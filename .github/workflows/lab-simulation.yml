@@ -61,7 +61,11 @@ jobs:
           {
             git clone --depth 1 --branch "${VRNETLAB_VERSION}" https://github.com/srl-labs/vrnetlab /tmp/vrnetlab
             cd /tmp/vrnetlab/routeros
-            curl -fsSL -o chr.zip "https://download.mikrotik.com/routeros/${CHR_VERSION}/chr-${CHR_VERSION}.vmdk.zip"
+            for host in download.mikrotik.com cdn.mikrotik.com download2.mikrotik.com; do
+              curl -fsSL --retry 5 --retry-all-errors --retry-delay 5 -o chr.zip                 "https://${host}/routeros/${CHR_VERSION}/chr-${CHR_VERSION}.vmdk.zip" && break
+              echo "falha ao baixar de ${host}, tentando o próximo"
+            done
+            test -s chr.zip
             unzip -o chr.zip && rm chr.zip
             make docker-image
           } 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/03-build-chr.log"
