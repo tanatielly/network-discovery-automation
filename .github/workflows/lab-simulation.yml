@@ -21,11 +21,14 @@ env:
   VRNETLAB_VERSION: "v0.21.0"
   CHR_VERSION: "7.16.2"
   PYTHONUNBUFFERED: "1"
+  LOGS: lab-results/logs
 
 jobs:
   lab:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 100
+    permissions:
+      contents: write # publica os resultados no branch lab-results
     steps:
       - uses: actions/checkout@v4
 
@@ -35,59 +38,61 @@ jobs:
 
       - name: Recursos do runner
         run: |
-          nproc; free -h; df -h / | tail -1
-          ls -l /dev/kvm || true
+          mkdir -p "$LOGS"
+          { nproc; free -h; df -h /; ls -l /dev/kvm || true; uname -a; } 2>&1 | tee "$LOGS/00-runner.log"
 
       - name: Habilitar KVM (VMs MikroTik CHR)
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-          ls -l /dev/kvm
+          ls -l /dev/kvm | tee "$LOGS/01-kvm.log"
 
       - name: Instalar containerlab
         run: |
-          bash -c "$(curl -sL https://get.containerlab.dev)" -- -v "${CLAB_VERSION}"
-          containerlab version
+          bash -c "$(curl -sL https://get.containerlab.dev)" -- -v "${CLAB_VERSION}" 2>&1 | tail -20 | tee "$LOGS/02-containerlab.log"
+          containerlab version | tee -a "$LOGS/02-containerlab.log"
 
       - name: Construir imagem MikroTik CHR (vrnetlab)
         run: |
-          git clone --depth 1 --branch "${VRNETLAB_VERSION}" https://github.com/srl-labs/vrnetlab /tmp/vrnetlab
-          cd /tmp/vrnetlab/routeros
-          curl -fsSL -o chr.zip "https://download.mikrotik.com/routeros/${CHR_VERSION}/chr-${CHR_VERSION}.vmdk.zip"
-          unzip -o chr.zip && rm chr.zip
-          make docker-image
+          {
+            git clone --depth 1 --branch "${VRNETLAB_VERSION}" https://github.com/srl-labs/vrnetlab /tmp/vrnetlab
+            cd /tmp/vrnetlab/routeros
+            curl -fsSL -o chr.zip "https://download.mikrotik.com/routeros/${CHR_VERSION}/chr-${CHR_VERSION}.vmdk.zip"
+            unzip -o chr.zip && rm chr.zip
+            make docker-image
+          } 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/03-build-chr.log"
           IMG=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -i routeros | head -1)
-          echo "imagem gerada: $IMG"
+          echo "imagem gerada: $IMG" | tee -a "$LOGS/03-build-chr.log"
           docker tag "$IMG" nettopo/chr:lab
 
       - name: Construir imagem Linux (FRR + lldpd + SNMP + SSH)
-        run: docker build -t nettopo/linux-net:lab lab/images/linux-net
+        run: docker build -t nettopo/linux-net:lab lab/images/linux-net 2>&1 | tee "$LOGS/04-build-linux.log"
 
       - name: Subir o laboratório
-        run: sudo containerlab deploy -t lab/nettopo-lab.clab.yml --reconfigure
+        run: sudo containerlab deploy -t lab/nettopo-lab.clab.yml --reconfigure 2>&1 | tee "$LOGS/05-deploy.log"
 
       - name: Instalar NetTopo
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]" pytest-cov mypy bandit types-PyYAML
+          pip install -e ".[dev]" pytest-cov mypy bandit types-PyYAML 2>&1 | tail -5 | tee "$LOGS/06-install.log"
 
       - name: Aguardar e configurar equipamentos
         working-directory: lab/scripts
-        run: python configure.py "$GITHUB_WORKSPACE/lab-results"
+        run: python configure.py "$GITHUB_WORKSPACE/lab-results" 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/07-configure.log"
 
       - name: Saídas brutas e matriz de parsing
         working-directory: lab/scripts
-        run: python dump_raw.py "$GITHUB_WORKSPACE/lab-results"
+        run: python dump_raw.py "$GITHUB_WORKSPACE/lab-results" 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/08-dump-raw.log"
 
       - name: Cenários da simulação
         working-directory: lab/scripts
-        run: python run_scenarios.py "$GITHUB_WORKSPACE/lab-results"
+        run: python run_scenarios.py "$GITHUB_WORKSPACE/lab-results" 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/09-scenarios.log"
 
       - name: Métricas (gabarito x descoberto)
         if: always()
         working-directory: lab/scripts
-        run: python score.py "$GITHUB_WORKSPACE/lab-results"
+        run: python score.py "$GITHUB_WORKSPACE/lab-results" 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/10-score.log"
 
       - name: Qualidade de código
         if: always()
@@ -97,23 +102,48 @@ jobs:
             > lab-results/quality/pytest.txt 2>&1 || true
           ruff check src tests lab > lab-results/quality/ruff.txt 2>&1 || true
           mypy src/nettopo --ignore-missing-imports > lab-results/quality/mypy.txt 2>&1 || true
-          bandit -r src/nettopo -f json -o lab-results/quality/bandit.json || true
+          bandit -r src/nettopo -f json -o lab-results/quality/bandit.json > /dev/null 2>&1 || true
           tail -3 lab-results/quality/pytest.txt; tail -1 lab-results/quality/mypy.txt
 
-      - name: Resumo
+      - name: Estado final do laboratório
         if: always()
         run: |
-          cat lab-results/summary.md >> "$GITHUB_STEP_SUMMARY" || echo "sem resumo" >> "$GITHUB_STEP_SUMMARY"
-          sudo containerlab inspect -t lab/nettopo-lab.clab.yml > lab-results/containerlab-inspect.txt 2>&1 || true
-          docker logs clab-nettopo-edge-mk1 > lab-results/lab-state/edge-mk1-container.log 2>&1 || true
+          sudo containerlab inspect -t lab/nettopo-lab.clab.yml > "$LOGS/11-inspect.log" 2>&1 || true
+          for c in $(docker ps -a --format '{{.Names}}' | grep clab-nettopo); do
+            docker logs "$c" > "$LOGS/container-$c.log" 2>&1 || true
+          done
+          cat lab-results/summary.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || echo "sem resumo" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Publicar resultados
+      - name: Publicar resultados (artefato)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lab-results
           path: lab-results/
           retention-days: 30
+
+      - name: Publicar resultados (branch lab-results)
+        if: always()
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          REMOTE="https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          DEST=/tmp/results-branch
+          if ! git clone -q --depth 1 --branch lab-results "$REMOTE" "$DEST" 2>/dev/null; then
+            mkdir -p "$DEST" && cd "$DEST" && git init -q -b lab-results && git remote add origin "$REMOTE" && cd -
+          fi
+          RUN_DIR="runs/${RUN_ID}-${RUN_ATTEMPT}"
+          mkdir -p "$DEST/$RUN_DIR"
+          cp -r lab-results/. "$DEST/$RUN_DIR/"
+          echo "{\"run_id\": \"${RUN_ID}\", \"attempt\": \"${RUN_ATTEMPT}\", \"sha\": \"${GITHUB_SHA}\", \"dir\": \"${RUN_DIR}\"}" > "$DEST/latest.json"
+          cd "$DEST"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Resultados da simulação: run ${RUN_ID} (${GITHUB_SHA::7})"
+          git push -q origin lab-results
 
       - name: Destruir o laboratório
         if: always()
