@@ -11,7 +11,6 @@ import sys
 from pathlib import Path
 
 from common import COLLECTABLE, CREDS, NODES, PROFILE_OF, SSH_BY_PROFILE, write_json
-
 from nettopo.collectors.ssh import _ERROR_MARKERS, hostname_from_prompt
 from nettopo.models import Device
 from nettopo.vendors.parsers import parse_output

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} · Topologia</title>
+<style>
+{{ css }}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+</head>
+<body>
+<div id="nettopo-root"></div>
+<script id="nettopo-data" type="application/json">{{ data_json }}</script>
+<script>
+{{ topoview_js }}
+</script>
+<script>
+{{ viewer_js }}
+</script>
+<script>
+  (function () {
+    var data = JSON.parse(document.getElementById("nettopo-data").textContent);
+    window.NetTopoViewer.mount(document.getElementById("nettopo-root"), data);
+  })();
+</script>
+</body>
+</html>

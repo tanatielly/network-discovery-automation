@@ -29,6 +29,9 @@ jobs:
     timeout-minutes: 100
     permissions:
       contents: write # publica os resultados no branch lab-results
+    defaults:
+      run:
+        shell: bash # bash -eo pipefail: falhas não ficam escondidas pelo "| tee"
     steps:
       - uses: actions/checkout@v4
 

@@ -29,7 +29,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.4", "snmpsim>=1.1", "pysmi>=1.5"]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff==0.16.9", "snmpsim>=1.1", "pysmi>=1.5"]
 
 [project.scripts]
 nettopo = "nettopo.cli:app"
@@ -45,7 +45,11 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 110
 target-version = "py310"
+src = ["src", "tests", "lab/scripts"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
 ignore = ["E501", "B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["nettopo", "common"]
