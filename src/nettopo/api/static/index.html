@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NetTopo</title>
+<link rel="stylesheet" href="/assets/viewer.css">
+<link rel="stylesheet" href="/static/ui.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+<script src="/assets/topoview.js"></script>
+<script src="/assets/viewer.js"></script>
+</head>
+<body>
+<header class="ui-top">
+  <div class="ui-brand"><span class="ui-logo" aria-hidden="true"></span>NetTopo</div>
+  <nav class="ui-actions">
+    <button class="nt-btn primary" id="btn-new" type="button">Nova descoberta</button>
+    <button class="nt-btn" id="btn-demo" type="button" title="Descoberta em rede simulada multi-vendor">Demo</button>
+  </nav>
+</header>
+<div class="ui-layout">
+  <aside class="ui-side">
+    <h2>Histórico</h2>
+    <ul id="history" class="ui-history"><li class="nt-muted">Carregando…</li></ul>
+  </aside>
+  <main id="main" class="ui-main"></main>
+</div>
+
+<template id="tpl-form">
+  <form class="ui-form" id="discovery-form" autocomplete="off">
+    <h1>Nova descoberta</h1>
+    <p class="nt-muted">Informe um ponto de partida (ex.: roteador de borda ou core) e as credenciais de leitura.
+      O NetTopo percorre a rede pelos vizinhos LLDP/CDP/MNDP e adjacências OSPF/BGP.</p>
+    <div class="ui-grid">
+      <label>Nome da rede<input class="nt-input" name="name" placeholder="Rede Corporativa"></label>
+      <label>Sementes (IP/hostname, uma por linha)<textarea class="nt-input" name="seeds" rows="2" required placeholder="10.0.0.1"></textarea></label>
+      <label>Redes permitidas (CIDR, uma por linha)<textarea class="nt-input" name="include" rows="3" placeholder="vazio = 10/8, 172.16/12, 192.168/16, 100.64/10"></textarea></label>
+      <label>Redes excluídas<textarea class="nt-input" name="exclude" rows="3" placeholder="10.99.0.0/16"></textarea></label>
+      <label>Profundidade máxima<input class="nt-input" name="max_depth" type="number" min="0" max="50" value="6"></label>
+      <label>Paralelismo<input class="nt-input" name="concurrency" type="number" min="1" max="128" value="16"></label>
+      <label>Timeout (s)<input class="nt-input" name="timeout" type="number" min="2" max="120" value="15"></label>
+    </div>
+    <fieldset class="ui-fieldset">
+      <legend>Métodos de coleta (ordem de preferência)</legend>
+      <label class="nt-toggle"><input type="checkbox" name="m_rest" checked> API REST</label>
+      <label class="nt-toggle"><input type="checkbox" name="m_netconf" checked> NETCONF</label>
+      <label class="nt-toggle"><input type="checkbox" name="m_ssh" checked> SSH/CLI</label>
+      <label class="nt-toggle"><input type="checkbox" name="m_snmp" checked> SNMP</label>
+      <span class="ui-sep"></span>
+      <label class="nt-toggle"><input type="checkbox" name="f_routing" checked> Seguir OSPF/BGP</label>
+      <label class="nt-toggle"><input type="checkbox" name="f_arp"> Seguir ARP</label>
+      <label class="nt-toggle"><input type="checkbox" name="c_mac"> Coletar tabela MAC</label>
+    </fieldset>
+    <fieldset class="ui-fieldset">
+      <legend>Credenciais <span class="nt-muted">(usadas apenas em memória, não são gravadas)</span></legend>
+      <div id="creds"></div>
+      <button class="nt-btn" type="button" id="add-cred">+ Adicionar credencial</button>
+    </fieldset>
+    <div class="ui-formbar">
+      <button class="nt-btn primary" type="submit">Iniciar descoberta</button>
+      <span class="ui-error" id="form-error" role="alert"></span>
+    </div>
+  </form>
+</template>
+
+<template id="tpl-cred">
+  <div class="ui-cred">
+    <select class="nt-select" data-f="type" aria-label="Tipo">
+      <option value="ssh">SSH</option><option value="snmp">SNMP</option>
+      <option value="netconf">NETCONF</option><option value="rest">API REST</option>
+    </select>
+    <select class="nt-select" data-f="version" data-for="snmp" aria-label="Versão SNMP">
+      <option value="2c">v2c</option><option value="3">v3</option><option value="1">v1</option>
+    </select>
+    <input class="nt-input" data-f="community" data-for="snmp-v12" placeholder="community" type="password">
+    <input class="nt-input" data-f="username" data-for="user" placeholder="usuário">
+    <input class="nt-input" data-f="password" data-for="pass" placeholder="senha" type="password">
+    <input class="nt-input" data-f="enable_secret" data-for="ssh" placeholder="enable (opcional)" type="password">
+    <select class="nt-select" data-f="auth_protocol" data-for="snmp-v3" aria-label="Autenticação">
+      <option>sha</option><option>sha256</option><option>sha512</option><option>md5</option>
+    </select>
+    <input class="nt-input" data-f="auth_key" data-for="snmp-v3" placeholder="auth key" type="password">
+    <select class="nt-select" data-f="priv_protocol" data-for="snmp-v3" aria-label="Privacidade">
+      <option>aes</option><option>aes256</option><option>des</option>
+    </select>
+    <input class="nt-input" data-f="priv_key" data-for="snmp-v3" placeholder="priv key" type="password">
+    <input class="nt-input" data-f="token" data-for="rest" placeholder="token (FortiOS)" type="password">
+    <input class="nt-input ui-port" data-f="port" placeholder="porta" type="number">
+    <button class="nt-btn" type="button" data-remove title="Remover">×</button>
+  </div>
+</template>
+<script src="/static/app.js"></script>
+</body>
+</html>

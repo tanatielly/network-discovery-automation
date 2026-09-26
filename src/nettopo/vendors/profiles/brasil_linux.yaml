@@ -1,0 +1,80 @@
+profiles:
+  # Fabricantes com forte presença no Brasil. A CLI do DmOS é semelhante à Cisco,
+  # por isso usa o driver cisco_ios do Netmiko; os parsers genéricos cobrem as saídas.
+  - id: datacom_dmos
+    vendor: Datacom
+    os: DmOS
+    category: switch
+    priority: 20
+    netmiko: cisco_ios
+    textfsm: datacom_dmos
+    sys_object_id: ["1.3.6.1.4.1.3709."]
+    sys_descr: ["DmOS", "DATACOM", "DM4\\d{3}", "DM2\\d{3}"]
+    notes: "Driver SSH baseado em cisco_ios; parsers genéricos. SNMP recomendado como complemento."
+    commands:
+      facts: show system
+      hostname: show running-config hostname
+      ip_interfaces: show ip interface brief
+      lldp: show lldp neighbors
+      arp: show ip arp
+      routes: show ip route
+      vlans: show vlan brief
+    parsers:
+      facts: kv_colon
+
+  - id: furukawa
+    vendor: Furukawa
+    os: FK / Laserway
+    category: switch
+    priority: 15
+    sys_descr: ["Furukawa", "Laserway", "FK-"]
+    notes: "Suporte via SNMP (LLDP-MIB / IF-MIB)."
+
+  - id: intelbras
+    vendor: Intelbras
+    os: Intelbras Switch OS
+    category: switch
+    priority: 15
+    sys_descr: ["Intelbras", "SG \\d{4}", "SF \\d{4}"]
+    notes: "Suporte via SNMP (LLDP-MIB / IF-MIB)."
+
+  - id: vyos
+    vendor: VyOS
+    os: VyOS
+    category: router
+    priority: 20
+    netmiko: vyos
+    sys_descr: ["VyOS"]
+    commands:
+      facts: show version
+      interfaces: show interfaces
+      lldp: show lldp neighbors detail
+      arp: show arp
+      routes: show ip route
+      ospf: show ip ospf neighbor
+      bgp: show ip bgp summary
+
+  - id: linux
+    vendor: Linux
+    os: Linux (lldpd)
+    category: server
+    priority: 5
+    netmiko: linux
+    sys_object_id: ["1.3.6.1.4.1.8072.3.2.10"]
+    sys_descr: ["^Linux", "Cumulus", "Ubuntu", "Debian", "Red Hat", "CentOS"]
+    commands:
+      facts: "cat /etc/os-release; uname -r; cat /sys/class/dmi/id/product_serial 2>/dev/null; cat /sys/class/dmi/id/product_name 2>/dev/null"
+      hostname: hostname
+      interfaces: ip -o link show
+      ip_interfaces: ip -o -4 addr show
+      lldp: lldpctl -f keyvalue
+      arp: ip -4 neigh show
+      routes: ip -4 route show
+    parsers:
+      facts: linux_facts
+      hostname: first_line
+      interfaces: linux_links
+      ip_interfaces: linux_addrs
+      lldp: lldpctl_keyvalue
+      arp: linux_neigh
+      routes: linux_routes

@@ -1,0 +1,120 @@
+name: Simulação em laboratório (Containerlab)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "lab/**"
+      - "src/**"
+      - ".github/workflows/lab-simulation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lab-simulation
+  cancel-in-progress: true
+
+env:
+  CLAB_VERSION: "0.79.0"
+  VRNETLAB_VERSION: "v0.21.0"
+  CHR_VERSION: "7.16.2"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  lab:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Recursos do runner
+        run: |
+          nproc; free -h; df -h / | tail -1
+          ls -l /dev/kvm || true
+
+      - name: Habilitar KVM (VMs MikroTik CHR)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          ls -l /dev/kvm
+
+      - name: Instalar containerlab
+        run: |
+          bash -c "$(curl -sL https://get.containerlab.dev)" -- -v "${CLAB_VERSION}"
+          containerlab version
+
+      - name: Construir imagem MikroTik CHR (vrnetlab)
+        run: |
+          git clone --depth 1 --branch "${VRNETLAB_VERSION}" https://github.com/srl-labs/vrnetlab /tmp/vrnetlab
+          cd /tmp/vrnetlab/mikrotik/routeros
+          curl -fsSL -o chr.zip "https://download.mikrotik.com/routeros/${CHR_VERSION}/chr-${CHR_VERSION}.vmdk.zip"
+          unzip -o chr.zip && rm chr.zip
+          make docker-image
+          IMG=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -i routeros | head -1)
+          echo "imagem gerada: $IMG"
+          docker tag "$IMG" nettopo/chr:lab
+
+      - name: Construir imagem Linux (FRR + lldpd + SNMP + SSH)
+        run: docker build -t nettopo/linux-net:lab lab/images/linux-net
+
+      - name: Subir o laboratório
+        run: sudo containerlab deploy -t lab/nettopo-lab.clab.yml --reconfigure
+
+      - name: Instalar NetTopo
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" pytest-cov mypy bandit types-PyYAML
+
+      - name: Aguardar e configurar equipamentos
+        working-directory: lab/scripts
+        run: python configure.py "$GITHUB_WORKSPACE/lab-results"
+
+      - name: Saídas brutas e matriz de parsing
+        working-directory: lab/scripts
+        run: python dump_raw.py "$GITHUB_WORKSPACE/lab-results"
+
+      - name: Cenários da simulação
+        working-directory: lab/scripts
+        run: python run_scenarios.py "$GITHUB_WORKSPACE/lab-results"
+
+      - name: Métricas (gabarito x descoberto)
+        if: always()
+        working-directory: lab/scripts
+        run: python score.py "$GITHUB_WORKSPACE/lab-results"
+
+      - name: Qualidade de código
+        if: always()
+        run: |
+          mkdir -p lab-results/quality
+          pytest -q --cov=nettopo --cov-report=term --cov-report=json:lab-results/quality/coverage.json \
+            > lab-results/quality/pytest.txt 2>&1 || true
+          ruff check src tests lab > lab-results/quality/ruff.txt 2>&1 || true
+          mypy src/nettopo --ignore-missing-imports > lab-results/quality/mypy.txt 2>&1 || true
+          bandit -r src/nettopo -f json -o lab-results/quality/bandit.json || true
+          tail -3 lab-results/quality/pytest.txt; tail -1 lab-results/quality/mypy.txt
+
+      - name: Resumo
+        if: always()
+        run: |
+          cat lab-results/summary.md >> "$GITHUB_STEP_SUMMARY" || echo "sem resumo" >> "$GITHUB_STEP_SUMMARY"
+          sudo containerlab inspect -t lab/nettopo-lab.clab.yml > lab-results/containerlab-inspect.txt 2>&1 || true
+          docker logs clab-nettopo-edge-mk1 > lab-results/lab-state/edge-mk1-container.log 2>&1 || true
+
+      - name: Publicar resultados
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-results
+          path: lab-results/
+          retention-days: 30
+
+      - name: Destruir o laboratório
+        if: always()
+        run: sudo containerlab destroy -t lab/nettopo-lab.clab.yml --cleanup || true

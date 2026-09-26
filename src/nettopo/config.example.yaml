@@ -1,0 +1,83 @@
+# NetTopo - configuração de descoberta
+# Segredos podem vir de variáveis de ambiente: ${NOME_DA_VARIAVEL} ou ${NOME:-padrao}
+
+name: Rede Corporativa
+seeds:
+  - 10.0.0.1          # ponto de partida (ex.: roteador de borda ou core)
+
+scope:
+  include:            # só descobre IPs nestas redes (vazio = RFC1918 + 100.64/10)
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+  exclude:
+    - 10.99.0.0/16    # ex.: rede de convidados
+  hostname_exclude:   # regex de hostnames que não devem ser seguidos
+    - "^SEP[0-9A-F]{12}$"   # telefones Cisco
+    - "(?i)^ap-"
+
+max_depth: 6          # saltos a partir da semente
+max_devices: 2000
+concurrency: 16       # coletas em paralelo
+timeout: 15           # segundos por operação
+
+# Ordem de preferência dos métodos. O primeiro que funcionar entre rest/netconf/ssh é o
+# principal; SNMP complementa os dados (snmp_complement) ou é usado sozinho.
+methods: [rest, netconf, ssh, snmp]
+snmp_complement: true
+dns_resolve: true     # resolve hostnames de vizinhos sem IP de gerência
+infer_l3_links: true  # cria links L3 a partir de sub-redes /30 e /31 compartilhadas
+
+follow:               # fontes que alimentam a fila de descoberta
+  lldp: true
+  cdp: true
+  other_l2: true      # MNDP (MikroTik), EDP (Extreme), FDP (Ruckus/Brocade)
+  routing: true       # vizinhos OSPF/BGP
+  arp: false          # varrer tabela ARP (agressivo, use com escopo restrito)
+
+collect:
+  interfaces: true
+  arp: true
+  routes: true
+  vlans: true
+  mac_table: false
+  routing_neighbors: true
+  route_limit: 5000
+
+# Credenciais testadas em ordem; a que funcionar é priorizada nos próximos equipamentos.
+credentials:
+  - name: ssh-admin
+    type: ssh
+    username: ${NETTOPO_SSH_USER:-admin}
+    password: ${NETTOPO_SSH_PASS}
+    enable_secret: ${NETTOPO_ENABLE}
+
+  - name: snmp-v3
+    type: snmp
+    version: "3"
+    username: ${NETTOPO_SNMP_USER:-nettopo}
+    auth_protocol: sha        # md5 | sha | sha224 | sha256 | sha384 | sha512
+    auth_key: ${NETTOPO_SNMP_AUTH}
+    priv_protocol: aes        # des | 3des | aes | aes192 | aes256
+    priv_key: ${NETTOPO_SNMP_PRIV}
+
+  - name: snmp-v2c
+    type: snmp
+    version: 2c
+    community: ${NETTOPO_SNMP_COMMUNITY:-public}
+
+  - name: netconf
+    type: netconf
+    username: ${NETTOPO_SSH_USER:-admin}
+    password: ${NETTOPO_SSH_PASS}
+    port: 830
+
+  - name: api-rest            # Arista eAPI, NX-API, RESTCONF (IOS-XE), MikroTik REST
+    type: rest
+    username: ${NETTOPO_SSH_USER:-admin}
+    password: ${NETTOPO_SSH_PASS}
+    verify_ssl: false
+
+  # - name: fortigate-api     # FortiOS usa token de API
+  #   type: rest
+  #   token: ${NETTOPO_FORTI_TOKEN}

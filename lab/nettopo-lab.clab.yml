@@ -1,0 +1,95 @@
+# Laboratório NetTopo (Containerlab) — roda no GitHub Actions, sem hardware local.
+#
+#                 isp-pe (FRR, BGP AS64500, SEM credenciais do NetTopo)
+#                    | eth1 -- ether2
+#   edge-mk1 (MikroTik CHR) ---- ether3/ether3 (OSPF) ---- edge-mk2 (MikroTik CHR)
+#        | ether4                                                | ether4
+#   core-srl1 (Nokia SR Linux) ---- e1-2/e1-2 ---- core-srl2 (Nokia SR Linux)
+#        | e1-3                                    | e1-3         | e1-4
+#        +-------------- dist-frr1 (Linux+FRR) ----+             srv2 (Linux)
+#                          | eth3
+#                        srv1 (Linux)
+name: nettopo
+
+mgmt:
+  network: clab-mgmt
+  ipv4-subnet: 172.20.20.0/24
+
+topology:
+  kinds:
+    nokia_srlinux:
+      image: ghcr.io/nokia/srlinux:25.10.5
+    mikrotik_ros:
+      image: nettopo/chr:lab
+    linux:
+      image: nettopo/linux-net:lab
+
+  nodes:
+    isp-pe:
+      kind: linux
+      mgmt-ipv4: 172.20.20.2
+      env:
+        NODE_ROLE: router
+        SSH_USER: ispadmin
+        SSH_PASS: "Isp#Secret-2026"
+        SNMP_COMMUNITY: isp-secret
+      binds:
+        - configs/isp-pe/frr.conf:/etc/frr/frr.conf
+      exec:
+        - ip addr add 200.200.10.1/30 dev eth1
+
+    edge-mk1:
+      kind: mikrotik_ros
+      mgmt-ipv4: 172.20.20.11
+      startup-config: configs/edge-mk1.rsc
+
+    edge-mk2:
+      kind: mikrotik_ros
+      mgmt-ipv4: 172.20.20.12
+      startup-config: configs/edge-mk2.rsc
+
+    core-srl1:
+      kind: nokia_srlinux
+      mgmt-ipv4: 172.20.20.21
+      startup-config: configs/core-srl1.cfg
+
+    core-srl2:
+      kind: nokia_srlinux
+      mgmt-ipv4: 172.20.20.22
+      startup-config: configs/core-srl2.cfg
+
+    dist-frr1:
+      kind: linux
+      mgmt-ipv4: 172.20.20.31
+      env:
+        NODE_ROLE: router
+      binds:
+        - configs/dist-frr1/frr.conf:/etc/frr/frr.conf
+      exec:
+        - ip addr add 10.10.3.2/30 dev eth1
+        - ip addr add 10.10.4.2/30 dev eth2
+        - ip addr add 192.168.10.1/24 dev eth3
+
+    srv1:
+      kind: linux
+      mgmt-ipv4: 172.20.20.41
+      exec:
+        - ip addr add 192.168.10.10/24 dev eth1
+
+    srv2:
+      kind: linux
+      mgmt-ipv4: 172.20.20.42
+      exec:
+        - ip addr add 192.168.20.10/24 dev eth1
+
+  # MikroTik: eth1 do container = ether2 no RouterOS (ether1 é a gerência)
+  links:
+    - endpoints: ["isp-pe:eth1", "edge-mk1:eth1"]
+    - endpoints: ["edge-mk1:eth2", "edge-mk2:eth2"]
+    - endpoints: ["edge-mk1:eth3", "core-srl1:e1-1"]
+    - endpoints: ["edge-mk2:eth3", "core-srl2:e1-1"]
+    - endpoints: ["core-srl1:e1-2", "core-srl2:e1-2"]
+    - endpoints: ["core-srl1:e1-3", "dist-frr1:eth1"]
+    - endpoints: ["core-srl2:e1-3", "dist-frr1:eth2"]
+    - endpoints: ["dist-frr1:eth3", "srv1:eth1"]
+    - endpoints: ["core-srl2:e1-4", "srv2:eth1"]
