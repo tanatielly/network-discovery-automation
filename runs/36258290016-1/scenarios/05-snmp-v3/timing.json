@@ -1,0 +1,6 @@
+{
+  "id": "05-snmp-v3",
+  "title": "Somente SNMPv3 (authPriv SHA/AES) a partir do inventário",
+  "status": "ok",
+  "duration_s": 10.9
+}

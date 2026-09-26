@@ -1,0 +1,3 @@
+SSH pronto: {'isp-pe': 0.0, 'edge-mk1': 0.3, 'edge-mk2': 1.2, 'core-srl1': 0.0, 'core-srl2': 0.0, 'dist-frr1': 0.0, 'srv1': 0.0, 'srv2': 0.0}
+vizinhos LLDP SR Linux: {'core-srl1': 3, 'core-srl2': 4}
+laboratório pronto em 53s

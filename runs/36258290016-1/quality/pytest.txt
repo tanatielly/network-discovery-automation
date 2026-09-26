@@ -1,0 +1,82 @@
+..............................................                           [100%]
+=============================== warnings summary ===============================
+../../../../../opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_snmp_live.py::test_discovery_over_real_snmp
+  /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/smi/compiler.py:23: DeprecationWarning: getReadersFromUrls is deprecated. Please use get_readers_from_urls instead.
+    from pysmi.reader.url import getReadersFromUrls
+
+tests/test_snmp_live.py::test_discovery_over_real_snmp
+  /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/smi/compiler.py:29: DeprecationWarning: smiV1Relaxed is deprecated. Please use smi_v1_relaxed instead.
+    from pysmi.parser.dialect import smiV1Relaxed
+
+tests/test_snmp_live.py::test_discovery_over_real_snmp
+  /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/smi/compiler.py:60: DeprecationWarning: addSources is deprecated. Please use add_sources instead.
+    compiler.addSources(
+
+tests/test_snmp_live.py::test_discovery_over_real_snmp
+  /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/smi/compiler.py:64: DeprecationWarning: addSearchers is deprecated. Please use add_searchers instead.
+    compiler.addSearchers(StubSearcher(*baseMibs))
+
+tests/test_snmp_live.py::test_discovery_over_real_snmp
+  /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/smi/compiler.py:65: DeprecationWarning: addSearchers is deprecated. Please use add_searchers instead.
+    compiler.addSearchers(
+
+tests/test_snmp_live.py::test_discovery_over_real_snmp
+  /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/smi/compiler.py:68: DeprecationWarning: addBorrowers is deprecated. Please use add_borrowers instead.
+    compiler.addBorrowers(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.14-final-0 _______________
+
+Name                                       Stmts   Miss  Cover
+--------------------------------------------------------------
+src/nettopo/__init__.py                        1      0   100%
+src/nettopo/__main__.py                        3      3     0%
+src/nettopo/api/__init__.py                    0      0   100%
+src/nettopo/api/app.py                       178     19    89%
+src/nettopo/api/store.py                      74      7    91%
+src/nettopo/cli.py                           111    111     0%
+src/nettopo/collectors/__init__.py             0      0   100%
+src/nettopo/collectors/base.py                24      1    96%
+src/nettopo/collectors/netconf.py            233    134    42%
+src/nettopo/collectors/orchestrator.py       104     27    74%
+src/nettopo/collectors/rest.py               319    189    41%
+src/nettopo/collectors/simulated.py          104      1    99%
+src/nettopo/collectors/snmp.py               360     79    78%
+src/nettopo/collectors/ssh.py                133     95    29%
+src/nettopo/config.py                        123      7    94%
+src/nettopo/discovery/__init__.py              0      0   100%
+src/nettopo/discovery/engine.py              111     12    89%
+src/nettopo/discovery/fingerprint.py          30      2    93%
+src/nettopo/discovery/identity.py            111     55    50%
+src/nettopo/discovery/scope.py                67     12    82%
+src/nettopo/models.py                        150      8    95%
+src/nettopo/output/__init__.py                27      1    96%
+src/nettopo/output/drawio.py                  89      2    98%
+src/nettopo/output/excel.py                   77      1    99%
+src/nettopo/output/graphdata.py               24      0   100%
+src/nettopo/output/html.py                    21      0   100%
+src/nettopo/output/icons.py                   46      0   100%
+src/nettopo/output/markdown.py                90      4    96%
+src/nettopo/topology/__init__.py               0      0   100%
+src/nettopo/topology/builder.py              162     27    83%
+src/nettopo/topology/diff.py                  27      0   100%
+src/nettopo/topology/enrich.py                94     20    79%
+src/nettopo/topology/layout.py                45      1    98%
+src/nettopo/topology/roles.py                102      9    91%
+src/nettopo/utils.py                         187     38    80%
+src/nettopo/vendors/__init__.py                2      0   100%
+src/nettopo/vendors/parsers/__init__.py       34      5    85%
+src/nettopo/vendors/parsers/generic.py       128     29    77%
+src/nettopo/vendors/parsers/linux.py          74     51    31%
+src/nettopo/vendors/parsers/mikrotik.py       79     21    73%
+src/nettopo/vendors/parsers/normalize.py     233    148    36%
+src/nettopo/vendors/registry.py               98     11    89%
+--------------------------------------------------------------
+TOTAL                                       3875   1130    71%
+Coverage JSON written to file lab-results/quality/coverage.json
+46 passed, 7 warnings in 31.15s

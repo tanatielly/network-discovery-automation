@@ -1,0 +1,12 @@
+{
+  "devices_added": [],
+  "devices_removed": [],
+  "devices_changed": [],
+  "links_added": [
+    "[l3] core-srl2:ethernet-1/3 <-> dist-frr1:eth2"
+  ],
+  "links_removed": [
+    "[physical] core-srl2:ethernet-1/3 <-> dist-frr1:eth2",
+    "[physical] core-srl2:ethernet-1/4 <-> dist-frr1:eth1"
+  ]
+}

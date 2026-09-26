@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "name": "Lab NetTopo - Containerlab",
+    "seeds": [
+      "172.20.20.11"
+    ],
+    "started_at": "2026-09-26T17:19:54.229758Z",
+    "finished_at": "2026-09-26T17:21:52.299181Z",
+    "tool_version": "0.1.0",
+    "max_depth": 6,
+    "stats": {
+      "devices": 0,
+      "collected": 0,
+      "stubs": 0,
+      "links": 0,
+      "physical_links": 0,
+      "l3_links": 0,
+      "logical_links": 0,
+      "interfaces": 0,
+      "failed_targets": 1,
+      "by_vendor": {},
+      "by_role": {},
+      "duration_s": 118.1
+    },
+    "failed_targets": {
+      "172.20.20.11": "ssh: perfil sem driver Netmiko"
+    },
+    "settings": {
+      "name": "Lab NetTopo - Containerlab",
+      "seeds": [
+        "172.20.20.11"
+      ],
+      "scope": {
+        "include": [
+          "172.20.20.0/24",
+          "10.0.0.0/8",
+          "192.168.0.0/16"
+        ],
+        "exclude": [],
+        "hostname_exclude": []
+      },
+      "max_depth": 6,
+      "max_devices": 2000,
+      "concurrency": 16,
+      "timeout": 8,
+      "snmp_retries": 1,
+      "methods": [
+        "ssh"
+      ],
+      "snmp_complement": true,
+      "dns_resolve": true,
+      "infer_l3_links": true,
+      "credentials": [
+        {
+          "name": "ssh-mikrotik",
+          "type": "ssh",
+          "username": "admin",
+          "password": "***",
+          "enable_secret": null,
+          "port": null,
+          "version": "2c",
+          "community": null,
+          "auth_protocol": "sha",
+          "auth_key": null,
+          "priv_protocol": "aes",
+          "priv_key": null,
+          "context": null,
+          "token": null,
+          "verify_ssl": false,
+          "https": true
+        },
+        {
+          "name": "ssh-srlinux",
+          "type": "ssh",
+          "username": "admin",
+          "password": "***",
+          "enable_secret": null,
+          "port": null,
+          "version": "2c",
+          "community": null,
+          "auth_protocol": "sha",
+          "auth_key": null,
+          "priv_protocol": "aes",
+          "priv_key": null,
+          "context": null,
+          "token": null,
+          "verify_ssl": false,
+          "https": true
+        },
+        {
+          "name": "ssh-linux",
+          "type": "ssh",
+          "username": "nettopo",
+          "password": "***",
+          "enable_secret": null,
+          "port": null,
+          "version": "2c",
+          "community": null,
+          "auth_protocol": "sha",
+          "auth_key": null,
+          "priv_protocol": "aes",
+          "priv_key": null,
+          "context": null,
+          "token": null,
+          "verify_ssl": false,
+          "https": true
+        }
+      ],
+      "follow": {
+        "lldp": true,
+        "cdp": true,
+        "other_l2": true,
+        "routing": true,
+        "arp": false
+      },
+      "collect": {
+        "interfaces": true,
+        "arp": true,
+        "routes": true,
+        "vlans": true,
+        "mac_table": false,
+        "routing_neighbors": true,
+        "route_limit": 5000
+      }
+    }
+  },
+  "devices": {},
+  "links": []
+}

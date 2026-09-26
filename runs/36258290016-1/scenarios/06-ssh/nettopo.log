@@ -1,0 +1,22 @@
+2026-09-26 17:21:51,956 DEBUG nettopo.collectors.ssh: autodetect 172.20.20.11 via ssh-srlinux: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: autodetect 172.20.20.11:22
+
+
+Authentication failed.
+2026-09-26 17:21:52,298 DEBUG nettopo.collectors.ssh: autodetect 172.20.20.11 via ssh-linux: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: autodetect 172.20.20.11:22
+
+
+Authentication failed.

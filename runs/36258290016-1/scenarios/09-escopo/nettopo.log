@@ -1,0 +1,37 @@
+2026-09-26 17:23:00,707 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-09-26 17:23:00,744 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v3 falhou: Unknown USM user
+2026-09-26 17:23:02,807 DEBUG nettopo.collectors.ssh: autodetect 172.20.20.2 via ssh-mikrotik: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: autodetect 172.20.20.2:22
+
+
+Authentication failed.
+2026-09-26 17:23:03,613 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-09-26 17:23:06,880 DEBUG nettopo.collectors.ssh: autodetect 172.20.20.2 via ssh-srlinux: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: autodetect 172.20.20.2:22
+
+
+Authentication failed.
+2026-09-26 17:23:11,327 DEBUG nettopo.collectors.ssh: autodetect 172.20.20.2 via ssh-linux: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: autodetect 172.20.20.2:22
+
+
+Authentication failed.
+2026-09-26 17:23:13,630 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.2 via snmp-v3 falhou: No SNMP response received before timeout

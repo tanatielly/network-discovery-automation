@@ -1,0 +1,12 @@
+Flags: D - dynamic; X - disabled; I - inactive, R - running; S - slave; P - passthrough 
+ 0   R   name="ether1" default-name="ether1" type="ether" mtu=1500 actual-mtu=1500 mac-address=0C:00:0E:9C:D2:00 last-link-up-time=2026-09-26 17:16:55 link-downs=0 
+
+ 1   R   name="ether2" default-name="ether2" type="ether" mtu=1500 actual-mtu=1500 mac-address=52:54:00:12:34:56 last-link-up-time=2026-09-26 17:16:55 link-downs=0 
+
+ 2   R   ;;; Interlink edge-mk1
+         name="ether3" default-name="ether3" type="ether" mtu=1500 actual-mtu=1500 mac-address=0C:00:66:13:2C:02 last-link-up-time=2026-09-26 17:16:55 link-downs=0 
+
+ 3   R   ;;; Core SRL2
+         name="ether4" default-name="ether4" type="ether" mtu=1500 actual-mtu=1500 mac-address=0C:00:08:31:C9:03 last-link-up-time=2026-09-26 17:16:55 link-downs=0 
+
+ 4   R   name="lo" type="loopback" mtu=65536 actual-mtu=65536 mac-address=00:00:00:00:00:00 last-link-up-time=2026-09-26 17:16:45 link-downs=0

@@ -1,0 +1,5 @@
+{
+  "docker stop srv2": 0,
+  "dist-frr1 eth2 down": "",
+  "lldp core-srl2 após falha": "  +--------------+-------------------+----------------------+---------------------+------------------------+----------------------+---------------+\n  |     Name     |     Neighbor      | Neighbor System Name | Neighbor Chassis ID | Neighbor First Message | Neighbor Last Update | Neighbor Port |\n  +==============+===================+======================+=====================+========================+======================+===============+\n  | ethernet-1/1 | 0C:00:08:31:C9:03 | edge-mk2             | 0C:00:08:31:C9:03   | 10 minutes ago         | 19 seconds ago       | ether4        |\n  | ethernet-1/2 | 1A:1E:00:FF:00:00 | core-srl1            | 1A:1E:00:FF:00:00   | 10 minutes ago         | 28 seconds ago       | ethernet-1/2  |\n  | mgmt0        | 1A:1E:00:FF:00:00 | core-srl1            | 1A:1E:00:FF:00:00   | 10 minutes ago         | 28 seconds ago       | mgmt0         |\n  +--------------+-------------------+----------------------+---------------------+------------------------+----------------------+---------------+\n"
+}

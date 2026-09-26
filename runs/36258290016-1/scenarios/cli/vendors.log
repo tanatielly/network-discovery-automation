@@ -1,0 +1,63 @@
+                             Fabricantes suportados                             
+┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━┳━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━┓
+┃         ┃         ┃         ┃          ┃      ┃ SSH     ┃         ┃          ┃
+┃ Perfil  ┃ Fabric… ┃ Sistema ┃ Categor… ┃ SNMP ┃ (Netmi… ┃ NETCONF ┃ API REST ┃
+┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━╇━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━┩
+│ allied… │ Allied  │ Allied… │ switch   │ sim  │ allied… │ —       │ —        │
+│         │ Telesis │ Plus    │          │      │         │         │          │
+│ arista… │ Arista  │ EOS     │ switch   │ sim  │ arista… │ default │ eapi     │
+│ checkp… │ Check   │ Gaia    │ firewall │ sim  │ checkp… │ —       │ —        │
+│         │ Point   │         │          │      │         │         │          │
+│ cisco_… │ Cisco   │ ASA     │ firewall │ sim  │ cisco_… │ —       │ —        │
+│ cisco_… │ Cisco   │ IOS /   │ network  │ sim  │ cisco_… │ csr     │ restcon… │
+│         │         │ IOS-XE  │          │      │         │         │          │
+│ cisco_… │ Cisco   │ IOS-XR  │ router   │ sim  │ cisco_… │ iosxr   │ —        │
+│ cisco_… │ Cisco   │ NX-OS   │ switch   │ sim  │ cisco_… │ nexus   │ nxapi    │
+│ cisco_… │ Cisco   │ SMB     │ switch   │ sim  │ cisco_… │ —       │ —        │
+│         │         │ (Sx300… │          │      │         │         │          │
+│ dataco… │ Datacom │ DmOS    │ switch   │ sim  │ cisco_… │ —       │ —        │
+│ dell_o… │ Dell    │ OS10    │ switch   │ sim  │ dell_o… │ —       │ —        │
+│ dell_o… │ Dell    │ OS6 /   │ switch   │ sim  │ dell_o… │ —       │ —        │
+│         │         │ PowerC… │          │      │         │         │          │
+│ extrem… │ Extreme │ EXOS    │ switch   │ sim  │ extrem… │ —       │ —        │
+│         │ Networ… │         │          │      │         │         │          │
+│ extrem… │ Extreme │ VOSS /  │ switch   │ sim  │ extrem… │ —       │ —        │
+│         │ Networ… │ VSP     │          │      │         │         │          │
+│ fortin… │ Fortin… │ FortiOS │ firewall │ sim  │ fortin… │ —       │ fortios  │
+│ furuka… │ Furuka… │ FK /    │ switch   │ sim  │ —       │ —       │ —        │
+│         │         │ Laserw… │          │      │         │         │          │
+│ hp_com… │ HPE /   │ Comware │ switch   │ sim  │ hp_com… │ default │ —        │
+│         │ H3C     │         │          │      │         │         │          │
+│ aruba_… │ HPE     │ ArubaO… │ switch   │ sim  │ aruba_… │ —       │ —        │
+│         │ Aruba   │         │          │      │         │         │          │
+│ hp_pro… │ HPE     │ ProCur… │ switch   │ sim  │ hp_pro… │ —       │ —        │
+│         │ Aruba   │ /       │          │      │         │         │          │
+│         │         │ ArubaO… │          │      │         │         │          │
+│ huawei… │ Huawei  │ VRP     │ network  │ sim  │ huawei  │ huawei  │ —        │
+│ intelb… │ Intelb… │ Intelb… │ switch   │ sim  │ —       │ —       │ —        │
+│         │         │ Switch  │          │      │         │         │          │
+│         │         │ OS      │          │      │         │         │          │
+│ junipe… │ Juniper │ Junos   │ network  │ sim  │ junipe… │ junos   │ —        │
+│ linux   │ Linux   │ Linux   │ server   │ sim  │ linux   │ —       │ —        │
+│         │         │ (lldpd) │          │      │         │         │          │
+│ mikrot… │ MikroT… │ Router… │ router   │ sim  │ mikrot… │ —       │ mikrotik │
+│ nokia_… │ Nokia   │ SR      │ switch   │ sim  │ nokia_… │ default │ —        │
+│         │         │ Linux   │          │      │         │         │          │
+│ nokia_… │ Nokia   │ SR OS   │ router   │ sim  │ nokia_… │ default │ —        │
+│ paloal… │ Palo    │ PAN-OS  │ firewall │ sim  │ paloal… │ —       │ —        │
+│         │ Alto    │         │          │      │         │         │          │
+│         │ Networ… │         │          │      │         │         │          │
+│ ruckus… │ Ruckus  │ FastIr… │ switch   │ sim  │ ruckus… │ —       │ —        │
+│         │ /       │ (ICX)   │          │      │         │         │          │
+│         │ Brocade │         │          │      │         │         │          │
+│ sonicw… │ SonicW… │ SonicOS │ firewall │ sim  │ generic │ —       │ —        │
+│ tplink… │ TP-Link │ JetStr… │ switch   │ sim  │ tplink… │ —       │ —        │
+│ ubiqui… │ Ubiqui… │ EdgeOS  │ router   │ sim  │ ubiqui… │ —       │ —        │
+│ ubiqui… │ Ubiqui… │ EdgeSw… │ switch   │ sim  │ ubiqui… │ —       │ —        │
+│         │         │ / UniFi │          │      │         │         │          │
+│         │         │ Switch  │          │      │         │         │          │
+│ vyos    │ VyOS    │ VyOS    │ router   │ sim  │ vyos    │ —       │ —        │
+│ zte_zx… │ ZTE     │ ZXROS   │ network  │ sim  │ zte_zx… │ —       │ —        │
+└─────────┴─────────┴─────────┴──────────┴──────┴─────────┴─────────┴──────────┘
+Qualquer equipamento com SNMP + LLDP-MIB é descoberto mesmo sem perfil 
+específico.

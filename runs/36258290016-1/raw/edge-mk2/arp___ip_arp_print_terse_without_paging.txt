@@ -1,0 +1,2 @@
+0 DC address=10.255.0.1 mac-address=0C:00:8A:78:39:02 interface=ether3 published=no status=stale
+1 DC address=172.31.255.29 mac-address=FE:C1:4C:53:3E:F1 interface=ether1 published=no status=reachable

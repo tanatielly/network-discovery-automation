@@ -1,0 +1,18 @@
+{"type": "started", "seeds": ["172.20.20.11", "172.20.20.12", "172.20.20.2", "172.20.20.21", "172.20.20.22", "172.20.20.31", "172.20.20.41", "172.20.20.42"], "t": 0.0}
+{"type": "device_started", "target": "172.20.20.2", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.11", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.12", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.21", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.22", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.31", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.41", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.42", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_failed", "target": "172.20.20.2", "reason": "nenhum método funcionou", "processed": 1, "t": 0.74}
+{"type": "device_failed", "target": "172.20.20.21", "reason": "nenhum método funcionou", "processed": 2, "t": 0.74}
+{"type": "device_failed", "target": "172.20.20.22", "reason": "nenhum método funcionou", "processed": 3, "t": 0.74}
+{"type": "device_done", "target": "172.20.20.41", "id": "srv1", "hostname": "srv1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 4, "known": 1, "t": 1.56}
+{"type": "device_done", "target": "172.20.20.31", "id": "dist-frr1", "hostname": "dist-frr1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 3, "processed": 5, "known": 2, "t": 1.57}
+{"type": "device_done", "target": "172.20.20.42", "id": "srv2", "hostname": "srv2", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 6, "known": 3, "t": 1.57}
+{"type": "device_failed", "target": "172.20.20.11", "reason": "nenhum método funcionou", "processed": 7, "t": 10.94}
+{"type": "device_failed", "target": "172.20.20.12", "reason": "nenhum método funcionou", "processed": 8, "t": 10.94}
+{"type": "finished", "stats": {"devices": 5, "collected": 3, "stubs": 2, "links": 4, "physical_links": 4, "l3_links": 0, "logical_links": 0, "interfaces": 11, "failed_targets": 5, "by_vendor": {"Linux": 3, "Nokia": 2}, "by_role": {"router": 2, "l3switch": 2, "server": 1}, "duration_s": 10.9}, "t": 10.94}
