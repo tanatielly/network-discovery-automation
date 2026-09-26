@@ -53,7 +53,7 @@ jobs:
       - name: Construir imagem MikroTik CHR (vrnetlab)
         run: |
           git clone --depth 1 --branch "${VRNETLAB_VERSION}" https://github.com/srl-labs/vrnetlab /tmp/vrnetlab
-          cd /tmp/vrnetlab/mikrotik/routeros
+          cd /tmp/vrnetlab/routeros
           curl -fsSL -o chr.zip "https://download.mikrotik.com/routeros/${CHR_VERSION}/chr-${CHR_VERSION}.vmdk.zip"
           unzip -o chr.zip && rm chr.zip
           make docker-image

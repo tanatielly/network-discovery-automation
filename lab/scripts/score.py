@@ -118,7 +118,14 @@ def main() -> None:
     results = Path(sys.argv[1] if len(sys.argv) > 1 else "lab-results")
     truth = load_truth()
     metrics: dict[str, Any] = {}
-    for d in sorted((results / "scenarios").iterdir()):
+    scenarios = results / "scenarios"
+    if not scenarios.is_dir():
+        results.mkdir(parents=True, exist_ok=True)
+        msg = "# Simulação NetTopo\n\nNenhum cenário executado (falha antes da simulação; veja os logs do job).\n"
+        (results / "summary.md").write_text(msg, encoding="utf-8")
+        print("nenhum cenário encontrado")
+        return
+    for d in sorted(scenarios.iterdir()):
         topo_file = d / "topology.json"
         if not d.is_dir() or not topo_file.exists():
             continue
