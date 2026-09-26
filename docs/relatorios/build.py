@@ -318,20 +318,45 @@ def to_pdf(html_path: Path) -> Path | None:
     return pdf if pdf.exists() else None
 
 
+def to_artifact(page: str, name: str, links: dict[str, str]) -> str:
+    """Versão para o visualizador de Artifacts: sem <html>/<head>/<body>, sem botão de impressão
+    (bloqueado no visualizador) e com o link do outro relatório apontando para o Artifact dele."""
+    head = page.split("<head>", 1)[1].split("</head>", 1)[0]
+    head = re.sub(r'<meta[^>]*>\s*', "", head)
+    body = page.split(f'<body class="{name}">', 1)[1].rsplit("</body>", 1)[0]
+    body = re.sub(r'\s*<button type="button" class="btn primary" id="btn-print">.*?</button>', "", body)
+    body = re.sub(r"<script>.*?</script>", "", body, flags=re.S)
+    body = body.replace('<a class="btn" href="' + PDF_URL.format(name=name), '<a class="btn primary" href="'
+                        + PDF_URL.format(name=name))
+    for other, url in links.items():
+        body = body.replace(f'href="{other}.html"', f'href="{url}" target="_blank" rel="noopener"')
+    return head.strip() + f'\n<div class="{name}">\n' + body + "\n</div>\n"
+
+
 def main() -> None:
     if len(sys.argv) < 2:
         sys.exit(__doc__)
     run = Path(sys.argv[1])
     copy_data(run)
     d = load_run(run)
+    art_dir = None
+    if "--artifact-dir" in sys.argv:
+        art_dir = Path(sys.argv[sys.argv.index("--artifact-dir") + 1])
+        art_dir.mkdir(parents=True, exist_ok=True)
+    links = {r: sys.argv[sys.argv.index(f"--link-{r}") + 1] for r in REPORTS if f"--link-{r}" in sys.argv}
     for name in REPORTS:
         if not (HERE / f"{name}.md").exists():
             continue
         out = HERE / f"{name}.html"
-        out.write_text(render(name, d), encoding="utf-8")
+        page = render(name, d)
+        out.write_text(page, encoding="utf-8")
         print("HTML:", out)
         if "--pdf" in sys.argv:
             print("PDF:", to_pdf(out))
+        if art_dir:
+            art = art_dir / f"{name}.html"
+            art.write_text(to_artifact(page, name, links), encoding="utf-8")
+            print("Artifact:", art)
 
 
 if __name__ == "__main__":
