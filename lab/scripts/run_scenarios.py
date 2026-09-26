@@ -27,7 +27,6 @@ from common import (
     sh,
     write_json,
 )
-
 from nettopo.config import Settings
 from nettopo.discovery.engine import discover
 from nettopo.models import Topology
