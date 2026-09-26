@@ -125,6 +125,17 @@ As credenciais enviadas à API são usadas apenas em memória e **não são grav
 banco (SQLite em `./nettopo_data`, configurável por `NETTOPO_DATA`). Defina
 `NETTOPO_API_TOKEN` para exigir o cabeçalho `Authorization: Bearer <token>`.
 
+## Laboratório e avaliação
+
+A ferramenta é testada contra sistemas reais (MikroTik RouterOS 7, Nokia SR Linux, Linux/FRR) num
+laboratório Containerlab que roda no GitHub Actions, sem hardware local. Detalhes em
+[`lab/README.md`](lab/README.md).
+
+Relatórios da primeira avaliação (26/09/2026):
+
+- [Gestão técnica](docs/relatorios/gestao-tecnica.md) · [PDF](docs/relatorios/gestao-tecnica.pdf)
+- [Técnico](docs/relatorios/tecnico.md) · [PDF](docs/relatorios/tecnico.pdf)
+
 ## Desenvolvimento
 
 ```bash
