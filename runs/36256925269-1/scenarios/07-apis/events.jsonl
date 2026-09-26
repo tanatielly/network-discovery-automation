@@ -1,0 +1,25 @@
+{"type": "started", "seeds": ["172.20.20.11"], "t": 0.0}
+{"type": "device_started", "target": "172.20.20.11", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_done", "target": "172.20.20.11", "id": "edge-mk1", "hostname": "edge-mk1", "vendor": "MikroTik", "model": "CHR QEMU Standard PC (i440FX + PIIX, 1996)", "via": ["rest"], "neighbors": 3, "processed": 1, "known": 1, "t": 0.59}
+{"type": "queued", "target": "172.20.20.2", "hostname": "isp-pe", "depth": 1, "t": 0.59}
+{"type": "queued", "target": "10.255.0.2", "hostname": "edge-mk2", "depth": 1, "t": 0.59}
+{"type": "queued", "target": "172.20.20.21", "hostname": "core-srl1", "depth": 1, "t": 0.59}
+{"type": "device_started", "target": "172.20.20.2", "depth": 1, "parent": "edge-mk1", "t": 0.59}
+{"type": "device_started", "target": "10.255.0.2", "depth": 1, "parent": "edge-mk1", "t": 0.59}
+{"type": "device_started", "target": "172.20.20.21", "depth": 1, "parent": "edge-mk1", "t": 0.59}
+{"type": "device_done", "target": "172.20.20.21", "id": "core-srl1", "hostname": "core-srl1", "vendor": "Nokia", "model": null, "via": ["netconf"], "neighbors": 4, "processed": 2, "known": 2, "t": 1.66}
+{"type": "queued", "target": "172.20.20.22", "hostname": "core-srl2", "depth": 2, "t": 1.66}
+{"type": "queued", "target": "172.20.20.31", "hostname": "dist-frr1", "depth": 2, "t": 1.66}
+{"type": "device_started", "target": "172.20.20.22", "depth": 2, "parent": "core-srl1", "t": 1.66}
+{"type": "device_started", "target": "172.20.20.31", "depth": 2, "parent": "core-srl1", "t": 1.66}
+{"type": "device_done", "target": "172.20.20.31", "id": "dist-frr1", "hostname": "dist-frr1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 3, "processed": 3, "known": 3, "t": 1.92}
+{"type": "queued", "target": "172.20.20.41", "hostname": "srv1", "depth": 3, "t": 1.92}
+{"type": "device_started", "target": "172.20.20.41", "depth": 3, "parent": "dist-frr1", "t": 1.92}
+{"type": "device_done", "target": "172.20.20.41", "id": "srv1", "hostname": "srv1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 4, "known": 4, "t": 2.16}
+{"type": "device_done", "target": "172.20.20.22", "id": "core-srl2", "hostname": "core-srl2", "vendor": "Nokia", "model": null, "via": ["netconf"], "neighbors": 5, "processed": 5, "known": 5, "t": 2.85}
+{"type": "queued", "target": "172.20.20.42", "hostname": "srv2", "depth": 3, "t": 2.85}
+{"type": "device_started", "target": "172.20.20.42", "depth": 3, "parent": "core-srl2", "t": 2.85}
+{"type": "device_done", "target": "172.20.20.42", "id": "srv2", "hostname": "srv2", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 6, "known": 6, "t": 3.09}
+{"type": "device_failed", "target": "172.20.20.2", "reason": "nenhum método funcionou", "processed": 7, "t": 10.76}
+{"type": "device_failed", "target": "10.255.0.2", "reason": "sem resposta (portas fechadas / credenciais ausentes)", "processed": 8, "t": 13.56}
+{"type": "finished", "stats": {"devices": 8, "collected": 6, "stubs": 2, "links": 11, "physical_links": 11, "l3_links": 0, "logical_links": 0, "interfaces": 134, "failed_targets": 2, "by_vendor": {"Linux": 4, "MikroTik": 2, "Nokia": 2}, "by_role": {"router": 6, "l3switch": 2}, "duration_s": 13.6}, "t": 13.57}

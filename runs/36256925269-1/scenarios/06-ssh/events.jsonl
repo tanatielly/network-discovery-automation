@@ -1,0 +1,4 @@
+{"type": "started", "seeds": ["172.20.20.11"], "t": 0.0}
+{"type": "device_started", "target": "172.20.20.11", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_failed", "target": "172.20.20.11", "reason": "ssh: perfil sem driver Netmiko", "processed": 1, "t": 118.09}
+{"type": "finished", "stats": {"devices": 0, "collected": 0, "stubs": 0, "links": 0, "physical_links": 0, "l3_links": 0, "logical_links": 0, "interfaces": 0, "failed_targets": 1, "by_vendor": {}, "by_role": {}, "duration_s": 118.1}, "t": 118.09}

@@ -1,0 +1,6 @@
+{
+  "id": "11-falha-injetada",
+  "title": "Após falha: srv2 desligado e link core-srl2/dist-frr1 derrubado",
+  "status": "ok",
+  "duration_s": 24.3
+}

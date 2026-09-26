@@ -1,0 +1,47 @@
+concurrency: 16
+credentials:
+- name: ssh-mikrotik
+  password: admin
+  type: ssh
+  username: admin
+- name: ssh-srlinux
+  password: NokiaSrl1!
+  type: ssh
+  username: admin
+- name: ssh-linux
+  password: NetTopo#2026
+  type: ssh
+  username: nettopo
+- community: public
+  name: snmp-v2c
+  type: snmp
+  version: 2c
+- auth_key: authpass2026
+  auth_protocol: sha
+  name: snmp-v3
+  priv_key: privpass2026
+  priv_protocol: aes
+  type: snmp
+  username: nettopo
+  version: '3'
+- name: netconf-srlinux
+  password: NokiaSrl1!
+  port: 830
+  type: netconf
+  username: admin
+- https: false
+  name: rest-mikrotik
+  password: admin
+  port: 80
+  type: rest
+  username: admin
+max_depth: 0
+name: Lab NetTopo - Containerlab
+scope:
+  include:
+  - 172.20.20.0/24
+  - 10.0.0.0/8
+  - 192.168.0.0/16
+seeds:
+- 172.20.20.11
+timeout: 8

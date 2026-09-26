@@ -1,0 +1,98 @@
+{
+  "name": "Lab NetTopo - Containerlab",
+  "seeds": [
+    "172.20.20.11"
+  ],
+  "scope": {
+    "include": [
+      "172.20.20.0/24",
+      "10.0.0.0/8",
+      "192.168.0.0/16"
+    ],
+    "exclude": [],
+    "hostname_exclude": []
+  },
+  "max_depth": 6,
+  "max_devices": 2000,
+  "concurrency": 16,
+  "timeout": 8,
+  "snmp_retries": 1,
+  "methods": [
+    "ssh"
+  ],
+  "snmp_complement": true,
+  "dns_resolve": true,
+  "infer_l3_links": true,
+  "credentials": [
+    {
+      "name": "ssh-mikrotik",
+      "type": "ssh",
+      "username": "admin",
+      "password": "***",
+      "enable_secret": null,
+      "port": null,
+      "version": "2c",
+      "community": null,
+      "auth_protocol": "sha",
+      "auth_key": null,
+      "priv_protocol": "aes",
+      "priv_key": null,
+      "context": null,
+      "token": null,
+      "verify_ssl": false,
+      "https": true
+    },
+    {
+      "name": "ssh-srlinux",
+      "type": "ssh",
+      "username": "admin",
+      "password": "***",
+      "enable_secret": null,
+      "port": null,
+      "version": "2c",
+      "community": null,
+      "auth_protocol": "sha",
+      "auth_key": null,
+      "priv_protocol": "aes",
+      "priv_key": null,
+      "context": null,
+      "token": null,
+      "verify_ssl": false,
+      "https": true
+    },
+    {
+      "name": "ssh-linux",
+      "type": "ssh",
+      "username": "nettopo",
+      "password": "***",
+      "enable_secret": null,
+      "port": null,
+      "version": "2c",
+      "community": null,
+      "auth_protocol": "sha",
+      "auth_key": null,
+      "priv_protocol": "aes",
+      "priv_key": null,
+      "context": null,
+      "token": null,
+      "verify_ssl": false,
+      "https": true
+    }
+  ],
+  "follow": {
+    "lldp": true,
+    "cdp": true,
+    "other_l2": true,
+    "routing": true,
+    "arp": false
+  },
+  "collect": {
+    "interfaces": true,
+    "arp": true,
+    "routes": true,
+    "vlans": true,
+    "mac_table": false,
+    "routing_neighbors": true,
+    "route_limit": 5000
+  }
+}

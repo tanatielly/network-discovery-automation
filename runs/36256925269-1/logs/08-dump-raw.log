@@ -1,0 +1,7 @@
+edge-mk1 {'facts': ('mikrotik_facts', 1), 'hostname': ('mikrotik_identity', 1), 'interfaces': ('mikrotik_interfaces', 5), 'ip_interfaces': ('mikrotik_ip_address', 4), 'other_l2': ('mikrotik_neighbors', 3), 'arp': ('mikrotik_arp', 3), 'routes': ('mikrotik_routes', 1), 'vlans': ('none', 0)}
+edge-mk2 {'facts': ('mikrotik_facts', 1), 'hostname': ('mikrotik_identity', 1), 'interfaces': ('mikrotik_interfaces', 5), 'ip_interfaces': ('mikrotik_ip_address', 3), 'other_l2': ('mikrotik_neighbors', 2), 'arp': ('mikrotik_arp', 2), 'routes': ('mikrotik_routes', 1), 'vlans': ('none', 0)}
+core-srl1 {'facts': ('kv_colon', 1), 'ip_interfaces': ('none', 0), 'lldp': ('none', 0), 'arp': ('generic', 1)}
+core-srl2 {'facts': ('kv_colon', 1), 'ip_interfaces': ('none', 0), 'lldp': ('none', 0), 'arp': ('generic', 1)}
+dist-frr1 {'facts': ('linux_facts', 1), 'hostname': ('first_line', 1), 'interfaces': ('linux_links', 4), 'ip_interfaces': ('linux_addrs', 4), 'lldp': ('none', 0), 'arp': ('linux_neigh', 1), 'routes': ('linux_routes', 5)}
+srv1 {'facts': ('linux_facts', 1), 'hostname': ('first_line', 1), 'interfaces': ('linux_links', 2), 'ip_interfaces': ('linux_addrs', 2), 'lldp': ('none', 0), 'arp': ('linux_neigh', 1), 'routes': ('linux_routes', 3)}
+srv2 {'facts': ('linux_facts', 1), 'hostname': ('first_line', 1), 'interfaces': ('linux_links', 2), 'ip_interfaces': ('linux_addrs', 2), 'lldp': ('none', 0), 'arp': ('linux_neigh', 1), 'routes': ('linux_routes', 3)}

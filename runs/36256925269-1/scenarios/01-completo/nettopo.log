@@ -1,0 +1,55 @@
+2026-09-26 16:57:30,559 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-09-26 16:57:30,598 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v3 falhou: Unknown USM user
+2026-09-26 16:57:32,136 DEBUG nettopo.collectors.ssh: 172.20.20.31 facts 'cat /etc/os-release; uname -r; cat /sys/class/dmi/id/product_serial 2>/dev/null; cat /sys/class/dmi/id/product_name 2>/dev/null' -> 1 registros (linux_facts)
+2026-09-26 16:57:32,136 DEBUG nettopo.collectors.ssh: 172.20.20.31 hostname 'hostname' -> 1 registros (first_line)
+2026-09-26 16:57:32,137 DEBUG nettopo.collectors.ssh: 172.20.20.31 interfaces 'ip -o link show' -> 4 registros (linux_links)
+2026-09-26 16:57:32,137 DEBUG nettopo.collectors.ssh: 172.20.20.31 ip_interfaces 'ip -o -4 addr show' -> 4 registros (linux_addrs)
+2026-09-26 16:57:32,138 DEBUG nettopo.collectors.ssh: 172.20.20.31 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-09-26 16:57:32,138 DEBUG nettopo.collectors.ssh: 172.20.20.31 routes 'ip -4 route show' -> 5 registros (linux_routes)
+2026-09-26 16:57:33,438 DEBUG nettopo.collectors.ssh: autodetect 172.20.20.2 via ssh-mikrotik: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: autodetect 172.20.20.2:22
+
+
+Authentication failed.
+2026-09-26 16:57:33,482 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-09-26 16:57:33,489 DEBUG nettopo.collectors.ssh: 172.20.20.42 facts 'cat /etc/os-release; uname -r; cat /sys/class/dmi/id/product_serial 2>/dev/null; cat /sys/class/dmi/id/product_name 2>/dev/null' -> 1 registros (linux_facts)
+2026-09-26 16:57:33,489 DEBUG nettopo.collectors.ssh: 172.20.20.42 hostname 'hostname' -> 1 registros (first_line)
+2026-09-26 16:57:33,489 DEBUG nettopo.collectors.ssh: 172.20.20.42 interfaces 'ip -o link show' -> 2 registros (linux_links)
+2026-09-26 16:57:33,490 DEBUG nettopo.collectors.ssh: 172.20.20.42 ip_interfaces 'ip -o -4 addr show' -> 2 registros (linux_addrs)
+2026-09-26 16:57:33,490 DEBUG nettopo.collectors.ssh: 172.20.20.42 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-09-26 16:57:33,490 DEBUG nettopo.collectors.ssh: 172.20.20.42 routes 'ip -4 route show' -> 3 registros (linux_routes)
+2026-09-26 16:57:36,287 DEBUG nettopo.collectors.ssh: autodetect 172.20.20.2 via ssh-srlinux: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: autodetect 172.20.20.2:22
+
+
+Authentication failed.
+2026-09-26 16:57:36,757 DEBUG nettopo.collectors.ssh: 172.20.20.41 facts 'cat /etc/os-release; uname -r; cat /sys/class/dmi/id/product_serial 2>/dev/null; cat /sys/class/dmi/id/product_name 2>/dev/null' -> 1 registros (linux_facts)
+2026-09-26 16:57:36,757 DEBUG nettopo.collectors.ssh: 172.20.20.41 hostname 'hostname' -> 1 registros (first_line)
+2026-09-26 16:57:36,757 DEBUG nettopo.collectors.ssh: 172.20.20.41 interfaces 'ip -o link show' -> 2 registros (linux_links)
+2026-09-26 16:57:36,758 DEBUG nettopo.collectors.ssh: 172.20.20.41 ip_interfaces 'ip -o -4 addr show' -> 2 registros (linux_addrs)
+2026-09-26 16:57:36,758 DEBUG nettopo.collectors.ssh: 172.20.20.41 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-09-26 16:57:36,758 DEBUG nettopo.collectors.ssh: 172.20.20.41 routes 'ip -4 route show' -> 3 registros (linux_routes)
+2026-09-26 16:57:38,694 DEBUG nettopo.collectors.ssh: autodetect 172.20.20.2 via ssh-linux: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: autodetect 172.20.20.2:22
+
+
+Authentication failed.
+2026-09-26 16:57:43,553 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.2 via snmp-v3 falhou: No SNMP response received before timeout

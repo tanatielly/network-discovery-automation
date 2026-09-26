@@ -1,0 +1,12 @@
+Equipamentos adicionados (1)
+  dist-frr1
+Equipamentos removidos (1)
+  srv2
+Links adicionados (2)
+   core-srl2:ethernet-1/3 <-> dist-frr1:eth2
+   core-srl1:ethernet-1/3 <-> dist-frr1:eth1
+Links removidos (3)
+   core-srl1:ethernet-1/3 <-> srv2:eth1
+   core-srl2:ethernet-1/3 <-> srv2:eth2
+   core-srl2:ethernet-1/4 <-> srv2:eth1
+Equipamentos alterados (0)

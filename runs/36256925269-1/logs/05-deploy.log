@@ -1,0 +1,61 @@
+16:54:13 INFO Containerlab started version=0.79.0
+16:54:13 INFO Parsing & checking topology file=nettopo-lab.clab.yml
+16:54:13 INFO Removing directory path=/home/runner/work/network-discovery-automation/network-discovery-automation/lab/clab-nettopo
+16:54:13 INFO Creating docker network name=clab-mgmt IPv4 subnet=172.20.20.0/24 IPv6 subnet="" MTU=0
+16:54:13 INFO Pulling image image=ghcr.io/nokia/srlinux:25.10.5
+16:55:01 INFO Done pulling image image=ghcr.io/nokia/srlinux:25.10.5
+16:55:01 INFO Creating lab directory path=/home/runner/work/network-discovery-automation/network-discovery-automation/lab/clab-nettopo
+16:55:02 INFO Creating container name=srv1
+16:55:02 INFO Creating container name=edge-mk2
+16:55:02 INFO Creating container name=isp-pe
+16:55:02 INFO Creating container name=core-srl1
+16:55:03 INFO Creating container name=srv2
+16:55:03 INFO Creating container name=dist-frr1
+16:55:03 INFO Creating container name=core-srl2
+16:55:03 INFO Running postdeploy actions kind=nokia_srlinux node=core-srl1
+16:55:03 INFO Created link: core-srl1:e1-3 ▪┄┄▪ dist-frr1:eth1
+16:55:03 INFO Created link: dist-frr1:eth3 ▪┄┄▪ srv1:eth1
+16:55:03 INFO Creating container name=edge-mk1
+16:55:03 INFO Created link: edge-mk2:eth3 ▪┄┄▪ core-srl2:e1-1
+16:55:03 INFO Created link: core-srl1:e1-2 ▪┄┄▪ core-srl2:e1-2
+16:55:03 INFO Created link: core-srl2:e1-3 ▪┄┄▪ dist-frr1:eth2
+16:55:03 INFO Created link: core-srl2:e1-4 ▪┄┄▪ srv2:eth1
+16:55:03 INFO Running postdeploy actions kind=nokia_srlinux node=core-srl2
+16:55:04 INFO Created link: isp-pe:eth1 ▪┄┄▪ edge-mk1:eth1
+16:55:04 INFO Created link: edge-mk1:eth2 ▪┄┄▪ edge-mk2:eth2
+16:55:04 INFO Created link: edge-mk1:eth3 ▪┄┄▪ core-srl1:e1-1
+16:55:49 INFO Executed command node=isp-pe command="ip addr add 200.200.10.1/30 dev eth1" stdout=""
+16:55:49 INFO Executed command node=srv1 command="ip addr add 192.168.10.10/24 dev eth1" stdout=""
+16:55:49 INFO Executed command node=srv2 command="ip addr add 192.168.20.10/24 dev eth1" stdout=""
+16:55:49 INFO Executed command node=dist-frr1 command="ip addr add 10.10.3.2/30 dev eth1" stdout=""
+16:55:49 INFO Executed command node=dist-frr1 command="ip addr add 10.10.4.2/30 dev eth2" stdout=""
+16:55:49 INFO Executed command node=dist-frr1 command="ip addr add 192.168.10.1/24 dev eth3" stdout=""
+16:55:50 INFO Adding host entries path=/etc/hosts
+16:55:50 INFO Adding SSH config for nodes path=/etc/ssh/ssh_config.d/clab-nettopo.conf
+[1m╭[0m[1m────────────────────────[0m[1m┬[0m[1m───────────────────────────────[0m[1m┬[0m[1m────────────────────[0m[1m┬[0m[1m────────────────[0m[1m╮[0m
+[1m│[0m[1m          Name          [0m[1m│[0m[1m           Kind/Image          [0m[1m│[0m[1m        State       [0m[1m│[0m[1m IPv4/6 Address [0m[1m│[0m
+[1m├[0m[1m────────────────────────[0m[1m┼[0m[1m───────────────────────────────[0m[1m┼[0m[1m────────────────────[0m[1m┼[0m[1m────────────────[0m[1m┤[0m
+│ clab-nettopo-core-srl1 │ nokia_srlinux                 │ running            │ 172.20.20.21   │
+│                        │ ghcr.io/nokia/srlinux:25.10.5 │                    │ N/A            │
+├────────────────────────┼───────────────────────────────┼────────────────────┼────────────────┤
+│ clab-nettopo-core-srl2 │ nokia_srlinux                 │ running            │ 172.20.20.22   │
+│                        │ ghcr.io/nokia/srlinux:25.10.5 │                    │ N/A            │
+├────────────────────────┼───────────────────────────────┼────────────────────┼────────────────┤
+│ clab-nettopo-dist-frr1 │ linux                         │ running            │ 172.20.20.31   │
+│                        │ nettopo/linux-net:lab         │                    │ N/A            │
+├────────────────────────┼───────────────────────────────┼────────────────────┼────────────────┤
+│ clab-nettopo-edge-mk1  │ mikrotik_ros                  │ running            │ 172.20.20.11   │
+│                        │ nettopo/chr:lab               │ (health: starting) │ N/A            │
+├────────────────────────┼───────────────────────────────┼────────────────────┼────────────────┤
+│ clab-nettopo-edge-mk2  │ mikrotik_ros                  │ running            │ 172.20.20.12   │
+│                        │ nettopo/chr:lab               │ (health: starting) │ N/A            │
+├────────────────────────┼───────────────────────────────┼────────────────────┼────────────────┤
+│ clab-nettopo-isp-pe    │ linux                         │ running            │ 172.20.20.2    │
+│                        │ nettopo/linux-net:lab         │                    │ N/A            │
+├────────────────────────┼───────────────────────────────┼────────────────────┼────────────────┤
+│ clab-nettopo-srv1      │ linux                         │ running            │ 172.20.20.41   │
+│                        │ nettopo/linux-net:lab         │                    │ N/A            │
+├────────────────────────┼───────────────────────────────┼────────────────────┼────────────────┤
+│ clab-nettopo-srv2      │ linux                         │ running            │ 172.20.20.42   │
+│                        │ nettopo/linux-net:lab         │                    │ N/A            │
+╰────────────────────────┴───────────────────────────────┴────────────────────┴────────────────╯

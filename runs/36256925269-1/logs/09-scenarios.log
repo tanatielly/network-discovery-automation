@@ -1,0 +1,28 @@
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/proto/secmod/rfc3826/priv/aes.py:174: CryptographyDeprecationWarning: CFB has been moved to cryptography.hazmat.decrepit.ciphers.modes.CFB and will be removed from cryptography.hazmat.primitives.ciphers.modes in 49.0.0.
+  algorithm=algorithms.AES(key), mode=modes.CFB(iv), backend=default_backend()
+[01-completo] ok em 24.5s
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/proto/secmod/rfc3826/priv/aes.py:174: CryptographyDeprecationWarning: CFB has been moved to cryptography.hazmat.decrepit.ciphers.modes.CFB and will be removed from cryptography.hazmat.primitives.ciphers.modes in 49.0.0.
+  algorithm=algorithms.AES(key), mode=modes.CFB(iv), backend=default_backend()
+[02-completo-dns] ok em 23.9s
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/proto/secmod/rfc3826/priv/aes.py:174: CryptographyDeprecationWarning: CFB has been moved to cryptography.hazmat.decrepit.ciphers.modes.CFB and will be removed from cryptography.hazmat.primitives.ciphers.modes in 49.0.0.
+  algorithm=algorithms.AES(key), mode=modes.CFB(iv), backend=default_backend()
+[03-inventario] ok em 24.2s
+[04-snmp-v2c] ok em 0.8s
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/proto/secmod/rfc3826/priv/aes.py:174: CryptographyDeprecationWarning: CFB has been moved to cryptography.hazmat.decrepit.ciphers.modes.CFB and will be removed from cryptography.hazmat.primitives.ciphers.modes in 49.0.0.
+  algorithm=algorithms.AES(key), mode=modes.CFB(iv), backend=default_backend()
+[05-snmp-v3] ok em 10.9s
+[06-ssh] ok em 118.1s
+[07-apis] ok em 13.6s
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/proto/secmod/rfc3826/priv/aes.py:174: CryptographyDeprecationWarning: CFB has been moved to cryptography.hazmat.decrepit.ciphers.modes.CFB and will be removed from cryptography.hazmat.primitives.ciphers.modes in 49.0.0.
+  algorithm=algorithms.AES(key), mode=modes.CFB(iv), backend=default_backend()
+[08-credenciais-mistas] ok em 44.0s
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/proto/secmod/rfc3826/priv/aes.py:174: CryptographyDeprecationWarning: CFB has been moved to cryptography.hazmat.decrepit.ciphers.modes.CFB and will be removed from cryptography.hazmat.primitives.ciphers.modes in 49.0.0.
+  algorithm=algorithms.AES(key), mode=modes.CFB(iv), backend=default_backend()
+[09-escopo] ok em 23.7s
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/proto/secmod/rfc3826/priv/aes.py:174: CryptographyDeprecationWarning: CFB has been moved to cryptography.hazmat.decrepit.ciphers.modes.CFB and will be removed from cryptography.hazmat.primitives.ciphers.modes in 49.0.0.
+  algorithm=algorithms.AES(key), mode=modes.CFB(iv), backend=default_backend()
+[10-concorrencia-1] ok em 41.7s
+[12-api-ui] finished em 24.6s
+/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/pysnmp/proto/secmod/rfc3826/priv/aes.py:174: CryptographyDeprecationWarning: CFB has been moved to cryptography.hazmat.decrepit.ciphers.modes.CFB and will be removed from cryptography.hazmat.primitives.ciphers.modes in 49.0.0.
+  algorithm=algorithms.AES(key), mode=modes.CFB(iv), backend=default_backend()
+[11-falha-injetada] ok em 24.3s
