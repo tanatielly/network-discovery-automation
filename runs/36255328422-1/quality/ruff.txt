@@ -1,0 +1,82 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> lab/scripts/run_scenarios.py:7:1
+   |
+ 5 |   """
+ 6 |
+ 7 | / from __future__ import annotations
+ 8 | |
+ 9 | | import asyncio
+10 | | import json
+11 | | import logging
+12 | | import os
+13 | | import shutil
+14 | | import subprocess
+15 | | import sys
+16 | | import time
+17 | | import traceback
+18 | | from pathlib import Path
+19 | | from typing import Any
+20 | |
+21 | | from common import (
+22 | |     NODES,
+23 | |     WRONG_CREDS,
+24 | |     all_creds,
+25 | |     base_settings,
+26 | |     docker_exec,
+27 | |     sh,
+28 | |     write_json,
+29 | | )
+30 | |
+31 | | from nettopo.config import Settings
+32 | | from nettopo.discovery.engine import discover
+33 | | from nettopo.models import Topology
+34 | | from nettopo.output import export_all
+35 | | from nettopo.topology.diff import diff_topologies
+   | |_________________________________________________^
+36 |
+37 |   RESULTS = Path(sys.argv[1] if len(sys.argv) > 1 else "lab-results")
+   |
+help: Organize imports
+   |
+29 | )
+30 + from nettopo.output import export_all
+31 |
+32 | from nettopo.config import Settings
+33 | from nettopo.discovery.engine import discover
+34 | from nettopo.models import Topology
+   - from nettopo.output import export_all
+35 | from nettopo.topology.diff import diff_topologies
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_engine_outputs.py:3:1
+   |
+ 1 |   """Pipeline completo (descoberta -> grafo -> saídas) usando a rede simulada."""
+ 2 |
+ 3 | / import asyncio
+ 4 | | import json
+ 5 | | import xml.etree.ElementTree as ET
+ 6 | | from pathlib import Path
+ 7 | |
+ 8 | | import pytest
+ 9 | | from openpyxl import load_workbook
+10 | |
+11 | | from nettopo.collectors.simulated import SimulatedCollector, demo_settings
+12 | | from nettopo.discovery.engine import discover
+13 | | from nettopo.models import Topology
+14 | | from nettopo.output import export_all
+15 | | from nettopo.topology.diff import diff_topologies
+   | |_________________________________________________^
+help: Organize imports
+   |
+8  | import pytest
+9  + from nettopo.output import export_all
+10 | from openpyxl import load_workbook
+--------------------------------------------------------------------------------
+14 | from nettopo.models import Topology
+   - from nettopo.output import export_all
+15 | from nettopo.topology.diff import diff_topologies
+   |
+
+Found 2 errors.
+[*] 2 fixable with the `--fix` option.

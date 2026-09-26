@@ -1,0 +1,9 @@
+  +--------------+-------------------+----------------------+---------------------+------------------------+----------------------+-------------------+
+  |     Name     |     Neighbor      | Neighbor System Name | Neighbor Chassis ID | Neighbor First Message | Neighbor Last Update |   Neighbor Port   |
+  +==============+===================+======================+=====================+========================+======================+===================+
+  | ethernet-1/1 | 0C:00:17:4D:EF:02 | edge-mk2             | 0C:00:17:4D:EF:02   | a minute ago           | 18 seconds ago       | ether4            |
+  | ethernet-1/2 | 1A:F0:00:FF:00:00 | core-srl1            | 1A:F0:00:FF:00:00   | a minute ago           | 29 seconds ago       | ethernet-1/2      |
+  | ethernet-1/3 | AA:C1:AB:CC:5F:84 | dist-frr1            | AA:C1:AB:CC:5F:84   | a minute ago           | 7 seconds ago        | AA:C1:AB:CC:5F:84 |
+  | ethernet-1/4 | AA:C1:AB:0E:0C:04 | srv2                 | AA:C1:AB:0E:0C:04   | a minute ago           | 8 seconds ago        | AA:C1:AB:0E:0C:04 |
+  | mgmt0        | 1A:F0:00:FF:00:00 | core-srl1            | 1A:F0:00:FF:00:00   | a minute ago           | 29 seconds ago       | mgmt0             |
+  +--------------+-------------------+----------------------+---------------------+------------------------+----------------------+-------------------+

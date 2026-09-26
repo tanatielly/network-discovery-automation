@@ -1,0 +1,23 @@
+[entrypoint] sshd ok
+snmpd[35]: Created directory: /var/lib/snmp/cert_indexes
+
+snmpd[35]: Turning on AgentX master support.
+
+[entrypoint] snmpd ok
+snmpd[41]: NET-SNMP version 5.9.3
+
+Starting watchfrr with command: '  /usr/lib/frr/watchfrr  -d  -F traditional   zebra bgpd ospfd staticd'.
+watchfrr[57]: [T83RR-8SM5G] watchfrr 8.4.4 starting: vty@0
+watchfrr[57]: [ZCJ3S-SPH5S] zebra state -> down : initial connection attempt failed
+watchfrr[57]: [ZCJ3S-SPH5S] bgpd state -> down : initial connection attempt failed
+watchfrr[57]: [ZCJ3S-SPH5S] ospfd state -> down : initial connection attempt failed
+watchfrr[57]: [ZCJ3S-SPH5S] staticd state -> down : initial connection attempt failed
+watchfrr[57]: [YFT0P-5Q5YX] Forked background command [pid 58]: /usr/lib/frr/watchfrr.sh restart all
+watchfrr[57]: [QDG3Y-BY5TN] zebra state -> up : connect succeeded
+watchfrr[57]: [QDG3Y-BY5TN] bgpd state -> up : connect succeeded
+watchfrr[57]: [QDG3Y-BY5TN] ospfd state -> up : connect succeeded
+watchfrr[57]: [QDG3Y-BY5TN] staticd state -> up : connect succeeded
+watchfrr[57]: [KWE5Q-QNGFC] all daemons up, doing startup-complete notify
+Started watchfrr.
+[entrypoint] frr ok
+[entrypoint] lldpd ok

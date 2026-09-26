@@ -1,0 +1,101 @@
+2026-09-26 16:26:05,047: launch     DEBUG    acting flags: username 'admin', password 'admin', connection-mode 'tc'
+2026-09-26 16:26:05,047: launch     DEBUG    Environment variables: environ({'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'HOSTNAME': 'edge-mk1', 'TERM': 'xterm', 'CLAB_LABEL_CLAB_NODE_KIND': 'mikrotik_ros', 'CLAB_LABEL_CLAB_NODE_TYPE': '', 'NO_PROXY': 'localhost,127.0.0.1,::1,*.local,172.20.20.0/24,172.20.20.11,172.20.20.12,172.20.20.2,172.20.20.21,172.20.20.22,172.20.20.31,172.20.20.41,172.20.20.42,core-srl1,core-srl2,dist-frr1,edge-mk1,edge-mk2,isp-pe,srv1,srv2', 'CLAB_INTFS': '3', 'DOCKER_NET_V6_ADDR': '', 'CONNECTION_MODE': 'tc', 'PASSWORD': 'admin', 'no_proxy': 'localhost,127.0.0.1,::1,*.local,172.20.20.0/24,172.20.20.11,172.20.20.12,172.20.20.2,172.20.20.21,172.20.20.22,172.20.20.31,172.20.20.41,172.20.20.42,core-srl1,core-srl2,dist-frr1,edge-mk1,edge-mk2,isp-pe,srv1,srv2', 'CLAB_LABEL_CLAB_TOPO_FILE': '/home/runner/work/network-discovery-automation/network-discovery-automation/lab/nettopo-lab.clab.yml', 'DOCKER_NET_V4_ADDR': '172.20.20.0/24', 'CLAB_LABEL_CLAB_NODE_LAB_DIR': '/home/runner/work/network-discovery-automation/network-discovery-automation/lab/clab-nettopo/edge-mk1', 'CLAB_LABEL_CONTAINERLAB': 'nettopo', 'CLAB_LABEL_CLAB_NODE_GROUP': '', 'CLAB_LABEL_CLAB_OWNER': 'runner', 'USERNAME': 'admin', 'CLAB_LABEL_CLAB_NODE_NAME': 'edge-mk1', 'CLAB_LABEL_CLAB_NODE_LONGNAME': 'clab-nettopo-edge-mk1', 'HOME': '/root', 'LC_CTYPE': 'C.UTF-8'})
+2026-09-26 16:26:05,047: vrnetlab   DEBUG    Creating overlay disk image
+2026-09-26 16:26:05,143: launch     INFO     Creating br-mgmt bridge for management interface
+2026-09-26 16:26:05,197: vrnetlab   DEBUG    Starting vrnetlab ROS
+2026-09-26 16:26:05,197: vrnetlab   DEBUG    VMs: [<__main__.ROS_vm object at 0x7fbcca016e10>]
+2026-09-26 16:26:05,197: vrnetlab   DEBUG    VM not started; starting!
+2026-09-26 16:26:05,197: vrnetlab   INFO     Starting ROS_vm
+2026-09-26 16:26:05,198: vrnetlab   DEBUG    number of provisioned data plane interfaces is 3
+2026-09-26 16:26:05,198: vrnetlab   DEBUG    waiting for provisioned interfaces to appear...
+2026-09-26 16:26:05,199: vrnetlab   DEBUG    highest allocated interface id determined to be: 3...
+2026-09-26 16:26:05,199: vrnetlab   DEBUG    interfaces provisioned, continuing...
+2026-09-26 16:26:05,200: vrnetlab   DEBUG    qemu cmd: qemu-system-x86_64 -enable-kvm -display none -machine pc -monitor tcp:0.0.0.0:4000,server,nowait -serial telnet:0.0.0.0:5000,server,nowait -m 256 -cpu host -smp 1 -drive if=ide,file=/chr-7.16.2-overlay.vmdk -boot n -device pci-bridge,chassis_nr=1,id=pci.1 -device pci-bridge,chassis_nr=2,id=pci.2 -device virtio-net,netdev=br-mgmt,mac=0C:00:0a:c4:cc:00 -netdev bridge,br=br-mgmt,id=br-mgmt -device virtio-net,netdev=p01,mac=0C:00:8e:74:41:01,bus=pci.1,addr=0x2 -netdev tap,id=p01,ifname=tap1,script=/etc/tc-tap-ifup,downscript=no -device virtio-net,netdev=p02,mac=0C:00:36:0f:e5:02,bus=pci.1,addr=0x3 -netdev tap,id=p02,ifname=tap2,script=/etc/tc-tap-ifup,downscript=no -device virtio-net,netdev=p03,mac=0C:00:81:24:f8:03,bus=pci.1,addr=0x4 -netdev tap,id=p03,ifname=tap3,script=/etc/tc-tap-ifup,downscript=no
+2026-09-26 16:26:07,207: vrnetlab   INFO     Unable to connect to qemu monitor (port 5000), retrying in a second (attempt 1)
+2026-09-26 16:26:37,898: launch     DEBUG    VM started
+2026-09-26 16:26:37,898: vrnetlab   DEBUG    writing to serial console: ''
+2026-09-26 16:26:37,898: launch     TRACE    waiting for 'MikroTik Login: ' on serial console
+2026-09-26 16:26:37,940: launch     TRACE    read from serial console: ': 
+[1;1H[H[JcMikroTik 7.16.2 (stable)
+MikroTik Login: '
+2026-09-26 16:26:37,940: vrnetlab   DEBUG    writing to serial console: 'admin+ct'
+2026-09-26 16:26:37,941: launch     TRACE    waiting for 'Password: ' on serial console
+2026-09-26 16:26:37,982: launch     TRACE    read from serial console: '
+[1;1H[H[JcMikroTik 7.16.2 (stable)
+MikroTik Login: admin+ct
+Password: '
+2026-09-26 16:26:37,982: vrnetlab   DEBUG    writing to serial console: ''
+2026-09-26 16:26:37,983: launch     TRACE    waiting for 'Do you want to see the software license? [Y/n]: ' on serial console
+2026-09-26 16:26:51,996: launch     TRACE    read from serial console: '
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MMM      MMM       KKK                          TTTTTTTTTTT      KKK
+  MMMM    MMMM       KKK                          TTTTTTTTTTT      KKK
+  MMM MMMM MMM  III  KKK  KKK  RRRRRR     OOOOOO      TTT     III  KKK  KKK
+  MMM  MM  MMM  III  KKKKK     RRR  RRR  OOO  OOO     TTT     III  KKKKK
+  MMM      MMM  III  KKK KKK   RRRRRR    OOO  OOO     TTT     III  KKK KKK
+  MMM      MMM  III  KKK  KKK  RRR  RRR   OOOOOO      TTT     III  KKK  KKK
+
+  MikroTik RouterOS 7.16.2 (c) 1999-2024       https://www.mikrotik.com/
+
+
+
+Do you want to see the software license? [Y/n]: '
+2026-09-26 16:26:51,997: vrnetlab   DEBUG    writing to serial console: 'n'
+2026-09-26 16:26:52,042: launch     DEBUG    ROSv7 detected, setting admin password
+2026-09-26 16:26:52,043: launch     TRACE    waiting for 'new password>' on serial console
+2026-09-26 16:26:52,758: launch     TRACE    read from serial console: ' new password>'
+2026-09-26 16:26:52,758: vrnetlab   DEBUG    writing to serial console: 'admin'
+2026-09-26 16:26:52,758: launch     TRACE    waiting for 'repeat new password>' on serial console
+2026-09-26 16:26:52,803: launch     TRACE    read from serial console: ' *****
+[9999Brepeat new password>'
+2026-09-26 16:26:52,803: vrnetlab   DEBUG    writing to serial console: 'admin'
+2026-09-26 16:26:52,803: launch     DEBUG    Login completed
+2026-09-26 16:26:52,804: launch     INFO     applying bootstrap configuration
+2026-09-26 16:26:52,804: vrnetlab   DEBUG    writing to serial console: '/system identity set name=edge-mk1'
+2026-09-26 16:26:52,804: launch     TRACE    waiting for '[admin@edge-mk1] > ' on serial console
+2026-09-26 16:26:52,849: launch     TRACE    read from serial console: ' *****
+
+Password changed
+[9999B[admin@MikroTik] > /system identity set name=edge-mk1
+[9999B[admin@edge-mk1] > '
+2026-09-26 16:26:52,849: vrnetlab   DEBUG    writing to serial console: '{ :local ether1count [/interface ethernet find where name=ether1]; :while ([:len $ether1count] < 1)  do={ :set ether1count [/interface ethernet find where name=ether1]; } };/ip address add interface=ether1 address=172.31.255.30/30'
+2026-09-26 16:26:52,850: launch     TRACE    waiting for '[admin@edge-mk1] > ' on serial console
+2026-09-26 16:26:52,906: launch     TRACE    read from serial console: '{ :local ether1count [/interface ethernet find where name=eth
+er1]; :while ([:len $ether1count] < 1)  do={ :set ether1count [/interface ethern
+et find where name=ether1]; } };/ip address add interface=ether1 address=172.31.
+255.30/30
+[9999B[admin@edge-mk1] > '
+2026-09-26 16:26:52,907: vrnetlab   DEBUG    writing to serial console: '/user set admin password=admin'
+2026-09-26 16:26:52,907: launch     TRACE    waiting for '[admin@edge-mk1] > ' on serial console
+2026-09-26 16:26:52,951: launch     TRACE    read from serial console: '/user set admin password=admin
+[9999B[admin@edge-mk1] > '
+2026-09-26 16:26:52,951: vrnetlab   DEBUG    writing to serial console: ''
+2026-09-26 16:26:52,952: launch     INFO     completed bootstrap configuration
+2026-09-26 16:26:52,952: launch     INFO     Pushing config via FTP
+2026-09-26 16:26:54,031: launch     INFO     config pushed via FTP
+2026-09-26 16:26:54,032: launch     INFO     Startup complete in: 0:00:48.834490
