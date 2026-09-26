@@ -1,0 +1,158 @@
+profiles:
+  - id: dell_os10
+    vendor: Dell
+    os: OS10
+    category: switch
+    priority: 20
+    netmiko: dell_os10
+    sys_object_id: ["1.3.6.1.4.1.674.11000."]
+    sys_descr: ["Dell EMC Networking OS10", "OS10"]
+    commands:
+      facts: show version
+      interfaces: show interface
+      ip_interfaces: show ip interface brief
+      lldp: show lldp neighbors detail
+      arp: show ip arp
+      routes: show ip route
+      vlans: show vlan
+      mac_table: show mac address-table
+
+  - id: dell_os6
+    vendor: Dell
+    os: OS6 / PowerConnect
+    category: switch
+    priority: 15
+    netmiko: dell_os6
+    textfsm: dell_force10
+    sys_object_id: ["1.3.6.1.4.1.674.10895."]
+    sys_descr: ["Dell EMC Networking N", "PowerConnect", "Dell Networking N"]
+    commands:
+      facts: show version
+      lldp: show lldp remote-device detail all
+      arp: show arp
+      routes: show ip route
+      vlans: show vlan
+
+  - id: extreme_exos
+    vendor: Extreme Networks
+    os: EXOS
+    category: switch
+    priority: 20
+    netmiko: extreme_exos
+    sys_object_id: ["1.3.6.1.4.1.1916."]
+    sys_descr: ["ExtremeXOS", "EXOS"]
+    commands:
+      facts: show version
+      hostname: show switch
+      ip_interfaces: show ipconfig
+      lldp: show lldp neighbors detailed
+      other_l2: show edp ports all
+      arp: show iparp
+      routes: show iproute
+      vlans: show vlan
+      mac_table: show fdb
+    parsers:
+      hostname: kv_colon
+
+  - id: extreme_vsp
+    vendor: Extreme Networks
+    os: VOSS / VSP
+    category: switch
+    priority: 20
+    netmiko: extreme_vsp
+    sys_object_id: ["1.3.6.1.4.1.2272."]
+    sys_descr: ["VSP-\\d+", "VOSS", "Virtual Services Platform"]
+    commands:
+      facts: show sys-info
+      lldp: show lldp neighbor
+      arp: show ip arp
+      routes: show ip route
+      vlans: show vlan basic
+
+  - id: ruckus_fastiron
+    vendor: Ruckus / Brocade
+    os: FastIron (ICX)
+    category: switch
+    priority: 20
+    netmiko: ruckus_fastiron
+    sys_object_id: ["1.3.6.1.4.1.1991."]
+    sys_descr: ["ICX\\d+", "FastIron", "Brocade", "Ruckus"]
+    commands:
+      facts: show version
+      interfaces: show interfaces brief
+      ip_interfaces: show ip interface
+      lldp: show lldp neighbors detail
+      other_l2: show fdp neighbors detail
+      arp: show arp
+      routes: show ip route
+      vlans: show vlan
+
+  - id: allied_telesis_awplus
+    vendor: Allied Telesis
+    os: AlliedWare Plus
+    category: switch
+    priority: 20
+    netmiko: allied_telesis_awplus
+    sys_object_id: ["1.3.6.1.4.1.207."]
+    sys_descr: ["AlliedWare Plus", "Allied Telesis"]
+    commands:
+      facts: show system
+      lldp: show lldp neighbors detail
+      arp: show arp
+      routes: show ip route
+      vlans: show vlan brief
+
+  - id: tplink_jetstream
+    vendor: TP-Link
+    os: JetStream
+    category: switch
+    priority: 20
+    netmiko: tplink_jetstream
+    sys_object_id: ["1.3.6.1.4.1.11863."]
+    sys_descr: ["JetStream", "TP-LINK", "T\\d{4}G"]
+    commands:
+      facts: show system-info
+      lldp: show lldp neighbor-information interface
+      arp: show arp
+      routes: show ip route
+      vlans: show vlan brief
+    parsers:
+      facts: kv_colon
+
+  - id: nokia_sros
+    vendor: Nokia
+    os: SR OS
+    category: router
+    priority: 20
+    netmiko: nokia_sros
+    sys_object_id: ["1.3.6.1.4.1.6527."]
+    sys_descr: ["TiMOS", "Nokia 7[0-9]{3}", "Alcatel-Lucent", "Nokia SR OS", "7750 SR"]
+    version_regex: 'TiMOS-[A-Z]-([\w.]+)'
+    netconf: default
+    commands:
+      facts: show system information
+      interfaces: show port
+      ip_interfaces: show router interface
+      lldp: show system lldp neighbor
+      arp: show router arp
+      routes: show router route-table
+      ospf: show router ospf neighbor
+      bgp: show router bgp summary
+    parsers:
+      facts: kv_colon
+
+  - id: nokia_srl
+    vendor: Nokia
+    os: SR Linux
+    category: switch
+    priority: 20
+    netmiko: nokia_srl
+    sys_descr: ["SRLinux", "SR Linux"]
+    netconf: default
+    commands:
+      facts: show version
+      lldp: show system lldp neighbor
+      ip_interfaces: show interface brief
+      arp: show arpnd arp-entries
+    parsers:
+      facts: kv_colon

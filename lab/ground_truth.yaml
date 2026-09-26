@@ -1,0 +1,28 @@
+# Gabarito do laboratório: o que o NetTopo DEVERIA encontrar.
+# Interfaces com o nome nativo de cada sistema (MikroTik etherN, SR Linux ethernet-1/N, Linux ethN).
+nodes:
+  edge-mk1:  {mgmt_ip: 172.20.20.11, vendor: MikroTik, collectable: true, roles: [router, l3switch]}
+  edge-mk2:  {mgmt_ip: 172.20.20.12, vendor: MikroTik, collectable: true, roles: [router, l3switch]}
+  core-srl1: {mgmt_ip: 172.20.20.21, vendor: Nokia, collectable: true, roles: [l3switch, switch, router]}
+  core-srl2: {mgmt_ip: 172.20.20.22, vendor: Nokia, collectable: true, roles: [l3switch, switch, router]}
+  dist-frr1: {mgmt_ip: 172.20.20.31, vendor: Linux, collectable: true, roles: [router, l3switch]}
+  srv1:      {mgmt_ip: 172.20.20.41, vendor: Linux, collectable: true, roles: [server]}
+  srv2:      {mgmt_ip: 172.20.20.42, vendor: Linux, collectable: true, roles: [server]}
+  # Operadora: credenciais diferentes -> deve aparecer como "não coletado" (stub) via LLDP
+  isp-pe:    {mgmt_ip: 172.20.20.2, vendor: Linux, collectable: false, roles: [router, external]}
+
+links:
+  - [isp-pe, eth1, edge-mk1, ether2]
+  - [edge-mk1, ether3, edge-mk2, ether3]
+  - [edge-mk1, ether4, core-srl1, ethernet-1/1]
+  - [edge-mk2, ether4, core-srl2, ethernet-1/1]
+  - [core-srl1, ethernet-1/2, core-srl2, ethernet-1/2]
+  - [core-srl1, ethernet-1/3, dist-frr1, eth1]
+  - [core-srl2, ethernet-1/3, dist-frr1, eth2]
+  - [dist-frr1, eth3, srv1, eth1]
+  - [core-srl2, ethernet-1/4, srv2, eth1]
+
+# Adjacências de roteamento esperadas (além dos links físicos)
+routing:
+  - [edge-mk1, edge-mk2, ospf]
+  - [edge-mk1, isp-pe, bgp]

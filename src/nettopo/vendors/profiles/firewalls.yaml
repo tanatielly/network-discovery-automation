@@ -1,0 +1,71 @@
+profiles:
+  - id: fortinet_fortios
+    vendor: Fortinet
+    os: FortiOS
+    category: firewall
+    priority: 20
+    netmiko: fortinet
+    sys_object_id: ["1.3.6.1.4.1.12356."]
+    sys_descr: ["FortiGate", "FortiOS", "Fortinet"]
+    version_regex: 'v(\d+\.\d+\.\d+)'
+    rest: fortios
+    commands:
+      facts: get system status
+      interfaces: get system interface physical
+      ip_interfaces: get system interface
+      lldp: diagnose lldprx neighbor summary
+      arp: get system arp
+      routes: get router info routing-table all
+      ospf: get router info ospf neighbor
+      bgp: get router info bgp summary
+    parsers:
+      facts: kv_colon
+
+  - id: paloalto_panos
+    vendor: Palo Alto Networks
+    os: PAN-OS
+    category: firewall
+    priority: 20
+    netmiko: paloalto_panos
+    sys_object_id: ["1.3.6.1.4.1.25461."]
+    sys_descr: ["Palo Alto Networks", "PA-\\d+", "PAN-OS"]
+    commands:
+      facts: show system info
+      interfaces: show interface all
+      lldp: show lldp neighbors all
+      arp: show arp all
+      routes: show routing route
+    parsers:
+      facts: kv_colon
+
+  - id: checkpoint_gaia
+    vendor: Check Point
+    os: Gaia
+    category: firewall
+    priority: 20
+    netmiko: checkpoint_gaia
+    sys_object_id: ["1.3.6.1.4.1.2620."]
+    sys_descr: ["Gaia", "Check Point"]
+    commands:
+      facts: show version all
+      hostname: show hostname
+      interfaces: show interfaces all
+      arp: show arp dynamic all
+      routes: show route
+    parsers:
+      facts: kv_colon
+
+  - id: sonicwall
+    vendor: SonicWall
+    os: SonicOS
+    category: firewall
+    priority: 20
+    netmiko: generic
+    sys_object_id: ["1.3.6.1.4.1.8741."]
+    sys_descr: ["SonicWALL", "SonicOS"]
+    commands:
+      facts: show version
+      arp: show arp cache
+      routes: show route
+    parsers:
+      facts: kv_colon

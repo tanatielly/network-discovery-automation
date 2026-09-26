@@ -1,0 +1,193 @@
+# Laboratório simulado multi-vendor usado por `nettopo demo` e pelos testes.
+# Campus de 3 camadas + datacenter + borda com dupla operadora + filial via OSPF.
+name: Demo - Campus Multi-vendor
+devices:
+  EDGE-RTR-01:
+    mgmt_ip: 10.0.0.1
+    profile: cisco_ios
+    model: ISR4451-X/K9
+    version: 17.9.4a
+    serial: FDO2231A0BC
+    interfaces:
+      GigabitEthernet0/0/0: 200.200.10.2/30
+      GigabitEthernet0/0/1: 10.255.0.1/30
+      GigabitEthernet0/0/2: 10.255.0.9/30
+      GigabitEthernet0/0/3: 172.16.0.1/30
+      Loopback0: 10.0.0.1/32
+    bgp: [{peer: 200.200.10.1, asn: 64500}]
+  EDGE-RTR-02:
+    mgmt_ip: 10.0.0.2
+    profile: juniper_junos
+    model: MX204
+    version: 22.4R3-S2
+    serial: JN1234ABCDEF
+    interfaces:
+      xe-0/1/0: 200.201.20.2/30
+      xe-0/1/1: 10.255.0.5/30
+      xe-0/1/2: 10.255.0.10/30
+      lo0: 10.0.0.2/32
+    bgp: [{peer: 200.201.20.1, asn: 64510}]
+  ISP-A-PE:
+    mgmt_ip: 200.200.10.1
+    profile: juniper_junos
+    model: MX960
+    reachable: false
+    caps: [router]
+  ISP-B-PE:
+    mgmt_ip: 200.201.20.1
+    profile: nokia_sros
+    model: 7750 SR-12
+    reachable: false
+    caps: [router]
+  FW-01:
+    mgmt_ip: 10.0.0.3
+    profile: fortinet_fortios
+    model: FortiGate-600E
+    version: v7.2.8
+    serial: FG6H0E5819900001
+    interfaces:
+      port1: 10.255.0.2/30
+      port2: 10.10.0.1/29
+  FW-02:
+    mgmt_ip: 10.0.0.4
+    profile: paloalto_panos
+    model: PA-3220
+    version: 10.2.9-h1
+    serial: "016201001234"
+    interfaces:
+      ethernet1/1: 10.255.0.6/30
+      ethernet1/2: 10.10.0.2/29
+  CORE-SW-01:
+    mgmt_ip: 10.0.0.10
+    profile: arista_eos
+    model: DCS-7280SR3-48YC8
+    version: 4.31.2F
+    serial: JPE21130001
+    interfaces:
+      Ethernet1: 10.10.0.3/29
+      Vlan10: 10.1.10.2/24
+    lags: {Ethernet49/1: Port-Channel100, Ethernet50/1: Port-Channel100}
+  CORE-SW-02:
+    mgmt_ip: 10.0.0.11
+    profile: cisco_nxos
+    model: N9K-C93180YC-FX
+    version: 10.3(4a)
+    serial: FDO23450XYZ
+    interfaces:
+      Ethernet1/1: 10.10.0.4/29
+      Vlan10: 10.1.10.3/24
+    lags: {Ethernet1/49: port-channel100, Ethernet1/50: port-channel100}
+  DIST-SW-01:
+    mgmt_ip: 10.0.1.1
+    profile: huawei_vrp
+    model: S6730-H48X6C
+    version: V200R022C00SPC500
+    serial: "2102351234567890"
+  DIST-SW-02:
+    mgmt_ip: 10.0.1.2
+    profile: aruba_aoscx
+    model: 8360-48Y6C (JL706A)
+    version: GL.10.12.1000
+    serial: SG12KXX001
+  ACC-SW-01:
+    mgmt_ip: 10.0.2.1
+    profile: hp_procurve
+    model: 2930F-48G-4SFP+ (JL256A)
+    version: WC.16.11.0012
+    serial: CN12ABC001
+  ACC-SW-02:
+    mgmt_ip: 10.0.2.2
+    profile: dell_os10
+    model: S4128F-ON
+    version: 10.5.5.3
+    serial: CN0DELL0001
+  ACC-SW-03:
+    mgmt_ip: 10.0.2.3
+    profile: extreme_exos
+    model: X440-G2-48p-10G4
+    version: 31.7.1.4
+    serial: 1234G-00001
+  ACC-SW-04:
+    mgmt_ip: 10.0.2.4
+    profile: mikrotik_routeros
+    model: CRS326-24G-2S+
+    version: 7.14.3
+    serial: HEX0A1B2C3D
+  ACC-SW-05:
+    mgmt_ip: 10.0.2.5
+    profile: datacom_dmos
+    model: DM4370
+    version: 9.4.2
+    serial: 4370DC0001
+  BRANCH-RTR-01:
+    mgmt_ip: 10.20.0.1
+    profile: mikrotik_routeros
+    model: CCR2004-1G-12S+2XS
+    version: 7.14.3
+    serial: HEXBR0001
+    interfaces:
+      sfp-sfpplus1: 172.16.0.2/30
+      bridge-lan: 10.20.0.1/24
+  BRANCH-SW-01:
+    mgmt_ip: 10.20.0.2
+    profile: tplink_jetstream
+    model: TL-SG3428
+    version: 2.0.8
+    serial: 22171A000123
+  AP-01:
+    mgmt_ip: 10.0.3.21
+    model: U6-Pro
+    description: UniFi AP U6-Pro 6.6.55
+    reachable: false
+    caps: [wlan, bridge]
+  AP-02:
+    mgmt_ip: 10.0.3.22
+    model: AP-515
+    description: ArubaOS AP-515 8.10
+    reachable: false
+    caps: [wlan, bridge]
+  SEP001122334455:
+    model: Cisco IP Phone CP-8841
+    reachable: false
+    caps: [telephone, bridge]
+  SRV-01:
+    mgmt_ip: 10.0.3.10
+    profile: linux
+    model: Ubuntu 22.04.4 LTS
+    version: 5.15.0-105-generic
+    serial: VMware-42-1a-7b
+    caps: [station]
+    interfaces:
+      eno1: 10.0.3.10/24
+
+# [lado A, lado B, protocolos, velocidade Mbps]
+links:
+  - [EDGE-RTR-01:GigabitEthernet0/0/0, ISP-A-PE:xe-0/0/1, [lldp], 1000]
+  - [EDGE-RTR-02:xe-0/1/0, ISP-B-PE:1/1/1, [lldp], 10000]
+  - [EDGE-RTR-01:GigabitEthernet0/0/1, FW-01:port1, [lldp], 1000]
+  - [EDGE-RTR-02:xe-0/1/1, FW-02:ethernet1/1, [lldp], 10000]
+  - [EDGE-RTR-01:GigabitEthernet0/0/2, EDGE-RTR-02:xe-0/1/2, [lldp], 1000]
+  - [FW-01:port2, CORE-SW-01:Ethernet1, [lldp], 10000]
+  - [FW-02:ethernet1/2, CORE-SW-02:Ethernet1/1, [lldp], 10000]
+  - [FW-01:ha1, FW-02:ha1-a, [lldp], 1000]
+  - [CORE-SW-01:Ethernet49/1, CORE-SW-02:Ethernet1/49, [lldp], 100000]
+  - [CORE-SW-01:Ethernet50/1, CORE-SW-02:Ethernet1/50, [lldp], 100000]
+  - [CORE-SW-01:Ethernet2, DIST-SW-01:XGigabitEthernet0/0/1, [lldp], 10000]
+  - [CORE-SW-02:Ethernet1/2, DIST-SW-01:XGigabitEthernet0/0/2, [lldp], 10000]
+  - [CORE-SW-01:Ethernet3, DIST-SW-02:1/1/1, [lldp], 25000]
+  - [CORE-SW-02:Ethernet1/3, DIST-SW-02:1/1/2, [lldp, cdp], 25000]
+  - [DIST-SW-01:GigabitEthernet0/0/10, ACC-SW-01:49, [lldp], 10000]
+  - [DIST-SW-01:GigabitEthernet0/0/11, ACC-SW-02:ethernet1/1/25, [lldp], 10000]
+  - [DIST-SW-01:GigabitEthernet0/0/12, ACC-SW-05:ten-gigabit-ethernet-1/1/1, [lldp], 10000]
+  - [DIST-SW-02:1/1/10, ACC-SW-03:49, [lldp], 10000]
+  - [DIST-SW-02:1/1/11, ACC-SW-04:sfp-sfpplus1, [lldp, mndp], 10000]
+  - [ACC-SW-01:1, AP-01:eth0, [lldp], 1000]
+  - [ACC-SW-03:5, AP-02:eth0, [lldp], 1000]
+  - [ACC-SW-02:ethernet1/1/1, SEP001122334455:Port 1, [lldp], 1000]
+  - [ACC-SW-04:ether2, SRV-01:eno1, [lldp], 1000]
+  - [BRANCH-RTR-01:ether2, BRANCH-SW-01:gi1/0/24, [lldp, mndp], 1000]
+
+# Adjacências de roteamento (não geram LLDP)
+routing:
+  - {a: EDGE-RTR-01, a_if: GigabitEthernet0/0/3, a_ip: 172.16.0.1, b: BRANCH-RTR-01, b_if: sfp-sfpplus1, b_ip: 172.16.0.2, protocol: ospf}
+  - {a: EDGE-RTR-01, a_if: GigabitEthernet0/0/2, a_ip: 10.255.0.9, b: EDGE-RTR-02, b_if: xe-0/1/2, b_ip: 10.255.0.10, protocol: ospf}

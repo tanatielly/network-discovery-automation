@@ -1,0 +1,62 @@
+profiles:
+  - id: aruba_aoscx
+    vendor: HPE Aruba
+    os: ArubaOS-CX
+    category: switch
+    priority: 25
+    netmiko: aruba_aoscx
+    textfsm: aruba_aoscx
+    sys_object_id: ["1.3.6.1.4.1.47196.4.1.1.1"]
+    sys_descr: ["ArubaOS-CX", "Aruba .*CX", "AOS-CX"]
+    commands:
+      facts: show system
+      interfaces: show interface
+      ip_interfaces: show ip interface brief
+      lldp: show lldp neighbor-info detail
+      arp: show arp
+      routes: show ip route
+      vlans: show vlan
+      mac_table: show mac-address-table
+      ospf: show ip ospf neighbors
+      bgp: show bgp all summary
+
+  - id: hp_procurve
+    vendor: HPE Aruba
+    os: ProCurve / ArubaOS-Switch
+    category: switch
+    priority: 20
+    netmiko: hp_procurve
+    sys_object_id: ["1.3.6.1.4.1.11.2.3.7.11."]
+    sys_descr: ["ProCurve", "HP J\\d{4}", "Aruba J\\d{4}", "ArubaOS-Switch", "PROVISION"]
+    commands:
+      facts: show system
+      interfaces: show interfaces brief
+      ip_interfaces: show ip
+      lldp: show lldp info remote-device detail
+      cdp: show cdp neighbors detail
+      arp: show arp
+      routes: show ip route
+      vlans: show vlans
+      mac_table: show mac-address
+
+  - id: hp_comware
+    vendor: HPE / H3C
+    os: Comware
+    category: switch
+    priority: 20
+    netmiko: hp_comware
+    sys_object_id: ["1.3.6.1.4.1.25506."]
+    sys_descr: ["Comware", "H3C", "HPE FlexFabric", "HP A\\d{4}"]
+    netconf: default
+    commands:
+      facts: display version
+      hostname: display current-configuration | include sysname
+      interfaces: display interface
+      ip_interfaces: display ip interface brief
+      lldp: display lldp neighbor-information verbose
+      arp: display arp
+      routes: display ip routing-table
+      vlans: display vlan brief
+      mac_table: display mac-address
+      ospf: display ospf peer
+      bgp: display bgp peer ipv4

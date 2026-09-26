@@ -1,0 +1,60 @@
+profiles:
+  - id: mikrotik_routeros
+    vendor: MikroTik
+    os: RouterOS
+    category: router
+    priority: 20
+    netmiko: mikrotik_routeros
+    sys_object_id: ["1.3.6.1.4.1.14988."]
+    sys_descr: ["RouterOS", "MikroTik"]
+    version_regex: 'RouterOS\s+([\d.]+)'
+    rest: mikrotik
+    commands:
+      facts: /system resource print without-paging
+      hostname: /system identity print
+      interfaces: /interface print detail without-paging
+      ip_interfaces: /ip address print terse without-paging
+      other_l2: /ip neighbor print detail without-paging
+      arp: /ip arp print terse without-paging
+      routes: /ip route print terse without-paging
+      vlans: /interface vlan print terse without-paging
+    parsers:
+      facts: mikrotik_facts
+      hostname: mikrotik_identity
+      interfaces: mikrotik_interfaces
+      ip_interfaces: mikrotik_ip_address
+      other_l2: mikrotik_neighbors
+      arp: mikrotik_arp
+      routes: mikrotik_routes
+      vlans: mikrotik_vlans
+
+  - id: ubiquiti_edgeswitch
+    vendor: Ubiquiti
+    os: EdgeSwitch / UniFi Switch
+    category: switch
+    priority: 20
+    netmiko: ubiquiti_edgeswitch
+    sys_object_id: ["1.3.6.1.4.1.4413."]
+    sys_descr: ["EdgeSwitch", "USW-", "UniFi Switch"]
+    commands:
+      facts: show version
+      lldp: show lldp remote-device detail all
+      arp: show arp
+      routes: show ip route
+      vlans: show vlan brief
+
+  - id: ubiquiti_edgerouter
+    vendor: Ubiquiti
+    os: EdgeOS
+    category: router
+    priority: 20
+    netmiko: ubiquiti_edgerouter
+    textfsm: vyos
+    sys_object_id: ["1.3.6.1.4.1.41112."]
+    sys_descr: ["EdgeOS", "EdgeRouter"]
+    commands:
+      facts: show version
+      interfaces: show interfaces
+      lldp: show lldp neighbors detail
+      arp: show arp
+      routes: show ip route

@@ -1,0 +1,45 @@
+profiles:
+  - id: juniper_junos
+    vendor: Juniper
+    os: Junos
+    category: network
+    priority: 20
+    netmiko: juniper_junos
+    sys_object_id: ["1.3.6.1.4.1.2636."]
+    sys_descr: ["Juniper Networks", "JUNOS"]
+    version_regex: 'JUNOS\s+(?:Base OS boot\s+)?\[?([\w.\-]+)'
+    netconf: junos
+    commands:
+      facts: show version
+      interfaces: show interfaces
+      ip_interfaces: show interfaces terse
+      lldp: show lldp neighbors
+      arp: show arp no-resolve
+      routes: show route
+      vlans: show vlans
+      mac_table: show ethernet-switching table
+      ospf: show ospf neighbor
+      bgp: show bgp summary
+
+  - id: arista_eos
+    vendor: Arista
+    os: EOS
+    category: switch
+    priority: 20
+    netmiko: arista_eos
+    sys_object_id: ["1.3.6.1.4.1.30065."]
+    sys_descr: ["Arista Networks EOS", "Arista"]
+    rest: eapi
+    netconf: default
+    commands:
+      facts: show version
+      hostname: show hostname
+      interfaces: show interfaces
+      ip_interfaces: show ip interface brief
+      lldp: show lldp neighbors detail
+      arp: show ip arp
+      routes: show ip route
+      vlans: show vlan
+      mac_table: show mac address-table
+      ospf: show ip ospf neighbor
+      bgp: show ip bgp summary

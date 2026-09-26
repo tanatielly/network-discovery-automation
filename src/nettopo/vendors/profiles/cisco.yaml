@@ -1,0 +1,102 @@
+profiles:
+  - id: cisco_nxos
+    vendor: Cisco
+    os: NX-OS
+    category: switch
+    priority: 30
+    netmiko: cisco_nxos
+    sys_object_id: ["1.3.6.1.4.1.9.12.3.1.3"]
+    sys_descr: ["NX-OS", "Nexus"]
+    version_regex: 'Version\s+([\w.()\-]+)'
+    rest: nxapi
+    netconf: nexus
+    commands:
+      facts: show version
+      interfaces: show interface
+      ip_interfaces: show ip interface brief vrf all
+      lldp: show lldp neighbors detail
+      cdp: show cdp neighbors detail
+      arp: ["show ip arp vrf all", "show ip arp"]
+      routes: show ip route
+      vlans: show vlan
+      mac_table: show mac address-table
+      ospf: show ip ospf neighbors
+      bgp: show ip bgp summary
+
+  - id: cisco_xr
+    vendor: Cisco
+    os: IOS-XR
+    category: router
+    priority: 30
+    netmiko: cisco_xr
+    sys_object_id: ["1.3.6.1.4.1.9.1."]
+    sys_descr: ["IOS XR", "IOS-XR"]
+    netconf: iosxr
+    commands:
+      facts: show version
+      interfaces: show interfaces
+      ip_interfaces: show ipv4 interface brief
+      lldp: show lldp neighbors detail
+      cdp: show cdp neighbors detail
+      arp: show arp
+      routes: show route ipv4
+      ospf: show ospf neighbor
+      bgp: show bgp summary
+
+  - id: cisco_asa
+    vendor: Cisco
+    os: ASA
+    category: firewall
+    priority: 30
+    netmiko: cisco_asa
+    sys_object_id: ["1.3.6.1.4.1.9.1.745", "1.3.6.1.4.1.9.1.1408"]
+    sys_descr: ["Adaptive Security Appliance", "Firepower Threat Defense"]
+    commands:
+      facts: show version
+      interfaces: show interface
+      ip_interfaces: show interface ip brief
+      arp: show arp
+      routes: show route
+      ospf: show ospf neighbor
+      bgp: show bgp summary
+
+  - id: cisco_s300
+    vendor: Cisco
+    os: SMB (Sx300/CBS)
+    category: switch
+    priority: 25
+    netmiko: cisco_s300
+    sys_descr: ["SG\\d{3}", "CBS\\d{3}", "SF\\d{3}"]
+    commands:
+      facts: show version
+      hostname: show system
+      ip_interfaces: show ip interface
+      lldp: show lldp neighbors
+      cdp: show cdp neighbors detail
+      arp: show arp
+      routes: show ip route
+      vlans: show vlan
+
+  - id: cisco_ios
+    vendor: Cisco
+    os: IOS / IOS-XE
+    category: network
+    priority: 10
+    netmiko: cisco_ios
+    sys_object_id: ["1.3.6.1.4.1.9."]
+    sys_descr: ["Cisco IOS Software", "IOS-XE", "Cisco Internetwork Operating System", "Cisco IOS"]
+    version_regex: 'Version\s+([\w.()\-:]+)'
+    rest: restconf_iosxe
+    netconf: csr
+    commands:
+      facts: show version
+      interfaces: show interfaces
+      ip_interfaces: show ip interface brief
+      lldp: show lldp neighbors detail
+      cdp: show cdp neighbors detail
+      arp: show ip arp
+      routes: show ip route
+      vlans: show vlan brief
+      mac_table: show mac address-table
+      ospf: show ip ospf neighbor
+      bgp: show ip bgp summary
