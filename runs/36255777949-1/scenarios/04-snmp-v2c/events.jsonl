@@ -1,0 +1,4 @@
+{"type": "started", "seeds": ["172.20.20.11"], "t": 0.0}
+{"type": "device_started", "target": "172.20.20.11", "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_done", "target": "172.20.20.11", "id": "edge-mk1", "hostname": "edge-mk1", "vendor": "MikroTik", "model": "RouterOS 7.16.2 (stable) on CHR", "via": ["snmp"], "neighbors": 4, "processed": 1, "known": 1, "t": 0.73}
+{"type": "finished", "stats": {"devices": 5, "collected": 1, "stubs": 4, "links": 4, "physical_links": 3, "l3_links": 0, "logical_links": 1, "interfaces": 5, "failed_targets": 0, "by_vendor": {"MikroTik": 2, "Linux": 1, "Nokia": 1, "Desconhecido": 1}, "by_role": {"router": 2, "switch": 2, "external": 1}, "duration_s": 0.7}, "t": 0.75}

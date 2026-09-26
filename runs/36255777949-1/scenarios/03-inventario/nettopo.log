@@ -1,0 +1,21 @@
+2026-09-26 16:38:51,766 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-09-26 16:38:52,730 DEBUG nettopo.collectors.ssh: 172.20.20.41 facts 'cat /etc/os-release; uname -r; cat /sys/class/dmi/id/product_serial 2>/dev/null; cat /sys/class/dmi/id/product_name 2>/dev/null' -> 1 registros (linux_facts)
+2026-09-26 16:38:52,730 DEBUG nettopo.collectors.ssh: 172.20.20.41 hostname 'hostname' -> 1 registros (first_line)
+2026-09-26 16:38:52,730 DEBUG nettopo.collectors.ssh: 172.20.20.41 interfaces 'ip -o link show' -> 2 registros (linux_links)
+2026-09-26 16:38:52,731 DEBUG nettopo.collectors.ssh: 172.20.20.41 ip_interfaces 'ip -o -4 addr show' -> 2 registros (linux_addrs)
+2026-09-26 16:38:52,731 DEBUG nettopo.collectors.ssh: 172.20.20.41 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-09-26 16:38:52,731 DEBUG nettopo.collectors.ssh: 172.20.20.41 routes 'ip -4 route show' -> 3 registros (linux_routes)
+2026-09-26 16:38:52,773 DEBUG nettopo.collectors.ssh: 172.20.20.31 facts 'cat /etc/os-release; uname -r; cat /sys/class/dmi/id/product_serial 2>/dev/null; cat /sys/class/dmi/id/product_name 2>/dev/null' -> 1 registros (linux_facts)
+2026-09-26 16:38:52,773 DEBUG nettopo.collectors.ssh: 172.20.20.31 hostname 'hostname' -> 1 registros (first_line)
+2026-09-26 16:38:52,773 DEBUG nettopo.collectors.ssh: 172.20.20.31 interfaces 'ip -o link show' -> 4 registros (linux_links)
+2026-09-26 16:38:52,774 DEBUG nettopo.collectors.ssh: 172.20.20.31 ip_interfaces 'ip -o -4 addr show' -> 4 registros (linux_addrs)
+2026-09-26 16:38:52,774 DEBUG nettopo.collectors.ssh: 172.20.20.31 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-09-26 16:38:52,774 DEBUG nettopo.collectors.ssh: 172.20.20.31 routes 'ip -4 route show' -> 5 registros (linux_routes)
+2026-09-26 16:38:52,792 DEBUG nettopo.collectors.ssh: 172.20.20.42 facts 'cat /etc/os-release; uname -r; cat /sys/class/dmi/id/product_serial 2>/dev/null; cat /sys/class/dmi/id/product_name 2>/dev/null' -> 1 registros (linux_facts)
+2026-09-26 16:38:52,792 DEBUG nettopo.collectors.ssh: 172.20.20.42 hostname 'hostname' -> 1 registros (first_line)
+2026-09-26 16:38:52,793 DEBUG nettopo.collectors.ssh: 172.20.20.42 interfaces 'ip -o link show' -> 2 registros (linux_links)
+2026-09-26 16:38:52,793 DEBUG nettopo.collectors.ssh: 172.20.20.42 ip_interfaces 'ip -o -4 addr show' -> 2 registros (linux_addrs)
+2026-09-26 16:38:52,797 DEBUG nettopo.collectors.ssh: 172.20.20.42 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-09-26 16:38:52,797 DEBUG nettopo.collectors.ssh: 172.20.20.42 routes 'ip -4 route show' -> 3 registros (linux_routes)
+2026-09-26 16:38:55,143 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-09-26 16:39:05,195 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.2 via snmp-v3 falhou: No SNMP response received before timeout

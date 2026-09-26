@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab NetTopo - Containerlab · Topologia</title>
+<style>
+/* NetTopo - estilos do visualizador (relatório HTML e UI web) */
+:root {
+  --bg: #ffffff; --bg2: #f6f8fa; --bg3: #eef1f4; --fg: #1f2328; --muted: #656d76; --border: #d0d7de;
+  --accent: #0969da; --accent-fg: #ffffff; --edge: #8c959f; --ok: #1a7f37; --warn: #9a6700; --err: #cf222e;
+  --shadow: 0 1px 3px rgba(31,35,40,.12), 0 8px 24px rgba(66,74,83,.12);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --fg: #e6edf3; --muted: #8d96a0; --border: #30363d;
+    --accent: #4493f8; --edge: #6e7681; --ok: #3fb950; --warn: #d29922; --err: #f85149;
+    --shadow: 0 1px 3px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.4); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --fg: #e6edf3; --muted: #8d96a0; --border: #30363d;
+  --accent: #4493f8; --edge: #6e7681; --ok: #3fb950; --warn: #d29922; --err: #f85149;
+  --shadow: 0 1px 3px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.4); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+a { color: var(--accent); }
+.nt-muted { color: var(--muted); }
+.nt-mono { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; font-size: 12.5px; }
+
+.nt-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px;
+  padding: 18px 20px 10px; border-bottom: 1px solid var(--border); background: var(--bg); }
+.nt-head h1 { margin: 0; font-size: 20px; font-weight: 650; letter-spacing: -.01em; }
+.nt-head .nt-sub { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.nt-stats { display: flex; flex-wrap: wrap; gap: 8px; }
+.nt-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; min-width: 88px; }
+.nt-stat b { display: block; font-size: 18px; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.nt-stat span { color: var(--muted); font-size: 11.5px; }
+.nt-stat.err b { color: var(--err); }
+
+.nt-tabs { display: flex; gap: 2px; padding: 0 16px; border-bottom: 1px solid var(--border); background: var(--bg);
+  overflow-x: auto; position: sticky; top: 0; z-index: 5; }
+.nt-tab { appearance: none; border: 0; background: none; color: var(--muted); padding: 10px 12px; font: inherit;
+  cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+.nt-tab:hover { color: var(--fg); }
+.nt-tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
+.nt-tab .nt-count { background: var(--bg3); border-radius: 10px; padding: 0 7px; font-size: 11.5px; margin-left: 4px; }
+.nt-panel { padding: 16px 20px 28px; }
+.nt-panel[hidden] { display: none; }
+
+.nt-diagram { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 0; height: calc(100vh - 190px);
+  min-height: 460px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg); }
+.nt-diagram.nodetail { grid-template-columns: minmax(0, 1fr) 0; }
+.nt-canvas-wrap { position: relative; min-width: 0; }
+.nt-canvas { position: absolute; inset: 0; }
+.nt-toolbar { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 3; display: flex; flex-wrap: wrap; gap: 6px;
+  align-items: center; pointer-events: none; }
+.nt-toolbar > * { pointer-events: auto; }
+.nt-input, .nt-select, .nt-btn { font: inherit; font-size: 13px; color: var(--fg); background: var(--bg);
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 9px; }
+.nt-input:focus, .nt-select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.nt-btn { cursor: pointer; background: var(--bg2); }
+.nt-btn:hover { background: var(--bg3); }
+.nt-btn.primary { background: var(--accent); color: var(--accent-fg); border-color: transparent; }
+.nt-toggle { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer; user-select: none; }
+.nt-legend { position: absolute; left: 10px; bottom: 10px; z-index: 3; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px; font-size: 11.5px; box-shadow: var(--shadow); max-width: calc(100% - 20px); }
+.nt-legend .row { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.nt-legend .it { display: inline-flex; align-items: center; gap: 5px; }
+.nt-legend img { width: 16px; height: 16px; }
+.nt-legend .ln { display: inline-block; width: 22px; border-top: 3px solid var(--edge); vertical-align: middle; }
+.nt-legend .ln.l3 { border-top: 3px dashed #0969da; }
+.nt-legend .ln.logical { border-top: 3px dotted #bf8700; }
+
+.nt-detail { border-left: 1px solid var(--border); overflow: auto; background: var(--bg2); padding: 14px; }
+.nt-detail h2 { font-size: 16px; margin: 0 0 2px; word-break: break-all; }
+.nt-detail h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 16px 0 6px; }
+.nt-badge { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 10px; background: var(--bg3);
+  border: 1px solid var(--border); margin: 2px 4px 2px 0; }
+.nt-badge.stub { border-style: dashed; }
+.nt-badge.ok { color: var(--ok); } .nt-badge.err { color: var(--err); }
+.nt-kv { display: grid; grid-template-columns: 110px 1fr; gap: 3px 8px; font-size: 12.5px; }
+.nt-kv dt { color: var(--muted); } .nt-kv dd { margin: 0; word-break: break-word; }
+.nt-empty { color: var(--muted); padding: 24px; text-align: center; }
+
+.nt-tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+table.nt-table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+.nt-table th, .nt-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.nt-table th { background: var(--bg2); position: sticky; top: 0; cursor: pointer; white-space: nowrap; font-weight: 600; }
+.nt-table th[data-sort="asc"]::after { content: " ▲"; font-size: 9px; }
+.nt-table th[data-sort="desc"]::after { content: " ▼"; font-size: 9px; }
+.nt-table tr:hover td { background: var(--bg2); }
+.nt-table tr.clickable { cursor: pointer; }
+.nt-detail .nt-table th, .nt-detail .nt-table td { padding: 4px 6px; font-size: 12px; }
+.nt-detail .nt-table td a { white-space: nowrap; }
+.nt-detail .nt-table .nt-mono { font-size: 11.5px; word-break: break-all; }
+.nt-filterbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 4px; }
+.dot.up { background: var(--ok); } .dot.down { background: var(--err); }
+
+@media (max-width: 860px) {
+  .nt-diagram, .nt-diagram.nodetail { grid-template-columns: 1fr; grid-template-rows: minmax(420px, 62vh) auto; height: auto; }
+  .nt-detail { border-left: 0; border-top: 1px solid var(--border); max-height: none; }
+  .nt-diagram.nodetail .nt-detail { display: none; }
+  .nt-head, .nt-panel { padding-left: 16px; padding-right: 16px; }
+}
+@media print {
+  .nt-tabs, .nt-toolbar { display: none; }
+  .nt-panel[hidden] { display: block; }
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+</head>
+<body>
+<div id="nettopo-root"></div>
+<script id="nettopo-data" type="application/json">{"meta":{"name":"Lab NetTopo - Containerlab","seeds":["172.20.20.11"],"started_at":"2026-09-26T16:37:52.638310Z","finished_at":"2026-09-26T16:38:16.860435Z","tool_version":"0.1.0","max_depth":6,"stats":{"devices":6,"collected":5,"stubs":1,"links":10,"physical_links":10,"l3_links":0,"logical_links":0,"interfaces":140,"failed_targets":1,"by_vendor":{"MikroTik":2,"Nokia":2,"Linux":2},"by_role":{"router":4,"l3switch":2},"duration_s":24.2},"failed_targets":{"10.255.0.2":"sem resposta (portas fechadas / credenciais ausentes)"},"settings":{"name":"Lab NetTopo - Containerlab","seeds":["172.20.20.11"],"scope":{"include":["172.20.20.0/24","10.0.0.0/8","192.168.0.0/16"],"exclude":[],"hostname_exclude":[]},"max_depth":6,"max_devices":2000,"concurrency":16,"timeout":8,"snmp_retries":1,"methods":["rest","netconf","ssh","snmp"],"snmp_complement":true,"dns_resolve":true,"infer_l3_links":true,"credentials":[{"name":"ssh-mikrotik","type":"ssh","username":"admin","password":"***","enable_secret":null,"port":null,"version":"2c","community":null,"auth_protocol":"sha","auth_key":null,"priv_protocol":"aes","priv_key":null,"context":null,"token":null,"verify_ssl":false,"https":true},{"name":"ssh-srlinux","type":"ssh","username":"admin","password":"***","enable_secret":null,"port":null,"version":"2c","community":null,"auth_protocol":"sha","auth_key":null,"priv_protocol":"aes","priv_key":null,"context":null,"token":null,"verify_ssl":false,"https":true},{"name":"ssh-linux","type":"ssh","username":"nettopo","password":"***","enable_secret":null,"port":null,"version":"2c","community":null,"auth_protocol":"sha","auth_key":null,"priv_protocol":"aes","priv_key":null,"context":null,"token":null,"verify_ssl":false,"https":true},{"name":"snmp-v2c","type":"snmp","username":null,"password":null,"enable_secret":null,"port":null,"version":"2c","community":"***","auth_protocol":"sha","auth_key":null,"priv_protocol":"aes","priv_key":null,"context":null,"token":null,"verify_ssl":false,"https":true},{"name":"snmp-v3","type":"snmp","username":"nettopo","password":null,"enable_secret":null,"port":null,"version":"3","community":null,"auth_protocol":"sha","auth_key":"***","priv_protocol":"aes","priv_key":"***","context":null,"token":null,"verify_ssl":false,"https":true},{"name":"netconf-srlinux","type":"netconf","username":"admin","password":"***","enable_secret":null,"port":830,"version":"2c","community":null,"auth_protocol":"sha","auth_key":null,"priv_protocol":"aes","priv_key":null,"context":null,"token":null,"verify_ssl":false,"https":true},{"name":"rest-mikrotik","type":"rest","username":"admin","password":"***","enable_secret":null,"port":80,"version":"2c","community":null,"auth_protocol":"sha","auth_key":null,"priv_protocol":"aes","priv_key":null,"context":null,"token":null,"verify_ssl":false,"https":false}],"follow":{"lldp":true,"cdp":true,"other_l2":true,"routing":true,"arp":false},"collect":{"interfaces":true,"arp":true,"routes":true,"vlans":true,"mac_table":false,"routing_neighbors":true,"route_limit":5000}}},"graph":{"elements":{"nodes":[{"data":{"id":"edge-mk1","label":"edge-mk1\n172.20.20.11","hostname":"edge-mk1","ip":"172.20.20.11","role":"router","roleLabel":"Roteador","tier":"edge","vendor":"MikroTik","model":"CHR QEMU Standard PC (i440FX + PIIX, 1996)","stub":false,"icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2228%22%20fill%3D%22%231f6feb%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%2845%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28135%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28225%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28315%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3C/svg%3E","color":"#1f6feb"},"position":{"x":-95.0,"y":0},"classes":"router"},{"data":{"id":"core-srl1","label":"core-srl1\n172.20.20.21","hostname":"core-srl1","ip":"172.20.20.21","role":"l3switch","roleLabel":"Switch L3","tier":"core","vendor":"Nokia","model":"","stub":false,"icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%2256%22%20height%3D%2242%22%20rx%3D%228%22%20fill%3D%22%230e7c66%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2824%2022%29%20rotate%2890%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2840%2030%29%20rotate%28-90%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2824%2038%29%20rotate%2890%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2840%2046%29%20rotate%28-90%29%20scale%28.55%29%22/%3E%3Crect%20x%3D%2240%22%20y%3D%224%22%20width%3D%2220%22%20height%3D%2213%22%20rx%3D%223%22%20fill%3D%22%23fff%22/%3E%3Ctext%20x%3D%2250%22%20y%3D%2214%22%20font-size%3D%2210%22%20font-family%3D%22Arial%22%20font-weight%3D%22700%22%20fill%3D%22%230e7c66%22%20text-anchor%3D%22middle%22%3EL3%3C/text%3E%3C/svg%3E","color":"#0e7c66"},"position":{"x":-95.0,"y":170},"classes":"l3switch"},{"data":{"id":"core-srl2","label":"core-srl2\n172.20.20.22","hostname":"core-srl2","ip":"172.20.20.22","role":"l3switch","roleLabel":"Switch L3","tier":"core","vendor":"Nokia","model":"","stub":false,"icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%2256%22%20height%3D%2242%22%20rx%3D%228%22%20fill%3D%22%230e7c66%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2824%2022%29%20rotate%2890%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2840%2030%29%20rotate%28-90%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2824%2038%29%20rotate%2890%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2840%2046%29%20rotate%28-90%29%20scale%28.55%29%22/%3E%3Crect%20x%3D%2240%22%20y%3D%224%22%20width%3D%2220%22%20height%3D%2213%22%20rx%3D%223%22%20fill%3D%22%23fff%22/%3E%3Ctext%20x%3D%2250%22%20y%3D%2214%22%20font-size%3D%2210%22%20font-family%3D%22Arial%22%20font-weight%3D%22700%22%20fill%3D%22%230e7c66%22%20text-anchor%3D%22middle%22%3EL3%3C/text%3E%3C/svg%3E","color":"#0e7c66"},"position":{"x":95.0,"y":170},"classes":"l3switch"},{"data":{"id":"dist-frr1","label":"dist-frr1\n172.20.20.31","hostname":"dist-frr1","ip":"172.20.20.31","role":"router","roleLabel":"Roteador","tier":"edge","vendor":"Linux","model":"Debian GNU/Linux 12 (bookworm)","stub":false,"icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2228%22%20fill%3D%22%231f6feb%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%2845%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28135%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28225%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28315%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3C/svg%3E","color":"#1f6feb"},"position":{"x":95.0,"y":0},"classes":"router"},{"data":{"id":"isp-pe","label":"isp-pe\n172.20.20.2","hostname":"isp-pe","ip":"172.20.20.2","role":"router","roleLabel":"Roteador","tier":"edge","vendor":"Linux","model":"","stub":false,"icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2228%22%20fill%3D%22%231f6feb%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%2845%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28135%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28225%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28315%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3C/svg%3E","color":"#1f6feb"},"position":{"x":-285.0,"y":0},"classes":"router"},{"data":{"id":"stub-edge-mk2","label":"edge-mk2\n10.255.0.2","hostname":"edge-mk2","ip":"10.255.0.2","role":"router","roleLabel":"Roteador","tier":"edge","vendor":"MikroTik","model":"MikroTik CHR","stub":true,"icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2228%22%20fill%3D%22%231f6feb%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%2845%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28135%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28225%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28315%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3C/svg%3E","color":"#1f6feb"},"position":{"x":285.0,"y":0},"classes":"router stub"}],"edges":[{"data":{"id":"L1","source":"edge-mk1","target":"isp-pe","sourceLabel":"ether2","targetLabel":"eth1","kind":"physical","protocols":"lldp, bgp","subnet":"200.200.10.0/30","speed":10000,"speedLabel":"10G","lag":"","sourceInterface":"ether2","targetInterface":"eth1"},"classes":"physical"},{"data":{"id":"L2","source":"edge-mk1","target":"stub-edge-mk2","sourceLabel":"ether3","targetLabel":"ether3","kind":"physical","protocols":"lldp","subnet":"10.255.0.0/30","speed":0,"speedLabel":"","lag":"","sourceInterface":"ether3","targetInterface":"ether3"},"classes":"physical"},{"data":{"id":"L3","source":"edge-mk1","target":"core-srl1","sourceLabel":"ether4","targetLabel":"to edge-mk1 ether4","kind":"physical","protocols":"lldp","subnet":"10.10.1.0/30","speed":0,"speedLabel":"","lag":"","sourceInterface":"ether4","targetInterface":"to edge-mk1 ether4"},"classes":"physical"},{"data":{"id":"L4","source":"core-srl1","target":"edge-mk1","sourceLabel":"ethernet-1/1","targetLabel":"ether4","kind":"physical","protocols":"lldp","subnet":"10.10.1.0/30","speed":25000,"speedLabel":"25G","lag":"","sourceInterface":"ethernet-1/1","targetInterface":"ether4"},"classes":"physical"},{"data":{"id":"L5","source":"core-srl1","target":"core-srl2","sourceLabel":"ethernet-1/2","targetLabel":"ethernet-1/2","kind":"physical","protocols":"lldp","subnet":"10.10.0.0/31","speed":25000,"speedLabel":"25G","lag":"","sourceInterface":"ethernet-1/2","targetInterface":"ethernet-1/2"},"classes":"physical"},{"data":{"id":"L6","source":"core-srl1","target":"core-srl2","sourceLabel":"mgmt0","targetLabel":"mgmt0","kind":"physical","protocols":"lldp","subnet":"172.20.20.0/24","speed":1000,"speedLabel":"1G","lag":"","sourceInterface":"mgmt0","targetInterface":"mgmt0"},"classes":"physical"},{"data":{"id":"L7","source":"core-srl1","target":"dist-frr1","sourceLabel":"ethernet-1/3","targetLabel":"eth1","kind":"physical","protocols":"lldp","subnet":"10.10.3.0/30","speed":10000,"speedLabel":"10G","lag":"","sourceInterface":"ethernet-1/3","targetInterface":"eth1"},"classes":"physical"},{"data":{"id":"L8","source":"core-srl2","target":"stub-edge-mk2","sourceLabel":"ethernet-1/1","targetLabel":"ether4","kind":"physical","protocols":"lldp","subnet":"10.10.2.0/30","speed":25000,"speedLabel":"25G","lag":"","sourceInterface":"ethernet-1/1","targetInterface":"ether4"},"classes":"physical"},{"data":{"id":"L9","source":"core-srl2","target":"dist-frr1","sourceLabel":"ethernet-1/3","targetLabel":"eth2","kind":"physical","protocols":"lldp","subnet":"10.10.4.0/30","speed":10000,"speedLabel":"10G","lag":"","sourceInterface":"ethernet-1/3","targetInterface":"eth2"},"classes":"physical"},{"data":{"id":"L10","source":"core-srl2","target":"dist-frr1","sourceLabel":"ethernet-1/4","targetLabel":"eth1","kind":"physical","protocols":"lldp","subnet":"192.168.20.0/24","speed":10000,"speedLabel":"10G","lag":"","sourceInterface":"ethernet-1/4","targetInterface":"eth1"},"classes":"physical"}]},"legend":{"roles":{"router":{"label":"Roteador","color":"#1f6feb","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2228%22%20fill%3D%22%231f6feb%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%2845%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28135%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28225%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2832%2032%29%20rotate%28315%29%20translate%280%20-12%29%20scale%28.85%29%22/%3E%3C/svg%3E"},"l3switch":{"label":"Switch L3","color":"#0e7c66","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%2256%22%20height%3D%2242%22%20rx%3D%228%22%20fill%3D%22%230e7c66%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2824%2022%29%20rotate%2890%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2840%2030%29%20rotate%28-90%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2824%2038%29%20rotate%2890%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2840%2046%29%20rotate%28-90%29%20scale%28.55%29%22/%3E%3Crect%20x%3D%2240%22%20y%3D%224%22%20width%3D%2220%22%20height%3D%2213%22%20rx%3D%223%22%20fill%3D%22%23fff%22/%3E%3Ctext%20x%3D%2250%22%20y%3D%2214%22%20font-size%3D%2210%22%20font-family%3D%22Arial%22%20font-weight%3D%22700%22%20fill%3D%22%230e7c66%22%20text-anchor%3D%22middle%22%3EL3%3C/text%3E%3C/svg%3E"},"switch":{"label":"Switch","color":"#2da44e","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%2256%22%20height%3D%2242%22%20rx%3D%228%22%20fill%3D%22%232da44e%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2824%2022%29%20rotate%2890%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2840%2030%29%20rotate%28-90%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2824%2038%29%20rotate%2890%29%20scale%28.55%29%22/%3E%3Cpath%20d%3D%22M0%2C-9%20L6%2C-3%20L2%2C-3%20L2%2C9%20L-2%2C9%20L-2%2C-3%20L-6%2C-3%20Z%22%20fill%3D%22%23fff%22%20transform%3D%22translate%2840%2046%29%20rotate%28-90%29%20scale%28.55%29%22/%3E%3C/svg%3E"},"firewall":{"label":"Firewall","color":"#cf222e","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%2256%22%20height%3D%2250%22%20rx%3D%226%22%20fill%3D%22%23cf222e%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%226%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2212%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2230%22%20y%3D%2212%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2246%22%20y%3D%2212%22%20width%3D%2212%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%226%22%20y%3D%2223%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2222%22%20y%3D%2223%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2238%22%20y%3D%2223%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2254%22%20y%3D%2223%22%20width%3D%224%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%226%22%20y%3D%2234%22%20width%3D%226%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2234%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2230%22%20y%3D%2234%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2246%22%20y%3D%2234%22%20width%3D%2212%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%226%22%20y%3D%2245%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2222%22%20y%3D%2245%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2238%22%20y%3D%2245%22%20width%3D%2214%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Crect%20x%3D%2254%22%20y%3D%2245%22%20width%3D%224%22%20height%3D%229%22%20rx%3D%221.5%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3C/svg%3E"},"wireless_controller":{"label":"Controladora Wi-Fi","color":"#8250df","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2228%22%20fill%3D%22%238250df%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2242%22%20r%3D%224%22%20fill%3D%22%23fff%22/%3E%3Cpath%20d%3D%22M22%2034%20a14%2014%200%200%201%2020%200%22%20stroke%3D%22%23fff%22%20stroke-width%3D%224%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M15%2027%20a24%2024%200%200%201%2034%200%22%20stroke%3D%22%23fff%22%20stroke-width%3D%224%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E"},"ap":{"label":"Access Point","color":"#8250df","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2228%22%20fill%3D%22%238250df%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2242%22%20r%3D%224%22%20fill%3D%22%23fff%22/%3E%3Cpath%20d%3D%22M22%2034%20a14%2014%200%200%201%2020%200%22%20stroke%3D%22%23fff%22%20stroke-width%3D%224%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M15%2027%20a24%2024%200%200%201%2034%200%22%20stroke%3D%22%23fff%22%20stroke-width%3D%224%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E"},"server":{"label":"Servidor/Host","color":"#57606a","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%2210%22%20y%3D%224%22%20width%3D%2244%22%20height%3D%2256%22%20rx%3D%226%22%20fill%3D%22%2357606a%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2212%22%20width%3D%2232%22%20height%3D%2210%22%20rx%3D%222%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Ccircle%20cx%3D%2242%22%20cy%3D%2217%22%20r%3D%222%22%20fill%3D%22%2357606a%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2227%22%20width%3D%2232%22%20height%3D%2210%22%20rx%3D%222%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Ccircle%20cx%3D%2242%22%20cy%3D%2232%22%20r%3D%222%22%20fill%3D%22%2357606a%22/%3E%3Crect%20x%3D%2216%22%20y%3D%2242%22%20width%3D%2232%22%20height%3D%2210%22%20rx%3D%222%22%20fill%3D%22%23fff%22%20opacity%3D%22.9%22/%3E%3Ccircle%20cx%3D%2242%22%20cy%3D%2247%22%20r%3D%222%22%20fill%3D%22%2357606a%22/%3E%3C/svg%3E"},"phone":{"label":"Telefone IP","color":"#bc4c00","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%2210%22%20fill%3D%22%23bc4c00%22/%3E%3Cpath%20d%3D%22M22%2018%20q-6%200%20-6%208%20q2%2014%2022%2022%20q8%200%208-6%20l-7-6%20-5%204%20q-8-4%20-10-10%20l4-5%20z%22%20fill%3D%22%23fff%22/%3E%3C/svg%3E"},"external":{"label":"Externo","color":"#6e7781","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cpath%20d%3D%22M18%2048%20a12%2012%200%200%201%200-24%20a16%2016%200%200%201%2030%20-2%20a11%2011%200%200%201%200%2026%20z%22%20fill%3D%22%236e7781%22/%3E%3Ctext%20x%3D%2232%22%20y%3D%2242%22%20font-size%3D%2211%22%20font-family%3D%22Arial%22%20font-weight%3D%22700%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3EEXT%3C/text%3E%3C/svg%3E"},"unknown":{"label":"Desconhecido","color":"#8c959f","icon":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2227%22%20fill%3D%22%23fff%22%20stroke%3D%22%238c959f%22%20stroke-width%3D%224%22%20stroke-dasharray%3D%226%204%22/%3E%3Ctext%20x%3D%2232%22%20y%3D%2241%22%20font-size%3D%2226%22%20font-family%3D%22Arial%22%20font-weight%3D%22700%22%20fill%3D%22%238c959f%22%20text-anchor%3D%22middle%22%3E%3F%3C/text%3E%3C/svg%3E"}},"tiers":{"external":"Externo / Operadoras","edge":"Borda / Roteamento","security":"Segurança","core":"Núcleo (Core)","distribution":"Distribuição","access":"Acesso","endpoint":"Endpoints"}}},"devices":{"edge-mk1":{"id":"edge-mk1","hostname":"edge-mk1","mgmt_ip":"172.20.20.11","vendor":"MikroTik","os":"RouterOS","profile":"mikrotik_routeros","model":"CHR QEMU Standard PC (i440FX + PIIX, 1996)","os_version":"7.16.2 (stable)","serial":null,"uptime":"1m46s","chassis_id":null,"sys_object_id":"1.3.6.1.4.1.14988.1","sys_description":"RouterOS CHR","location":"Borda - Rack A","contact":"noc@nettopo.lab","role":"router","tier":"edge","reachable":true,"stub":false,"collected_via":["rest","snmp"],"interfaces":[{"name":"ether1","description":null,"mac":"0c:00:f1:78:1a:00","ipv4":["172.31.255.30/30"],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":2,"if_type":"ether","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ether2","description":"Uplink operadora","mac":"0c:00:b2:69:a7:01","ipv4":["200.200.10.2/30"],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":3,"if_type":"ether","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ether3","description":"Interlink edge-mk2","mac":"0c:00:ec:8e:e1:02","ipv4":["10.255.0.1/30"],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":4,"if_type":"ether","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ether4","description":"Core SRL1","mac":"0c:00:80:50:4d:03","ipv4":["10.10.1.1/30"],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":5,"if_type":"ether","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"lo","description":null,"mac":"00:00:00:00:00:00","ipv4":[],"speed_mbps":null,"mtu":65536,"admin_up":true,"oper_up":true,"if_index":1,"if_type":"loopback","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null}],"neighbors":[{"protocol":"lldp","local_interface":"ether2","remote_hostname":"isp-pe","remote_interface":"eth1","remote_mgmt_ip":"172.20.20.2","remote_platform":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_description":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_chassis_id":"aa:c1:ab:7c:4c:59","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"ether3","remote_hostname":"edge-mk2","remote_interface":"ether3","remote_mgmt_ip":"10.255.0.2","remote_platform":"MikroTik CHR","remote_description":"MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR","remote_chassis_id":"0c:00:e9:1e:1b:02","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"ether4","remote_hostname":"core-srl1","remote_interface":"to edge-mk1 ether4","remote_mgmt_ip":"172.20.20.21","remote_platform":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_description":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_chassis_id":"1a:9f:00:ff:00:01","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"bgp","local_interface":null,"remote_hostname":null,"remote_interface":null,"remote_mgmt_ip":"200.200.10.1","remote_platform":null,"remote_description":null,"remote_chassis_id":null,"remote_capabilities":[],"remote_asn":64500,"state":"established"}],"vlans":[],"arp":[{"ip":"172.31.255.29","mac":"fe:a1:db:03:90:49","interface":"ether1"},{"ip":"10.255.0.2","mac":"0c:00:e9:1e:1b:02","interface":"ether3"},{"ip":"200.200.10.1","mac":"aa:c1:ab:7c:4c:59","interface":"ether2"}],"routes":[{"prefix":"10.10.0.0/16","next_hop":"10.10.1.2","interface":null,"protocol":"static","vrf":"main"},{"prefix":"10.10.1.0/30","next_hop":null,"interface":"ether4","protocol":"connected","vrf":"main"},{"prefix":"10.255.0.0/30","next_hop":null,"interface":"ether3","protocol":"connected","vrf":"main"},{"prefix":"172.31.255.28/30","next_hop":null,"interface":"ether1","protocol":"connected","vrf":"main"},{"prefix":"200.200.10.0/30","next_hop":null,"interface":"ether2","protocol":"connected","vrf":"main"},{"prefix":"203.0.113.0/24","next_hop":"200.200.10.1","interface":null,"protocol":"bgp","vrf":"main"},{"prefix":"10.10.0.0/16","next_hop":"10.10.1.2","interface":null,"protocol":"static","vrf":null},{"prefix":"10.10.1.0/30","next_hop":null,"interface":"ether4","protocol":"connected","vrf":null},{"prefix":"10.255.0.0/30","next_hop":null,"interface":"ether3","protocol":"connected","vrf":null},{"prefix":"172.31.255.28/30","next_hop":null,"interface":"ether1","protocol":"connected","vrf":null},{"prefix":"200.200.10.0/30","next_hop":null,"interface":"ether2","protocol":"connected","vrf":null},{"prefix":"203.0.113.0/24","next_hop":"200.200.10.1","interface":null,"protocol":"bgp","vrf":null}],"mac_table":[],"errors":[],"discovered_from":null,"depth":0,"extra":{"fingerprint":"snmp","capabilities":["router"]}},"core-srl1":{"id":"core-srl1","hostname":"core-srl1","mgmt_ip":"172.20.20.21","vendor":"Nokia","os":"SR Linux","profile":"nokia_srl","model":null,"os_version":"25.10.5-111","serial":null,"uptime":"0d 0h 2m","chassis_id":null,"sys_object_id":"1.3.6.1.4.1.6527.1.20.26","sys_description":"SRLinux-v25.10.5-111-g6fbddec84ef 7220 IXR-D2L Copyright (c) 2000-2026 Nokia. Kernel 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","location":"Core - Rack C1","contact":null,"role":"l3switch","tier":"core","reachable":true,"stub":false,"collected_via":["netconf","snmp"],"interfaces":[{"name":"ethernet-1/1","description":"to edge-mk1 ether4","mac":"1a:9f:00:ff:00:01","ipv4":["10.10.1.2/30"],"speed_mbps":25000,"mtu":9232,"admin_up":true,"oper_up":true,"if_index":16382,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/2","description":"to core-srl2 e1-2","mac":"1a:9f:00:ff:00:02","ipv4":["10.10.0.0/31"],"speed_mbps":25000,"mtu":9232,"admin_up":true,"oper_up":true,"if_index":49150,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/3","description":"to dist-frr1 eth1","mac":"1a:9f:00:ff:00:03","ipv4":["10.10.3.1/30"],"speed_mbps":25000,"mtu":9232,"admin_up":true,"oper_up":true,"if_index":81918,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/4","description":null,"mac":"1a:9f:00:ff:00:04","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":114686,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/5","description":null,"mac":"1a:9f:00:ff:00:05","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":147454,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/6","description":null,"mac":"1a:9f:00:ff:00:06","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":180222,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/7","description":null,"mac":"1a:9f:00:ff:00:07","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":212990,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/8","description":null,"mac":"1a:9f:00:ff:00:08","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":245758,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/9","description":null,"mac":"1a:9f:00:ff:00:09","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":278526,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/10","description":null,"mac":"1a:9f:00:ff:00:0a","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":311294,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/11","description":null,"mac":"1a:9f:00:ff:00:0b","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":344062,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/12","description":null,"mac":"1a:9f:00:ff:00:0c","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":376830,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/13","description":null,"mac":"1a:9f:00:ff:00:0d","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":409598,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/14","description":null,"mac":"1a:9f:00:ff:00:0e","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":442366,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/15","description":null,"mac":"1a:9f:00:ff:00:0f","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":475134,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/16","description":null,"mac":"1a:9f:00:ff:00:10","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":507902,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/17","description":null,"mac":"1a:9f:00:ff:00:11","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":540670,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/18","description":null,"mac":"1a:9f:00:ff:00:12","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":573438,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/19","description":null,"mac":"1a:9f:00:ff:00:13","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":606206,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/20","description":null,"mac":"1a:9f:00:ff:00:14","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":638974,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/21","description":null,"mac":"1a:9f:00:ff:00:15","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":671742,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/22","description":null,"mac":"1a:9f:00:ff:00:16","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":704510,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/23","description":null,"mac":"1a:9f:00:ff:00:17","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":737278,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/24","description":null,"mac":"1a:9f:00:ff:00:18","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":770046,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/25","description":null,"mac":"1a:9f:00:ff:00:19","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":802814,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/26","description":null,"mac":"1a:9f:00:ff:00:1a","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":835582,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/27","description":null,"mac":"1a:9f:00:ff:00:1b","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":868350,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/28","description":null,"mac":"1a:9f:00:ff:00:1c","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":901118,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/29","description":null,"mac":"1a:9f:00:ff:00:1d","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":933886,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/30","description":null,"mac":"1a:9f:00:ff:00:1e","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":966654,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/31","description":null,"mac":"1a:9f:00:ff:00:1f","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":999422,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/32","description":null,"mac":"1a:9f:00:ff:00:20","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1032190,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/33","description":null,"mac":"1a:9f:00:ff:00:21","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1064958,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/34","description":null,"mac":"1a:9f:00:ff:00:22","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1097726,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/35","description":null,"mac":"1a:9f:00:ff:00:23","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1130494,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/36","description":null,"mac":"1a:9f:00:ff:00:24","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1163262,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/37","description":null,"mac":"1a:9f:00:ff:00:25","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1196030,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/38","description":null,"mac":"1a:9f:00:ff:00:26","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1228798,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/39","description":null,"mac":"1a:9f:00:ff:00:27","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1261566,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/40","description":null,"mac":"1a:9f:00:ff:00:28","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1294334,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/41","description":null,"mac":"1a:9f:00:ff:00:29","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1327102,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/42","description":null,"mac":"1a:9f:00:ff:00:2a","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1359870,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/43","description":null,"mac":"1a:9f:00:ff:00:2b","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1392638,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/44","description":null,"mac":"1a:9f:00:ff:00:2c","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1425406,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/45","description":null,"mac":"1a:9f:00:ff:00:2d","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1458174,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/46","description":null,"mac":"1a:9f:00:ff:00:2e","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1490942,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/47","description":null,"mac":"1a:9f:00:ff:00:2f","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1523710,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/48","description":null,"mac":"1a:9f:00:ff:00:30","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1556478,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/49","description":null,"mac":"1a:9f:00:ff:00:31","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1589246,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/50","description":null,"mac":"1a:9f:00:ff:00:32","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1622014,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/51","description":null,"mac":"1a:9f:00:ff:00:33","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1654782,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/52","description":null,"mac":"1a:9f:00:ff:00:34","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1687550,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/53","description":null,"mac":"1a:9f:00:ff:00:35","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1720318,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/54","description":null,"mac":"1a:9f:00:ff:00:36","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1753086,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/55","description":null,"mac":"1a:9f:00:ff:00:37","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1785854,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/56","description":null,"mac":"1a:9f:00:ff:00:38","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1818622,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/57","description":null,"mac":"1a:9f:00:ff:00:39","ipv4":[],"speed_mbps":10000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1851390,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/58","description":null,"mac":"1a:9f:00:ff:00:3a","ipv4":[],"speed_mbps":10000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1884158,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"mgmt0","description":null,"mac":"1a:9f:00:00:00:00","ipv4":["172.20.20.21/24"],"speed_mbps":1000,"mtu":1514,"admin_up":true,"oper_up":true,"if_index":1077952510,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/1.0","description":null,"mac":"1a:9f:00:ff:00:01","ipv4":[],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":1,"if_type":"142","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/2.0","description":null,"mac":"1a:9f:00:ff:00:02","ipv4":[],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":32769,"if_type":"142","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/3.0","description":null,"mac":"1a:9f:00:ff:00:03","ipv4":[],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":65537,"if_type":"142","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"mgmt0.0","description":null,"mac":"1a:9f:00:00:00:00","ipv4":[],"speed_mbps":null,"mtu":0,"admin_up":true,"oper_up":true,"if_index":1077936129,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null}],"neighbors":[{"protocol":"lldp","local_interface":"ethernet-1/1","remote_hostname":"edge-mk1","remote_interface":"ether4","remote_mgmt_ip":"10.10.1.1","remote_platform":"MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR","remote_description":"MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR","remote_chassis_id":"0c:00:80:50:4d:03","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"ethernet-1/2","remote_hostname":"core-srl2","remote_interface":"ethernet-1/2","remote_mgmt_ip":"172.20.20.22","remote_platform":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_description":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_chassis_id":"1a:ad:01:ff:00:00","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"ethernet-1/3","remote_hostname":"dist-frr1","remote_interface":"eth1","remote_mgmt_ip":"172.20.20.31","remote_platform":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_description":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_chassis_id":"aa:c1:ab:85:43:5f","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"mgmt0","remote_hostname":"core-srl2","remote_interface":"mgmt0","remote_mgmt_ip":"172.20.20.22","remote_platform":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_description":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_chassis_id":"1a:ad:01:ff:00:00","remote_capabilities":["router"],"remote_asn":null,"state":null}],"vlans":[],"arp":[],"routes":[],"mac_table":[],"errors":[],"discovered_from":"edge-mk1","depth":1,"extra":{"fingerprint":"snmp","capabilities":["router"]}},"core-srl2":{"id":"core-srl2","hostname":"core-srl2","mgmt_ip":"172.20.20.22","vendor":"Nokia","os":"SR Linux","profile":"nokia_srl","model":null,"os_version":"25.10.5-111","serial":null,"uptime":"0d 0h 2m","chassis_id":null,"sys_object_id":"1.3.6.1.4.1.6527.1.20.26","sys_description":"SRLinux-v25.10.5-111-g6fbddec84ef 7220 IXR-D2L Copyright (c) 2000-2026 Nokia. Kernel 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","location":"Core - Rack C2","contact":null,"role":"l3switch","tier":"core","reachable":true,"stub":false,"collected_via":["netconf","snmp"],"interfaces":[{"name":"ethernet-1/1","description":"to edge-mk2 ether4","mac":"1a:ad:01:ff:00:01","ipv4":["10.10.2.2/30"],"speed_mbps":25000,"mtu":9232,"admin_up":true,"oper_up":true,"if_index":16382,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/2","description":"to core-srl1 e1-2","mac":"1a:ad:01:ff:00:02","ipv4":["10.10.0.1/31"],"speed_mbps":25000,"mtu":9232,"admin_up":true,"oper_up":true,"if_index":49150,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/3","description":"to dist-frr1 eth2","mac":"1a:ad:01:ff:00:03","ipv4":["10.10.4.1/30"],"speed_mbps":25000,"mtu":9232,"admin_up":true,"oper_up":true,"if_index":81918,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/4","description":"to srv2 eth1","mac":"1a:ad:01:ff:00:04","ipv4":["192.168.20.1/24"],"speed_mbps":25000,"mtu":9232,"admin_up":true,"oper_up":true,"if_index":114686,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/5","description":null,"mac":"1a:ad:01:ff:00:05","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":147454,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/6","description":null,"mac":"1a:ad:01:ff:00:06","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":180222,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/7","description":null,"mac":"1a:ad:01:ff:00:07","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":212990,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/8","description":null,"mac":"1a:ad:01:ff:00:08","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":245758,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/9","description":null,"mac":"1a:ad:01:ff:00:09","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":278526,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/10","description":null,"mac":"1a:ad:01:ff:00:0a","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":311294,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/11","description":null,"mac":"1a:ad:01:ff:00:0b","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":344062,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/12","description":null,"mac":"1a:ad:01:ff:00:0c","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":376830,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/13","description":null,"mac":"1a:ad:01:ff:00:0d","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":409598,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/14","description":null,"mac":"1a:ad:01:ff:00:0e","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":442366,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/15","description":null,"mac":"1a:ad:01:ff:00:0f","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":475134,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/16","description":null,"mac":"1a:ad:01:ff:00:10","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":507902,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/17","description":null,"mac":"1a:ad:01:ff:00:11","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":540670,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/18","description":null,"mac":"1a:ad:01:ff:00:12","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":573438,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/19","description":null,"mac":"1a:ad:01:ff:00:13","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":606206,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/20","description":null,"mac":"1a:ad:01:ff:00:14","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":638974,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/21","description":null,"mac":"1a:ad:01:ff:00:15","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":671742,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/22","description":null,"mac":"1a:ad:01:ff:00:16","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":704510,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/23","description":null,"mac":"1a:ad:01:ff:00:17","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":737278,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/24","description":null,"mac":"1a:ad:01:ff:00:18","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":770046,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/25","description":null,"mac":"1a:ad:01:ff:00:19","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":802814,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/26","description":null,"mac":"1a:ad:01:ff:00:1a","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":835582,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/27","description":null,"mac":"1a:ad:01:ff:00:1b","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":868350,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/28","description":null,"mac":"1a:ad:01:ff:00:1c","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":901118,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/29","description":null,"mac":"1a:ad:01:ff:00:1d","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":933886,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/30","description":null,"mac":"1a:ad:01:ff:00:1e","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":966654,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/31","description":null,"mac":"1a:ad:01:ff:00:1f","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":999422,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/32","description":null,"mac":"1a:ad:01:ff:00:20","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1032190,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/33","description":null,"mac":"1a:ad:01:ff:00:21","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1064958,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/34","description":null,"mac":"1a:ad:01:ff:00:22","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1097726,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/35","description":null,"mac":"1a:ad:01:ff:00:23","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1130494,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/36","description":null,"mac":"1a:ad:01:ff:00:24","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1163262,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/37","description":null,"mac":"1a:ad:01:ff:00:25","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1196030,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/38","description":null,"mac":"1a:ad:01:ff:00:26","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1228798,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/39","description":null,"mac":"1a:ad:01:ff:00:27","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1261566,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/40","description":null,"mac":"1a:ad:01:ff:00:28","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1294334,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/41","description":null,"mac":"1a:ad:01:ff:00:29","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1327102,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/42","description":null,"mac":"1a:ad:01:ff:00:2a","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1359870,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/43","description":null,"mac":"1a:ad:01:ff:00:2b","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1392638,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/44","description":null,"mac":"1a:ad:01:ff:00:2c","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1425406,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/45","description":null,"mac":"1a:ad:01:ff:00:2d","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1458174,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/46","description":null,"mac":"1a:ad:01:ff:00:2e","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1490942,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/47","description":null,"mac":"1a:ad:01:ff:00:2f","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1523710,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/48","description":null,"mac":"1a:ad:01:ff:00:30","ipv4":[],"speed_mbps":25000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1556478,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/49","description":null,"mac":"1a:ad:01:ff:00:31","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1589246,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/50","description":null,"mac":"1a:ad:01:ff:00:32","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1622014,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/51","description":null,"mac":"1a:ad:01:ff:00:33","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1654782,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/52","description":null,"mac":"1a:ad:01:ff:00:34","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1687550,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/53","description":null,"mac":"1a:ad:01:ff:00:35","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1720318,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/54","description":null,"mac":"1a:ad:01:ff:00:36","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1753086,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/55","description":null,"mac":"1a:ad:01:ff:00:37","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1785854,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/56","description":null,"mac":"1a:ad:01:ff:00:38","ipv4":[],"speed_mbps":100000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1818622,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/57","description":null,"mac":"1a:ad:01:ff:00:39","ipv4":[],"speed_mbps":10000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1851390,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/58","description":null,"mac":"1a:ad:01:ff:00:3a","ipv4":[],"speed_mbps":10000,"mtu":0,"admin_up":false,"oper_up":false,"if_index":1884158,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"mgmt0","description":null,"mac":"1a:ad:01:00:00:00","ipv4":["172.20.20.22/24"],"speed_mbps":1000,"mtu":1514,"admin_up":true,"oper_up":true,"if_index":1077952510,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/1.0","description":null,"mac":"1a:ad:01:ff:00:01","ipv4":[],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":1,"if_type":"142","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/2.0","description":null,"mac":"1a:ad:01:ff:00:02","ipv4":[],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":32769,"if_type":"142","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/3.0","description":null,"mac":"1a:ad:01:ff:00:03","ipv4":[],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":65537,"if_type":"142","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ethernet-1/4.0","description":null,"mac":"1a:ad:01:ff:00:04","ipv4":[],"speed_mbps":null,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":98305,"if_type":"142","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"mgmt0.0","description":null,"mac":"1a:ad:01:00:00:00","ipv4":[],"speed_mbps":null,"mtu":0,"admin_up":true,"oper_up":true,"if_index":1077936129,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null}],"neighbors":[{"protocol":"lldp","local_interface":"ethernet-1/1","remote_hostname":"edge-mk2","remote_interface":"ether4","remote_mgmt_ip":"10.10.2.1","remote_platform":"MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR","remote_description":"MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR","remote_chassis_id":"0c:00:7e:da:37:00","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"ethernet-1/2","remote_hostname":"core-srl1","remote_interface":"ethernet-1/2","remote_mgmt_ip":"172.20.20.21","remote_platform":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_description":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_chassis_id":"1a:9f:00:ff:00:00","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"ethernet-1/3","remote_hostname":"dist-frr1","remote_interface":"eth2","remote_mgmt_ip":"172.20.20.31","remote_platform":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_description":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_chassis_id":"aa:c1:ab:85:43:5f","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"ethernet-1/4","remote_hostname":"srv2","remote_interface":"eth1","remote_mgmt_ip":"172.20.20.42","remote_platform":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_description":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_chassis_id":"aa:c1:ab:9b:4b:34","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"mgmt0","remote_hostname":"core-srl1","remote_interface":"mgmt0","remote_mgmt_ip":"172.20.20.21","remote_platform":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_description":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_chassis_id":"1a:9f:00:ff:00:00","remote_capabilities":["router"],"remote_asn":null,"state":null}],"vlans":[],"arp":[],"routes":[],"mac_table":[],"errors":[],"discovered_from":"core-srl1","depth":2,"extra":{"fingerprint":"snmp","capabilities":["router"]}},"dist-frr1":{"id":"dist-frr1","hostname":"dist-frr1","mgmt_ip":"172.20.20.31","vendor":"Linux","os":"Linux (lldpd)","profile":"linux","model":"Debian GNU/Linux 12 (bookworm)","os_version":"6.17.0-1022-azure","serial":"Virtual Machine","uptime":"0d 0h 2m","chassis_id":"aa:c1:ab:85:43:5f","sys_object_id":"1.3.6.1.4.1.8072.3.2.10","sys_description":"Linux dist-frr1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","location":"Containerlab NetTopo Lab","contact":"lab@nettopo.local","role":"router","tier":"edge","reachable":true,"stub":false,"collected_via":["ssh","snmp"],"interfaces":[{"name":"eth0","description":null,"mac":"fa:41:09:24:5d:63","ipv4":["172.20.20.31/24","172.20.20.42/24","172.20.20.41/24"],"speed_mbps":10000,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":2,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"eth1","description":null,"mac":"aa:c1:ab:85:43:5f","ipv4":["10.10.3.2/30","192.168.20.10/24","192.168.10.10/24"],"speed_mbps":10000,"mtu":9500,"admin_up":true,"oper_up":true,"if_index":17,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"eth2","description":null,"mac":"aa:c1:ab:c7:46:0d","ipv4":["10.10.4.2/30"],"speed_mbps":10000,"mtu":9500,"admin_up":true,"oper_up":true,"if_index":19,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"eth3","description":null,"mac":"aa:c1:ab:b4:cb:17","ipv4":["192.168.10.1/24"],"speed_mbps":10000,"mtu":9500,"admin_up":true,"oper_up":true,"if_index":22,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"lo","description":null,"mac":null,"ipv4":["127.0.0.1/8"],"speed_mbps":10,"mtu":65536,"admin_up":true,"oper_up":true,"if_index":1,"if_type":"24","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null}],"neighbors":[{"protocol":"lldp","local_interface":"eth3","remote_hostname":"srv1","remote_interface":"eth1","remote_mgmt_ip":"172.20.20.41","remote_platform":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_description":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_chassis_id":"aa:c1:ab:d1:17:db","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"eth1","remote_hostname":"core-srl1","remote_interface":"ethernet-1/3","remote_mgmt_ip":"172.20.20.21","remote_platform":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_description":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_chassis_id":"1a:9f:00:ff:00:00","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"eth2","remote_hostname":"core-srl2","remote_interface":"ethernet-1/3","remote_mgmt_ip":"172.20.20.22","remote_platform":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_description":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_chassis_id":"1a:ad:01:ff:00:00","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"eth1","remote_hostname":"core-srl2","remote_interface":"ethernet-1/4","remote_mgmt_ip":"172.20.20.22","remote_platform":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_description":"SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026","remote_chassis_id":"1a:ad:01:ff:00:00","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"lldp","local_interface":"eth1","remote_hostname":"dist-frr1","remote_interface":"eth3","remote_mgmt_ip":"172.20.20.31","remote_platform":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_description":"Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","remote_chassis_id":"aa:c1:ab:85:43:5f","remote_capabilities":["router"],"remote_asn":null,"state":null}],"vlans":[],"arp":[{"ip":"172.20.20.1","mac":"12:72:54:fa:30:6d","interface":"eth0"}],"routes":[{"prefix":"0.0.0.0/0","next_hop":"172.20.20.1","interface":"eth0","protocol":null,"vrf":null},{"prefix":"10.10.3.0/30","next_hop":null,"interface":"eth1","protocol":"kernel","vrf":null},{"prefix":"10.10.4.0/30","next_hop":null,"interface":"eth2","protocol":"kernel","vrf":null},{"prefix":"172.20.20.0/24","next_hop":null,"interface":"eth0","protocol":"kernel","vrf":null},{"prefix":"192.168.10.0/24","next_hop":null,"interface":"eth3","protocol":"kernel","vrf":null},{"prefix":"192.168.20.0/24","next_hop":null,"interface":"eth1","protocol":"kernel","vrf":null}],"mac_table":[],"errors":[],"discovered_from":"core-srl1","depth":2,"extra":{"raw_commands":["cat /etc/os-release; uname -r; cat /sys/class/dmi/id/product_serial 2>/dev/null; cat /sys/class/dmi/id/product_name 2>/dev/null","hostname","ip -4 neigh show","ip -4 route show","ip -o -4 addr show","ip -o link show"],"fingerprint":"snmp","capabilities":["router"]}},"isp-pe":{"id":"isp-pe","hostname":"isp-pe","mgmt_ip":"172.20.20.2","vendor":"Linux","os":"Linux (lldpd)","profile":"linux","model":null,"os_version":"6.17.0-1022-azure","serial":null,"uptime":"0d 0h 2m","chassis_id":"aa:c1:ab:7c:4c:59","sys_object_id":"1.3.6.1.4.1.8072.3.2.10","sys_description":"Linux isp-pe 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64","location":"Containerlab NetTopo Lab","contact":"lab@nettopo.local","role":"router","tier":"edge","reachable":true,"stub":false,"collected_via":["snmp"],"interfaces":[{"name":"lo","description":null,"mac":null,"ipv4":["127.0.0.1/8"],"speed_mbps":10,"mtu":65536,"admin_up":true,"oper_up":true,"if_index":1,"if_type":"24","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"eth0","description":null,"mac":"c6:3b:e4:39:d8:97","ipv4":["172.20.20.2/24"],"speed_mbps":10000,"mtu":1500,"admin_up":true,"oper_up":true,"if_index":2,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"eth1","description":null,"mac":"aa:c1:ab:7c:4c:59","ipv4":["200.200.10.1/30"],"speed_mbps":10000,"mtu":9500,"admin_up":true,"oper_up":true,"if_index":32,"if_type":"6","mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null}],"neighbors":[{"protocol":"lldp","local_interface":"eth1","remote_hostname":"edge-mk1","remote_interface":"ether2","remote_mgmt_ip":"200.200.10.2","remote_platform":"MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR","remote_description":"MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR","remote_chassis_id":"0c:00:80:50:4d:03","remote_capabilities":["router"],"remote_asn":null,"state":null},{"protocol":"bgp","local_interface":null,"remote_hostname":null,"remote_interface":null,"remote_mgmt_ip":"200.200.10.2","remote_platform":null,"remote_description":null,"remote_chassis_id":null,"remote_capabilities":[],"remote_asn":65001,"state":"established"}],"vlans":[],"arp":[{"ip":"172.20.20.1","mac":"12:72:54:fa:30:6d","interface":"eth0"},{"ip":"200.200.10.2","mac":"0c:00:b2:69:a7:01","interface":"eth1"}],"routes":[{"prefix":"0.0.0.0/0","next_hop":"172.20.20.1","interface":"eth0","protocol":"connected","vrf":null},{"prefix":"172.20.20.0/24","next_hop":null,"interface":"eth0","protocol":"connected","vrf":null},{"prefix":"200.200.10.0/30","next_hop":null,"interface":"eth1","protocol":"connected","vrf":null},{"prefix":"203.0.113.0/24","next_hop":null,"interface":null,"protocol":"connected","vrf":null}],"mac_table":[],"errors":["ssh[ssh-mikrotik]: NetmikoAuthenticationException: Authentication to device failed.","ssh[ssh-srlinux]: NetmikoAuthenticationException: Authentication to device failed.","ssh[ssh-linux]: NetmikoAuthenticationException: Authentication to device failed."],"discovered_from":"edge-mk1","depth":1,"extra":{"fingerprint":"snmp","capabilities":["router"]}},"stub-edge-mk2":{"id":"stub-edge-mk2","hostname":"edge-mk2","mgmt_ip":"10.255.0.2","vendor":"MikroTik","os":"RouterOS","profile":"mikrotik_routeros","model":"MikroTik CHR","os_version":null,"serial":null,"uptime":null,"chassis_id":"0c:00:e9:1e:1b:02","sys_object_id":null,"sys_description":"MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR","location":null,"contact":null,"role":"router","tier":"edge","reachable":false,"stub":true,"collected_via":["visto via lldp"],"interfaces":[{"name":"ether3","description":null,"mac":null,"ipv4":[],"speed_mbps":null,"mtu":null,"admin_up":null,"oper_up":null,"if_index":null,"if_type":null,"mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null},{"name":"ether4","description":null,"mac":null,"ipv4":[],"speed_mbps":null,"mtu":null,"admin_up":null,"oper_up":null,"if_index":null,"if_type":null,"mode":null,"access_vlan":null,"trunk_vlans":null,"parent":null,"vrf":null}],"neighbors":[],"vlans":[],"arp":[],"routes":[],"mac_table":[],"errors":[],"discovered_from":null,"depth":0,"extra":{"capabilities":["router"]}}},"links":[{"id":"L1","source":"edge-mk1","source_interface":"ether2","target":"isp-pe","target_interface":"eth1","protocols":["lldp","bgp"],"kind":"physical","subnet":"200.200.10.0/30","speed_mbps":10000,"lag":null},{"id":"L2","source":"edge-mk1","source_interface":"ether3","target":"stub-edge-mk2","target_interface":"ether3","protocols":["lldp"],"kind":"physical","subnet":"10.255.0.0/30","speed_mbps":null,"lag":null},{"id":"L3","source":"edge-mk1","source_interface":"ether4","target":"core-srl1","target_interface":"to edge-mk1 ether4","protocols":["lldp"],"kind":"physical","subnet":"10.10.1.0/30","speed_mbps":null,"lag":null},{"id":"L4","source":"core-srl1","source_interface":"ethernet-1/1","target":"edge-mk1","target_interface":"ether4","protocols":["lldp"],"kind":"physical","subnet":"10.10.1.0/30","speed_mbps":25000,"lag":null},{"id":"L5","source":"core-srl1","source_interface":"ethernet-1/2","target":"core-srl2","target_interface":"ethernet-1/2","protocols":["lldp"],"kind":"physical","subnet":"10.10.0.0/31","speed_mbps":25000,"lag":null},{"id":"L6","source":"core-srl1","source_interface":"mgmt0","target":"core-srl2","target_interface":"mgmt0","protocols":["lldp"],"kind":"physical","subnet":"172.20.20.0/24","speed_mbps":1000,"lag":null},{"id":"L7","source":"core-srl1","source_interface":"ethernet-1/3","target":"dist-frr1","target_interface":"eth1","protocols":["lldp"],"kind":"physical","subnet":"10.10.3.0/30","speed_mbps":10000,"lag":null},{"id":"L8","source":"core-srl2","source_interface":"ethernet-1/1","target":"stub-edge-mk2","target_interface":"ether4","protocols":["lldp"],"kind":"physical","subnet":"10.10.2.0/30","speed_mbps":25000,"lag":null},{"id":"L9","source":"core-srl2","source_interface":"ethernet-1/3","target":"dist-frr1","target_interface":"eth2","protocols":["lldp"],"kind":"physical","subnet":"10.10.4.0/30","speed_mbps":10000,"lag":null},{"id":"L10","source":"core-srl2","source_interface":"ethernet-1/4","target":"dist-frr1","target_interface":"eth1","protocols":["lldp"],"kind":"physical","subnet":"192.168.20.0/24","speed_mbps":10000,"lag":null}]}</script>
+<script>
+/* TopoView - renderização da topologia com Cytoscape.js (compartilhado entre relatório HTML e UI web). */
+(function () {
+  "use strict";
+
+  function cssVar(name, fallback) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name);
+    return (v && v.trim()) || fallback;
+  }
+
+  function edgeWidth(e) {
+    var s = e.data("speed") || 0;
+    if (!s) return 2;
+    return 1.6 + Math.log10(Math.max(s, 100) / 100) * 1.3;
+  }
+
+  function buildStyle() {
+    var fg = cssVar("--fg", "#1f2328");
+    var muted = cssVar("--muted", "#656d76");
+    var bg = cssVar("--bg", "#ffffff");
+    var line = cssVar("--edge", "#8c959f");
+    var accent = cssVar("--accent", "#0969da");
+    return [
+      { selector: "node", style: {
+          "background-color": bg, "background-opacity": 0, "background-image": "data(icon)",
+          "background-fit": "contain", "background-clip": "none", "width": 44, "height": 44, "shape": "round-rectangle",
+          "label": "data(label)", "text-valign": "bottom", "text-halign": "center", "text-margin-y": 6,
+          "font-size": 11, "font-family": "system-ui, -apple-system, Segoe UI, Roboto, sans-serif", "color": fg,
+          "text-wrap": "wrap", "text-max-width": 140, "text-background-color": bg, "text-background-opacity": 0.85,
+          "text-background-padding": 2, "text-background-shape": "round-rectangle", "border-width": 0 } },
+      { selector: "node.stub", style: { "opacity": 0.72, "font-style": "italic" } },
+      { selector: "node:selected", style: { "border-width": 3, "border-color": accent, "border-style": "solid",
+          "background-opacity": 0 } },
+      { selector: "node.match", style: { "border-width": 3, "border-color": "#bf8700", "border-style": "double" } },
+      { selector: "node.faded, edge.faded", style: { "opacity": 0.15 } },
+      { selector: "edge", style: {
+          "width": edgeWidth, "line-color": line, "curve-style": "bezier", "control-point-step-size": 28,
+          "source-label": "data(sourceLabel)", "target-label": "data(targetLabel)",
+          "source-text-offset": 34, "target-text-offset": 34, "font-size": 9, "color": muted,
+          "text-background-color": bg, "text-background-opacity": 0.9, "text-background-padding": 1,
+          "text-rotation": "autorotate" } },
+      { selector: "edge.l3", style: { "line-style": "dashed", "line-color": "#0969da" } },
+      { selector: "edge.logical", style: { "line-style": "dotted", "line-color": "#bf8700" } },
+      { selector: "edge:selected", style: { "line-color": accent, "width": 5 } },
+      { selector: ".nolabels edge", style: { "source-label": "", "target-label": "" } },
+      { selector: "edge.hidden, node.hidden", style: { "display": "none" } }
+    ];
+  }
+
+  function create(container, graph, opts) {
+    opts = opts || {};
+    var cy = cytoscape({
+      container: container,
+      elements: [].concat(graph.elements.nodes, graph.elements.edges),
+      layout: { name: "preset", padding: 40 },
+      style: buildStyle(),
+      wheelSensitivity: 0.25,
+      minZoom: 0.05,
+      maxZoom: 4
+    });
+    var presetPositions = {};
+    cy.nodes().forEach(function (n) { presetPositions[n.id()] = Object.assign({}, n.position()); });
+
+    cy.on("tap", "node", function (e) { if (opts.onSelect) opts.onSelect(e.target.id(), "node"); });
+    cy.on("tap", "edge", function (e) { if (opts.onSelect) opts.onSelect(e.target.id(), "edge"); });
+    cy.on("tap", function (e) { if (e.target === cy && opts.onSelect) opts.onSelect(null); });
+    cy.on("mouseover", "node", function (e) {
+      var n = e.target, hood = n.closedNeighborhood();
+      cy.elements().not(hood).addClass("faded");
+    });
+    cy.on("mouseout", "node", function () { cy.elements().removeClass("faded"); });
+
+    var api = {
+      cy: cy,
+      setLayout: function (name) {
+        if (name === "hierarchical") {
+          cy.layout({ name: "preset", positions: function (n) { return presetPositions[n.id()]; },
+                      animate: true, animationDuration: 400, padding: 40 }).run();
+        } else if (name === "breadthfirst") {
+          var roots = cy.nodes().filter(function (n) { return ["external", "edge"].indexOf(n.data("tier")) >= 0; });
+          cy.layout({ name: "breadthfirst", roots: roots.length ? roots : undefined, spacingFactor: 1.1,
+                      animate: true, animationDuration: 400, padding: 40 }).run();
+        } else if (name === "concentric") {
+          var order = { external: 7, edge: 6, security: 5, core: 4, distribution: 3, access: 2, endpoint: 1 };
+          cy.layout({ name: "concentric", concentric: function (n) { return order[n.data("tier")] || 0; },
+                      levelWidth: function () { return 1; }, minNodeSpacing: 40, animate: true,
+                      animationDuration: 400, padding: 40 }).run();
+        } else {
+          cy.layout({ name: "cose", animate: true, animationDuration: 500, nodeRepulsion: 90000,
+                      idealEdgeLength: 110, padding: 40 }).run();
+        }
+      },
+      search: function (text) {
+        cy.nodes().removeClass("match");
+        text = (text || "").trim().toLowerCase();
+        if (!text) return 0;
+        var m = cy.nodes().filter(function (n) {
+          var d = n.data();
+          return [d.id, d.hostname, d.ip, d.vendor, d.model, d.roleLabel].join(" ").toLowerCase().indexOf(text) >= 0;
+        });
+        m.addClass("match");
+        if (m.length) cy.animate({ fit: { eles: m, padding: 120 } }, { duration: 350 });
+        return m.length;
+      },
+      focus: function (id) {
+        var n = cy.getElementById(id);
+        if (!n || !n.length) return;
+        cy.elements().unselect();
+        n.select();
+        cy.animate({ center: { eles: n }, zoom: Math.max(cy.zoom(), 1.1) }, { duration: 350 });
+      },
+      setFilter: function (f) {
+        cy.batch(function () {
+          cy.edges().forEach(function (e) {
+            e.toggleClass("hidden", f.kinds && f.kinds[e.data("kind")] === false);
+          });
+          cy.nodes().forEach(function (n) {
+            n.toggleClass("hidden", f.showStubs === false && n.data("stub"));
+          });
+        });
+        container.classList.toggle("nolabels", f.showLabels === false);
+        cy.style().selector("edge").style({
+          "source-label": f.showLabels === false ? "" : "data(sourceLabel)",
+          "target-label": f.showLabels === false ? "" : "data(targetLabel)"
+        }).update();
+      },
+      refreshTheme: function () { cy.style().fromJson(buildStyle()).update(); },
+      fit: function () { cy.animate({ fit: { padding: 40 } }, { duration: 300 }); },
+      png: function () { return cy.png({ full: true, scale: 2, bg: cssVar("--bg", "#ffffff") }); },
+      destroy: function () { cy.destroy(); }
+    };
+    return api;
+  }
+
+  window.TopoView = { create: create };
+})();
+
+</script>
+<script>
+/* NetTopoViewer - relatório interativo (diagrama + documentação) a partir do JSON da topologia. */
+(function () {
+  "use strict";
+
+  var ROLE_PT = { router: "Roteador", l3switch: "Switch L3", "switch": "Switch", firewall: "Firewall",
+    wireless_controller: "Controladora Wi-Fi", ap: "Access Point", server: "Servidor/Host", phone: "Telefone IP",
+    external: "Externo", unknown: "Desconhecido" };
+  var TIER_PT = { external: "Externo", edge: "Borda", security: "Segurança", core: "Núcleo", distribution: "Distribuição",
+    access: "Acesso", endpoint: "Endpoint" };
+  var KIND_PT = { physical: "Físico", l3: "L3 (sub-rede)", logical: "Lógico (roteamento)" };
+
+  function esc(v) {
+    if (v === null || v === undefined) return "";
+    return String(v).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function el(tag, attrs, html) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "class") e.className = attrs[k]; else if (k.indexOf("on") === 0) e.addEventListener(k.slice(2), attrs[k]);
+      else e.setAttribute(k, attrs[k]);
+    });
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  }
+  var IF_SHORT = [[/^GigabitEthernet/i, "Gi"], [/^TenGigabitEthernet/i, "Te"], [/^XGigabitEthernet/i, "XGE"],
+    [/^FortyGigabitEthernet/i, "Fo"], [/^HundredGigE/i, "Hu"], [/^TwentyFiveGigE/i, "Twe"], [/^FastEthernet/i, "Fa"],
+    [/^Port-channel/i, "Po"], [/^Ethernet/i, "Eth"], [/^ten-gigabit-ethernet-/i, "tge-"], [/^gigabit-ethernet-/i, "ge-"]];
+  function shortIf(n) {
+    if (!n) return "";
+    for (var i = 0; i < IF_SHORT.length; i++) if (IF_SHORT[i][0].test(n)) return n.replace(IF_SHORT[i][0], IF_SHORT[i][1]);
+    return n;
+  }
+  function status(v) { return v === true ? '<span class="dot up"></span>up' : v === false ? '<span class="dot down"></span>down' : "—"; }
+  function speed(m) { return !m ? "" : m >= 1000 ? (m / 1000) + " Gbps" : m + " Mbps"; }
+  function fmtDate(s) { try { return new Date(s).toLocaleString(); } catch (e) { return s || ""; } }
+
+  /* ------------------------------------------------------------------ tabela ordenável/filtrável */
+  function dataTable(container, columns, rows, opts) {
+    opts = opts || {};
+    var state = { sort: opts.sort !== undefined ? opts.sort : null, dir: 1, q: "" };
+    var bar = el("div", { class: "nt-filterbar" });
+    var input = el("input", { class: "nt-input", type: "search", placeholder: "Filtrar…", "aria-label": "Filtrar tabela" });
+    var count = el("span", { class: "nt-muted" });
+    bar.appendChild(input); bar.appendChild(count);
+    if (opts.extra) bar.appendChild(opts.extra);
+    var wrap = el("div", { class: "nt-tablewrap" });
+    var table = el("table", { class: "nt-table" });
+    wrap.appendChild(table);
+    container.appendChild(bar); container.appendChild(wrap);
+
+    function val(r, c) { return typeof c.get === "function" ? c.get(r) : r[c.key]; }
+    function render() {
+      var q = state.q.toLowerCase();
+      var list = rows.filter(function (r) {
+        if (!q) return true;
+        return columns.some(function (c) { var v = val(r, c); return v !== null && v !== undefined && String(v).toLowerCase().indexOf(q) >= 0; });
+      });
+      if (state.sort !== null) {
+        var c = columns[state.sort];
+        list.sort(function (a, b) {
+          var x = val(a, c), y = val(b, c);
+          if (typeof x === "number" && typeof y === "number") return (x - y) * state.dir;
+          return String(x === undefined || x === null ? "" : x).localeCompare(String(y === undefined || y === null ? "" : y), undefined, { numeric: true }) * state.dir;
+        });
+      }
+      var head = "<thead><tr>" + columns.map(function (c, i) {
+        var s = state.sort === i ? (state.dir > 0 ? "asc" : "desc") : "";
+        return '<th data-i="' + i + '"' + (s ? ' data-sort="' + s + '"' : "") + ">" + esc(c.title) + "</th>";
+      }).join("") + "</tr></thead>";
+      var body = "<tbody>" + list.map(function (r, i) {
+        return '<tr data-r="' + rows.indexOf(r) + '"' + (opts.onRow ? ' class="clickable"' : "") + ">" + columns.map(function (c) {
+          return "<td>" + (c.html ? c.html(r) : esc(val(r, c))) + "</td>";
+        }).join("") + "</tr>";
+      }).join("") + "</tbody>";
+      table.innerHTML = head + body;
+      count.textContent = list.length + " de " + rows.length;
+    }
+    table.addEventListener("click", function (e) {
+      var th = e.target.closest("th");
+      if (th) {
+        var i = +th.getAttribute("data-i");
+        state.dir = state.sort === i ? -state.dir : 1;
+        state.sort = i; render(); return;
+      }
+      var tr = e.target.closest("tr[data-r]");
+      if (tr && opts.onRow) opts.onRow(rows[+tr.getAttribute("data-r")]);
+    });
+    input.addEventListener("input", function () { state.q = input.value; render(); });
+    render();
+  }
+
+  /* ------------------------------------------------------------------ viewer */
+  function mount(root, data, opts) {
+    opts = opts || {};
+    root.innerHTML = "";
+    var devices = data.devices || {};
+    var links = data.links || [];
+    var meta = data.meta || {};
+    var stats = meta.stats || {};
+    var devList = Object.keys(devices).map(function (k) { return devices[k]; });
+    var failed = meta.failed_targets || {};
+    var view = null;
+
+    /* cabeçalho */
+    if (opts.header !== false) {
+      var head = el("div", { class: "nt-head" });
+      var title = el("div", null, "<h1>" + esc(meta.name || "Topologia de rede") + "</h1>" +
+        '<div class="nt-sub">Descoberta a partir de <span class="nt-mono">' + esc((meta.seeds || []).join(", ")) +
+        "</span> · " + esc(fmtDate(meta.finished_at || meta.started_at)) +
+        (stats.duration_s !== undefined ? " · " + esc(stats.duration_s) + " s" : "") + " · NetTopo " + esc(meta.tool_version || "") + "</div>");
+      var st = el("div", { class: "nt-stats" });
+      [["collected", "coletados"], ["stubs", "vistos por vizinhos"], ["physical_links", "links físicos"],
+       ["l3_links", "links L3"], ["interfaces", "interfaces"]].forEach(function (p) {
+        st.appendChild(el("div", { class: "nt-stat" }, "<b>" + esc(stats[p[0]] || 0) + "</b><span>" + p[1] + "</span>"));
+      });
+      st.appendChild(el("div", { class: "nt-stat" }, "<b>" + Object.keys(stats.by_vendor || {}).filter(function (v) { return v !== "Desconhecido"; }).length + "</b><span>fabricantes</span>"));
+      if (stats.failed_targets) st.appendChild(el("div", { class: "nt-stat err" }, "<b>" + stats.failed_targets + "</b><span>falhas</span>"));
+      head.appendChild(title); head.appendChild(st);
+      root.appendChild(head);
+    }
+
+    /* abas */
+    var tabs = [
+      ["diagram", "Diagrama"], ["inventory", "Inventário", devList.length], ["links", "Links", links.length],
+      ["interfaces", "Interfaces"], ["vlans", "VLANs"], ["neighbors", "Vizinhos"], ["routing", "IPs & Rotas"]
+    ];
+    if (Object.keys(failed).length) tabs.push(["failures", "Falhas", Object.keys(failed).length]);
+    var tabbar = el("div", { class: "nt-tabs", role: "tablist" });
+    var panels = {};
+    var built = {};
+    tabs.forEach(function (t, i) {
+      var b = el("button", { class: "nt-tab", role: "tab", "aria-selected": i === 0 ? "true" : "false", "data-tab": t[0] },
+        esc(t[1]) + (t[2] !== undefined ? '<span class="nt-count">' + t[2] + "</span>" : ""));
+      b.addEventListener("click", function () { show(t[0]); });
+      tabbar.appendChild(b);
+      var p = el("div", { class: "nt-panel", role: "tabpanel" });
+      p.hidden = i !== 0;
+      panels[t[0]] = p;
+    });
+    root.appendChild(tabbar);
+    Object.keys(panels).forEach(function (k) { root.appendChild(panels[k]); });
+
+    function show(name) {
+      Array.prototype.forEach.call(tabbar.children, function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === name ? "true" : "false"); });
+      Object.keys(panels).forEach(function (k) { panels[k].hidden = k !== name; });
+      if (!built[name]) { builders[name](panels[name]); built[name] = true; }
+      if (name === "diagram" && view) view.cy.resize();
+    }
+
+    function devName(id) { var d = devices[id]; return d ? (d.hostname || d.mgmt_ip || d.id) : id; }
+    function openDevice(id) { show("diagram"); if (view) view.focus(id); renderDetail(id, "node"); }
+
+    /* painel de detalhe */
+    var detail, diagramBox;
+    function kv(pairs) {
+      return '<dl class="nt-kv">' + pairs.filter(function (p) { return p[1] !== null && p[1] !== undefined && p[1] !== ""; })
+        .map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd>" + (p[2] ? p[1] : esc(p[1])) + "</dd>"; }).join("") + "</dl>";
+    }
+    function renderDetail(id, kind) {
+      if (!detail) return;
+      if (!id) { detail.innerHTML = '<div class="nt-empty">Clique em um equipamento ou link para ver os detalhes.</div>'; return; }
+      if (kind === "edge") {
+        var l = links.filter(function (x) { return x.id === id; })[0];
+        if (!l) return;
+        detail.innerHTML = "<h2>Link " + esc(l.id) + "</h2>" +
+          '<span class="nt-badge">' + esc(KIND_PT[l.kind] || l.kind) + "</span>" +
+          kv([["Origem", devName(l.source)], ["Interface", l.source_interface], ["Destino", devName(l.target)],
+              ["Interface", l.target_interface], ["Protocolos", (l.protocols || []).join(", ")], ["Sub-rede", l.subnet],
+              ["Velocidade", speed(l.speed_mbps)], ["Agregação", l.lag]]);
+        return;
+      }
+      var d = devices[id];
+      if (!d) return;
+      var h = "<h2>" + esc(d.hostname || d.mgmt_ip || d.id) + "</h2>";
+      h += '<span class="nt-badge">' + esc(ROLE_PT[d.role] || d.role) + "</span>";
+      if (d.tier) h += '<span class="nt-badge">' + esc(TIER_PT[d.tier] || d.tier) + "</span>";
+      h += d.stub ? '<span class="nt-badge stub">não coletado</span>' : '<span class="nt-badge ok">coletado</span>';
+      h += "<h3>Identificação</h3>" + kv([
+        ["IP gerência", d.mgmt_ip], ["Fabricante", d.vendor], ["Sistema", d.os], ["Versão", d.os_version],
+        ["Modelo", d.model], ["Serial", d.serial], ["Uptime", d.uptime], ["Local", d.location], ["Contato", d.contact],
+        ["Chassis MAC", d.chassis_id], ["Coletado via", (d.collected_via || []).join(", ")],
+        ["Descoberto por", d.discovered_from ? devName(d.discovered_from) : ""],
+        ["Descrição", d.sys_description]]);
+      var lk = links.filter(function (x) { return x.source === id || x.target === id; });
+      if (lk.length) {
+        h += "<h3>Conexões (" + lk.length + ")</h3><table class='nt-table'><tr><th>Local</th><th>Vizinho</th><th>Remota</th></tr>" +
+          lk.map(function (x) {
+            var me = x.source === id, other = me ? x.target : x.source;
+            return "<tr title='" + esc((x.protocols || []).join(", ")) + "'><td class='nt-mono'>" + esc(shortIf(me ? x.source_interface : x.target_interface)) +
+              "</td><td><a href='#' data-dev='" + esc(other) + "'>" + esc(devName(other)) + "</a></td><td class='nt-mono'>" +
+              esc(shortIf(me ? x.target_interface : x.source_interface)) + "</td></tr>";
+          }).join("") + "</table>";
+      }
+      var ifs = (d.interfaces || []).filter(function (i) { return (i.ipv4 && i.ipv4.length) || i.oper_up || i.description; });
+      if (ifs.length) {
+        h += "<h3>Interfaces (" + ifs.length + " de " + (d.interfaces || []).length + ")</h3><table class='nt-table'><tr><th>Nome</th><th>IP</th><th>Status</th><th>Vel.</th></tr>" +
+          ifs.slice(0, 80).map(function (i) {
+            return "<tr><td class='nt-mono' title='" + esc(i.description) + "'>" + esc(shortIf(i.name)) + "</td><td class='nt-mono'>" + esc((i.ipv4 || []).join(" ")) +
+              "</td><td>" + status(i.oper_up) + "</td><td>" + esc(speed(i.speed_mbps)) + "</td></tr>";
+          }).join("") + "</table>";
+      }
+      if (d.vlans && d.vlans.length) h += "<h3>VLANs</h3><div>" + d.vlans.map(function (v) { return '<span class="nt-badge">' + v.id + (v.name ? " " + esc(v.name) : "") + "</span>"; }).join("") + "</div>";
+      if (d.errors && d.errors.length) h += "<h3>Avisos</h3><ul>" + d.errors.map(function (e) { return "<li class='nt-muted'>" + esc(e) + "</li>"; }).join("") + "</ul>";
+      detail.innerHTML = h;
+    }
+
+    var builders = {
+      diagram: function (p) {
+        if (typeof cytoscape === "undefined" || !window.TopoView) {
+          p.innerHTML = '<div class="nt-empty">Não foi possível carregar o Cytoscape.js (sem acesso à internet?). As abas de documentação continuam disponíveis.</div>';
+          return;
+        }
+        diagramBox = el("div", { class: "nt-diagram" });
+        var wrap = el("div", { class: "nt-canvas-wrap" });
+        var canvas = el("div", { class: "nt-canvas" });
+        var tb = el("div", { class: "nt-toolbar" });
+        var search = el("input", { class: "nt-input", type: "search", placeholder: "Buscar host, IP, modelo…", "aria-label": "Buscar" });
+        var layout = el("select", { class: "nt-select", "aria-label": "Layout" },
+          '<option value="hierarchical">Hierárquico</option><option value="cose">Orgânico</option>' +
+          '<option value="breadthfirst">Árvore</option><option value="concentric">Concêntrico</option>');
+        var filters = { kinds: { physical: true, l3: true, logical: true }, showStubs: true, showLabels: true };
+        function toggle(label, get, set) {
+          var id = "t" + Math.random().toString(36).slice(2);
+          var t = el("label", { class: "nt-toggle", for: id }, '<input type="checkbox" id="' + id + '"' + (get() ? " checked" : "") + "> " + esc(label));
+          t.querySelector("input").addEventListener("change", function (e) { set(e.target.checked); view.setFilter(filters); });
+          return t;
+        }
+        tb.appendChild(search); tb.appendChild(layout);
+        tb.appendChild(toggle("L3", function () { return true; }, function (v) { filters.kinds.l3 = v; }));
+        tb.appendChild(toggle("Roteamento", function () { return true; }, function (v) { filters.kinds.logical = v; }));
+        tb.appendChild(toggle("Não coletados", function () { return true; }, function (v) { filters.showStubs = v; }));
+        tb.appendChild(toggle("Portas", function () { return true; }, function (v) { filters.showLabels = v; }));
+        var fit = el("button", { class: "nt-btn", type: "button" }, "Ajustar");
+        var png = el("button", { class: "nt-btn", type: "button" }, "PNG");
+        var det = el("button", { class: "nt-btn", type: "button", title: "Mostrar/ocultar painel" }, "Painel");
+        tb.appendChild(fit); tb.appendChild(png); tb.appendChild(det);
+        var legend = el("div", { class: "nt-legend" });
+        var roles = {};
+        devList.forEach(function (d) { roles[d.role] = true; });
+        var lg = (data.graph.legend || {}).roles || {};
+        legend.innerHTML = '<div class="row">' + Object.keys(lg).filter(function (r) { return roles[r]; }).map(function (r) {
+          return '<span class="it"><img alt="" src="' + lg[r].icon + '">' + esc(lg[r].label) + "</span>";
+        }).join("") + '</div><div class="row" style="margin-top:4px"><span class="it"><span class="ln"></span>Físico</span>' +
+          '<span class="it"><span class="ln l3"></span>L3</span><span class="it"><span class="ln logical"></span>Roteamento</span>' +
+          '<span class="it nt-muted">tracejado/itálico = não coletado</span></div>';
+        wrap.appendChild(canvas); wrap.appendChild(tb); wrap.appendChild(legend);
+        detail = el("div", { class: "nt-detail" });
+        diagramBox.appendChild(wrap); diagramBox.appendChild(detail);
+        p.appendChild(diagramBox);
+        view = window.TopoView.create(canvas, data.graph, { onSelect: renderDetail });
+        renderDetail(null);
+        search.addEventListener("input", function () { view.search(search.value); });
+        layout.addEventListener("change", function () { view.setLayout(layout.value); });
+        fit.addEventListener("click", function () { view.fit(); });
+        det.addEventListener("click", function () { diagramBox.classList.toggle("nodetail"); setTimeout(function () { view.cy.resize(); }, 50); });
+        png.addEventListener("click", function () {
+          var a = document.createElement("a");
+          a.href = view.png(); a.download = (meta.name || "topologia").replace(/\W+/g, "_") + ".png"; a.click();
+        });
+        detail.addEventListener("click", function (e) {
+          var a = e.target.closest("[data-dev]");
+          if (a) { e.preventDefault(); openDevice(a.getAttribute("data-dev")); }
+        });
+        if (window.matchMedia) {
+          window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { view.refreshTheme(); });
+        }
+      },
+      inventory: function (p) {
+        dataTable(p, [
+          { title: "Hostname", get: function (d) { return d.hostname || d.id; } },
+          { title: "IP", key: "mgmt_ip" },
+          { title: "Papel", get: function (d) { return ROLE_PT[d.role] || d.role; } },
+          { title: "Camada", get: function (d) { return TIER_PT[d.tier] || d.tier || ""; } },
+          { title: "Fabricante", key: "vendor" }, { title: "Sistema", key: "os" }, { title: "Versão", key: "os_version" },
+          { title: "Modelo", key: "model" }, { title: "Serial", key: "serial" },
+          { title: "Coleta", get: function (d) { return d.stub ? "vizinho" : (d.collected_via || []).join(", "); } },
+          { title: "Interfaces", get: function (d) { return (d.interfaces || []).length; } }
+        ], devList, { onRow: function (d) { openDevice(d.id); }, sort: 0 });
+      },
+      links: function (p) {
+        dataTable(p, [
+          { title: "ID", key: "id" }, { title: "Origem", get: function (l) { return devName(l.source); } },
+          { title: "Interface", key: "source_interface" }, { title: "Destino", get: function (l) { return devName(l.target); } },
+          { title: "Interface", key: "target_interface" }, { title: "Tipo", get: function (l) { return KIND_PT[l.kind] || l.kind; } },
+          { title: "Protocolos", get: function (l) { return (l.protocols || []).join(", "); } },
+          { title: "Velocidade", get: function (l) { return speed(l.speed_mbps); } }, { title: "Sub-rede", key: "subnet" },
+          { title: "LAG", key: "lag" }
+        ], links, { onRow: function (l) { show("diagram"); if (view) { view.focus(l.source); renderDetail(l.id, "edge"); } } });
+      },
+      interfaces: function (p) {
+        var rows = [];
+        devList.forEach(function (d) { if (!d.stub) (d.interfaces || []).forEach(function (i) { rows.push(Object.assign({ dev: d.hostname || d.id, devId: d.id }, i)); }); });
+        dataTable(p, [
+          { title: "Equipamento", key: "dev" }, { title: "Interface", key: "name" }, { title: "Descrição", key: "description" },
+          { title: "IPv4", get: function (i) { return (i.ipv4 || []).join(" "); } },
+          { title: "Admin", get: function (i) { return i.admin_up === true ? "up" : i.admin_up === false ? "down" : ""; } },
+          { title: "Oper", get: function (i) { return i.oper_up === true ? "up" : i.oper_up === false ? "down" : ""; }, html: function (i) { return status(i.oper_up); } },
+          { title: "Velocidade", get: function (i) { return speed(i.speed_mbps); } }, { title: "MTU", key: "mtu" },
+          { title: "MAC", key: "mac" }, { title: "LAG", key: "parent" }, { title: "VLAN", key: "access_vlan" }
+        ], rows, { onRow: function (i) { openDevice(i.devId); } });
+      },
+      vlans: function (p) {
+        var map = {};
+        devList.forEach(function (d) { (d.vlans || []).forEach(function (v) {
+          var m = map[v.id] || (map[v.id] = { id: v.id, names: {}, devs: [] });
+          if (v.name) m.names[v.name] = true; m.devs.push(d.hostname || d.id);
+        }); });
+        var rows = Object.keys(map).map(function (k) { var m = map[k]; return { id: m.id, name: Object.keys(m.names).join(" / "), count: m.devs.length, devs: m.devs.join(", ") }; });
+        if (!rows.length) { p.innerHTML = '<div class="nt-empty">Nenhuma VLAN coletada.</div>'; return; }
+        dataTable(p, [{ title: "VLAN", key: "id" }, { title: "Nome", key: "name" }, { title: "Equipamentos", key: "count" },
+          { title: "Presente em", key: "devs" }], rows, { sort: 0 });
+      },
+      neighbors: function (p) {
+        var rows = [];
+        devList.forEach(function (d) { (d.neighbors || []).forEach(function (n) { rows.push(Object.assign({ dev: d.hostname || d.id, devId: d.id }, n)); }); });
+        dataTable(p, [
+          { title: "Equipamento", key: "dev" }, { title: "Protocolo", key: "protocol" }, { title: "Interface local", key: "local_interface" },
+          { title: "Vizinho", key: "remote_hostname" }, { title: "Interface remota", key: "remote_interface" },
+          { title: "IP", key: "remote_mgmt_ip" }, { title: "Plataforma", key: "remote_platform" },
+          { title: "Capacidades", get: function (n) { return (n.remote_capabilities || []).join(", "); } },
+          { title: "ASN", key: "remote_asn" }, { title: "Estado", key: "state" }
+        ], rows, { onRow: function (n) { openDevice(n.devId); } });
+      },
+      routing: function (p) {
+        var ips = [];
+        devList.forEach(function (d) { (d.interfaces || []).forEach(function (i) { (i.ipv4 || []).forEach(function (a) {
+          ips.push({ ip: a, dev: d.hostname || d.id, devId: d.id, itf: i.name, desc: i.description, vrf: i.vrf });
+        }); }); });
+        p.appendChild(el("h3", null, "Endereçamento IPv4"));
+        dataTable(p, [{ title: "Endereço", key: "ip" }, { title: "Equipamento", key: "dev" }, { title: "Interface", key: "itf" },
+          { title: "VRF", key: "vrf" }, { title: "Descrição", key: "desc" }], ips, { onRow: function (r) { openDevice(r.devId); } });
+        var routes = [];
+        devList.forEach(function (d) { (d.routes || []).forEach(function (r) { routes.push(Object.assign({ dev: d.hostname || d.id }, r)); }); });
+        p.appendChild(el("h3", { style: "margin-top:22px" }, "Tabela de rotas"));
+        dataTable(p, [{ title: "Equipamento", key: "dev" }, { title: "Prefixo", key: "prefix" }, { title: "Next-hop", key: "next_hop" },
+          { title: "Interface", key: "interface" }, { title: "Protocolo", key: "protocol" }, { title: "VRF", key: "vrf" }], routes);
+      },
+      failures: function (p) {
+        var rows = Object.keys(failed).map(function (k) { return { target: k, reason: failed[k] }; });
+        dataTable(p, [{ title: "Alvo", key: "target" }, { title: "Motivo", key: "reason" }], rows);
+      }
+    };
+    builders.diagram(panels.diagram);
+    built.diagram = true;
+    // Deep-link: #tab=inventory ou #device=<id>
+    if (opts.deepLink !== false) {
+      var tabMatch = /tab=(\w+)/.exec(location.hash), devMatch = /device=([^&]+)/.exec(location.hash);
+      if (devMatch && devices[decodeURIComponent(devMatch[1])]) setTimeout(function () { openDevice(decodeURIComponent(devMatch[1])); }, 0);
+      else if (tabMatch && panels[tabMatch[1]]) show(tabMatch[1]);
+    }
+    return { show: show, openDevice: openDevice, view: function () { return view; },
+      destroy: function () { if (view) view.destroy(); root.innerHTML = ""; } };
+  }
+
+  window.NetTopoViewer = { mount: mount, esc: esc };
+})();
+
+</script>
+<script>
+  (function () {
+    var data = JSON.parse(document.getElementById("nettopo-data").textContent);
+    window.NetTopoViewer.mount(document.getElementById("nettopo-root"), data);
+  })();
+</script>
+</body>
+</html>

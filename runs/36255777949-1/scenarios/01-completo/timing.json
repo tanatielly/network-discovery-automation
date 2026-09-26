@@ -1,0 +1,6 @@
+{
+  "id": "01-completo",
+  "title": "Completo (REST > NETCONF > SSH + SNMP), semente única, sem DNS",
+  "status": "ok",
+  "duration_s": 24.6
+}

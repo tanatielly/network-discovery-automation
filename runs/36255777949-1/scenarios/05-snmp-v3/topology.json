@@ -1,0 +1,1041 @@
+{
+  "meta": {
+    "name": "Lab NetTopo - Containerlab",
+    "seeds": [
+      "172.20.20.2",
+      "172.20.20.11",
+      "172.20.20.12",
+      "172.20.20.21",
+      "172.20.20.22",
+      "172.20.20.31",
+      "172.20.20.41",
+      "172.20.20.42"
+    ],
+    "started_at": "2026-09-26T16:39:06.039961Z",
+    "finished_at": "2026-09-26T16:39:16.935023Z",
+    "tool_version": "0.1.0",
+    "max_depth": 6,
+    "stats": {
+      "devices": 7,
+      "collected": 4,
+      "stubs": 3,
+      "links": 5,
+      "physical_links": 5,
+      "l3_links": 0,
+      "logical_links": 0,
+      "interfaces": 14,
+      "failed_targets": 4,
+      "by_vendor": {
+        "Linux": 4,
+        "Nokia": 2,
+        "MikroTik": 1
+      },
+      "by_role": {
+        "router": 3,
+        "server": 2,
+        "l3switch": 2
+      },
+      "duration_s": 10.9
+    },
+    "failed_targets": {
+      "172.20.20.21": "nenhum método funcionou",
+      "172.20.20.22": "nenhum método funcionou",
+      "172.20.20.12": "nenhum método funcionou",
+      "172.20.20.11": "nenhum método funcionou"
+    },
+    "settings": {
+      "name": "Lab NetTopo - Containerlab",
+      "seeds": [
+        "172.20.20.2",
+        "172.20.20.11",
+        "172.20.20.12",
+        "172.20.20.21",
+        "172.20.20.22",
+        "172.20.20.31",
+        "172.20.20.41",
+        "172.20.20.42"
+      ],
+      "scope": {
+        "include": [
+          "172.20.20.0/24",
+          "10.0.0.0/8",
+          "192.168.0.0/16"
+        ],
+        "exclude": [],
+        "hostname_exclude": []
+      },
+      "max_depth": 6,
+      "max_devices": 2000,
+      "concurrency": 16,
+      "timeout": 8,
+      "snmp_retries": 1,
+      "methods": [
+        "snmp"
+      ],
+      "snmp_complement": true,
+      "dns_resolve": true,
+      "infer_l3_links": true,
+      "credentials": [
+        {
+          "name": "snmp-v3",
+          "type": "snmp",
+          "username": "nettopo",
+          "password": null,
+          "enable_secret": null,
+          "port": null,
+          "version": "3",
+          "community": null,
+          "auth_protocol": "sha",
+          "auth_key": "***",
+          "priv_protocol": "aes",
+          "priv_key": "***",
+          "context": null,
+          "token": null,
+          "verify_ssl": false,
+          "https": true
+        }
+      ],
+      "follow": {
+        "lldp": true,
+        "cdp": true,
+        "other_l2": true,
+        "routing": true,
+        "arp": false
+      },
+      "collect": {
+        "interfaces": true,
+        "arp": true,
+        "routes": true,
+        "vlans": true,
+        "mac_table": false,
+        "routing_neighbors": true,
+        "route_limit": 5000
+      }
+    }
+  },
+  "devices": {
+    "isp-pe": {
+      "id": "isp-pe",
+      "hostname": "isp-pe",
+      "mgmt_ip": "172.20.20.2",
+      "vendor": "Linux",
+      "os": "Linux (lldpd)",
+      "profile": "linux",
+      "model": null,
+      "os_version": "6.17.0-1022-azure",
+      "serial": null,
+      "uptime": "0d 0h 3m",
+      "chassis_id": "aa:c1:ab:7c:4c:59",
+      "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
+      "sys_description": "Linux isp-pe 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64",
+      "location": "Containerlab NetTopo Lab",
+      "contact": "lab@nettopo.local",
+      "role": "server",
+      "tier": "endpoint",
+      "reachable": true,
+      "stub": false,
+      "collected_via": [
+        "snmp"
+      ],
+      "interfaces": [
+        {
+          "name": "lo",
+          "description": null,
+          "mac": null,
+          "ipv4": [
+            "127.0.0.1/8"
+          ],
+          "speed_mbps": 10,
+          "mtu": 65536,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 1,
+          "if_type": "24",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth0",
+          "description": null,
+          "mac": "c6:3b:e4:39:d8:97",
+          "ipv4": [
+            "172.20.20.2/24"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 1500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 2,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth1",
+          "description": null,
+          "mac": "aa:c1:ab:7c:4c:59",
+          "ipv4": [
+            "200.200.10.1/30"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 9500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 32,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        }
+      ],
+      "neighbors": [
+        {
+          "protocol": "lldp",
+          "local_interface": "eth1",
+          "remote_hostname": "edge-mk1",
+          "remote_interface": "ether2",
+          "remote_mgmt_ip": "200.200.10.2",
+          "remote_platform": "MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR",
+          "remote_description": "MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR",
+          "remote_chassis_id": "0c:00:80:50:4d:03",
+          "remote_capabilities": [
+            "router"
+          ],
+          "remote_asn": null,
+          "state": null
+        },
+        {
+          "protocol": "bgp",
+          "local_interface": null,
+          "remote_hostname": null,
+          "remote_interface": null,
+          "remote_mgmt_ip": "200.200.10.2",
+          "remote_platform": null,
+          "remote_description": null,
+          "remote_chassis_id": null,
+          "remote_capabilities": [],
+          "remote_asn": 65001,
+          "state": "established"
+        }
+      ],
+      "vlans": [],
+      "arp": [
+        {
+          "ip": "172.20.20.1",
+          "mac": "12:72:54:fa:30:6d",
+          "interface": "eth0"
+        },
+        {
+          "ip": "200.200.10.2",
+          "mac": "0c:00:b2:69:a7:01",
+          "interface": "eth1"
+        }
+      ],
+      "routes": [
+        {
+          "prefix": "0.0.0.0/0",
+          "next_hop": "172.20.20.1",
+          "interface": "eth0",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "172.20.20.0/24",
+          "next_hop": null,
+          "interface": "eth0",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "200.200.10.0/30",
+          "next_hop": null,
+          "interface": "eth1",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "203.0.113.0/24",
+          "next_hop": null,
+          "interface": null,
+          "protocol": "connected",
+          "vrf": null
+        }
+      ],
+      "mac_table": [],
+      "errors": [],
+      "discovered_from": null,
+      "depth": 0,
+      "extra": {
+        "fingerprint": "snmp"
+      }
+    },
+    "srv1": {
+      "id": "srv1",
+      "hostname": "srv1",
+      "mgmt_ip": "172.20.20.41",
+      "vendor": "Linux",
+      "os": "Linux (lldpd)",
+      "profile": "linux",
+      "model": null,
+      "os_version": "6.17.0-1022-azure",
+      "serial": null,
+      "uptime": "0d 0h 3m",
+      "chassis_id": "aa:c1:ab:d1:17:db",
+      "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
+      "sys_description": "Linux srv1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64",
+      "location": "Containerlab NetTopo Lab",
+      "contact": "lab@nettopo.local",
+      "role": "router",
+      "tier": "edge",
+      "reachable": true,
+      "stub": false,
+      "collected_via": [
+        "snmp"
+      ],
+      "interfaces": [
+        {
+          "name": "lo",
+          "description": null,
+          "mac": null,
+          "ipv4": [
+            "127.0.0.1/8"
+          ],
+          "speed_mbps": 10,
+          "mtu": 65536,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 1,
+          "if_type": "24",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth0",
+          "description": null,
+          "mac": "b2:b1:43:2d:eb:d1",
+          "ipv4": [
+            "172.20.20.41/24"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 1500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 2,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth1",
+          "description": null,
+          "mac": "aa:c1:ab:d1:17:db",
+          "ipv4": [
+            "192.168.10.10/24"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 9500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 23,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        }
+      ],
+      "neighbors": [
+        {
+          "protocol": "lldp",
+          "local_interface": "eth1",
+          "remote_hostname": "dist-frr1",
+          "remote_interface": "eth3",
+          "remote_mgmt_ip": "172.20.20.31",
+          "remote_platform": "Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64",
+          "remote_description": "Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64",
+          "remote_chassis_id": "aa:c1:ab:85:43:5f",
+          "remote_capabilities": [
+            "router"
+          ],
+          "remote_asn": null,
+          "state": null
+        }
+      ],
+      "vlans": [],
+      "arp": [
+        {
+          "ip": "172.20.20.1",
+          "mac": "12:72:54:fa:30:6d",
+          "interface": "eth0"
+        }
+      ],
+      "routes": [
+        {
+          "prefix": "0.0.0.0/0",
+          "next_hop": "172.20.20.1",
+          "interface": "eth0",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "172.20.20.0/24",
+          "next_hop": null,
+          "interface": "eth0",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "192.168.10.0/24",
+          "next_hop": null,
+          "interface": "eth1",
+          "protocol": "connected",
+          "vrf": null
+        }
+      ],
+      "mac_table": [],
+      "errors": [],
+      "discovered_from": null,
+      "depth": 0,
+      "extra": {
+        "fingerprint": "snmp",
+        "capabilities": [
+          "router"
+        ]
+      }
+    },
+    "dist-frr1": {
+      "id": "dist-frr1",
+      "hostname": "dist-frr1",
+      "mgmt_ip": "172.20.20.31",
+      "vendor": "Linux",
+      "os": "Linux (lldpd)",
+      "profile": "linux",
+      "model": null,
+      "os_version": "6.17.0-1022-azure",
+      "serial": null,
+      "uptime": "0d 0h 3m",
+      "chassis_id": "aa:c1:ab:85:43:5f",
+      "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
+      "sys_description": "Linux dist-frr1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64",
+      "location": "Containerlab NetTopo Lab",
+      "contact": "lab@nettopo.local",
+      "role": "router",
+      "tier": "edge",
+      "reachable": true,
+      "stub": false,
+      "collected_via": [
+        "snmp"
+      ],
+      "interfaces": [
+        {
+          "name": "lo",
+          "description": null,
+          "mac": null,
+          "ipv4": [
+            "127.0.0.1/8"
+          ],
+          "speed_mbps": 10,
+          "mtu": 65536,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 1,
+          "if_type": "24",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth0",
+          "description": null,
+          "mac": "fa:41:09:24:5d:63",
+          "ipv4": [
+            "172.20.20.31/24"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 1500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 2,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth1",
+          "description": null,
+          "mac": "aa:c1:ab:85:43:5f",
+          "ipv4": [
+            "10.10.3.2/30"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 9500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 17,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth2",
+          "description": null,
+          "mac": "aa:c1:ab:c7:46:0d",
+          "ipv4": [
+            "10.10.4.2/30"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 9500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 19,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth3",
+          "description": null,
+          "mac": "aa:c1:ab:b4:cb:17",
+          "ipv4": [
+            "192.168.10.1/24"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 9500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 22,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        }
+      ],
+      "neighbors": [
+        {
+          "protocol": "lldp",
+          "local_interface": "eth3",
+          "remote_hostname": "srv1",
+          "remote_interface": "eth1",
+          "remote_mgmt_ip": "172.20.20.41",
+          "remote_platform": "Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64",
+          "remote_description": "Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64",
+          "remote_chassis_id": "aa:c1:ab:d1:17:db",
+          "remote_capabilities": [
+            "router"
+          ],
+          "remote_asn": null,
+          "state": null
+        },
+        {
+          "protocol": "lldp",
+          "local_interface": "eth1",
+          "remote_hostname": "core-srl1",
+          "remote_interface": "ethernet-1/3",
+          "remote_mgmt_ip": "172.20.20.21",
+          "remote_platform": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+          "remote_description": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+          "remote_chassis_id": "1a:9f:00:ff:00:00",
+          "remote_capabilities": [
+            "router"
+          ],
+          "remote_asn": null,
+          "state": null
+        },
+        {
+          "protocol": "lldp",
+          "local_interface": "eth2",
+          "remote_hostname": "core-srl2",
+          "remote_interface": "ethernet-1/3",
+          "remote_mgmt_ip": "172.20.20.22",
+          "remote_platform": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+          "remote_description": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+          "remote_chassis_id": "1a:ad:01:ff:00:00",
+          "remote_capabilities": [
+            "router"
+          ],
+          "remote_asn": null,
+          "state": null
+        }
+      ],
+      "vlans": [],
+      "arp": [
+        {
+          "ip": "172.20.20.1",
+          "mac": "12:72:54:fa:30:6d",
+          "interface": "eth0"
+        }
+      ],
+      "routes": [
+        {
+          "prefix": "0.0.0.0/0",
+          "next_hop": "172.20.20.1",
+          "interface": "eth0",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "10.10.3.0/30",
+          "next_hop": null,
+          "interface": "eth1",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "10.10.4.0/30",
+          "next_hop": null,
+          "interface": "eth2",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "172.20.20.0/24",
+          "next_hop": null,
+          "interface": "eth0",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "192.168.10.0/24",
+          "next_hop": null,
+          "interface": "eth3",
+          "protocol": "connected",
+          "vrf": null
+        }
+      ],
+      "mac_table": [],
+      "errors": [],
+      "discovered_from": null,
+      "depth": 0,
+      "extra": {
+        "fingerprint": "snmp",
+        "capabilities": [
+          "router"
+        ]
+      }
+    },
+    "srv2": {
+      "id": "srv2",
+      "hostname": "srv2",
+      "mgmt_ip": "172.20.20.42",
+      "vendor": "Linux",
+      "os": "Linux (lldpd)",
+      "profile": "linux",
+      "model": null,
+      "os_version": "6.17.0-1022-azure",
+      "serial": null,
+      "uptime": "0d 0h 3m",
+      "chassis_id": "aa:c1:ab:9b:4b:34",
+      "sys_object_id": "1.3.6.1.4.1.8072.3.2.10",
+      "sys_description": "Linux srv2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64",
+      "location": "Containerlab NetTopo Lab",
+      "contact": "lab@nettopo.local",
+      "role": "server",
+      "tier": "endpoint",
+      "reachable": true,
+      "stub": false,
+      "collected_via": [
+        "snmp"
+      ],
+      "interfaces": [
+        {
+          "name": "lo",
+          "description": null,
+          "mac": null,
+          "ipv4": [
+            "127.0.0.1/8"
+          ],
+          "speed_mbps": 10,
+          "mtu": 65536,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 1,
+          "if_type": "24",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth0",
+          "description": null,
+          "mac": "ba:f0:33:65:d4:02",
+          "ipv4": [
+            "172.20.20.42/24"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 1500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 2,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "eth1",
+          "description": null,
+          "mac": "aa:c1:ab:9b:4b:34",
+          "ipv4": [
+            "192.168.20.10/24"
+          ],
+          "speed_mbps": 10000,
+          "mtu": 9500,
+          "admin_up": true,
+          "oper_up": true,
+          "if_index": 35,
+          "if_type": "6",
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        }
+      ],
+      "neighbors": [
+        {
+          "protocol": "lldp",
+          "local_interface": "eth1",
+          "remote_hostname": "core-srl2",
+          "remote_interface": "ethernet-1/4",
+          "remote_mgmt_ip": "172.20.20.22",
+          "remote_platform": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+          "remote_description": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+          "remote_chassis_id": "1a:ad:01:ff:00:00",
+          "remote_capabilities": [
+            "router"
+          ],
+          "remote_asn": null,
+          "state": null
+        }
+      ],
+      "vlans": [],
+      "arp": [
+        {
+          "ip": "172.20.20.1",
+          "mac": "12:72:54:fa:30:6d",
+          "interface": "eth0"
+        }
+      ],
+      "routes": [
+        {
+          "prefix": "0.0.0.0/0",
+          "next_hop": "172.20.20.1",
+          "interface": "eth0",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "172.20.20.0/24",
+          "next_hop": null,
+          "interface": "eth0",
+          "protocol": "connected",
+          "vrf": null
+        },
+        {
+          "prefix": "192.168.20.0/24",
+          "next_hop": null,
+          "interface": "eth1",
+          "protocol": "connected",
+          "vrf": null
+        }
+      ],
+      "mac_table": [],
+      "errors": [],
+      "discovered_from": null,
+      "depth": 0,
+      "extra": {
+        "fingerprint": "snmp"
+      }
+    },
+    "stub-edge-mk1": {
+      "id": "stub-edge-mk1",
+      "hostname": "edge-mk1",
+      "mgmt_ip": "200.200.10.2",
+      "vendor": "MikroTik",
+      "os": "RouterOS",
+      "profile": "mikrotik_routeros",
+      "model": "MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR",
+      "os_version": null,
+      "serial": null,
+      "uptime": null,
+      "chassis_id": "0c:00:80:50:4d:03",
+      "sys_object_id": null,
+      "sys_description": "MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR",
+      "location": null,
+      "contact": null,
+      "role": "router",
+      "tier": "edge",
+      "reachable": false,
+      "stub": true,
+      "collected_via": [
+        "visto via lldp"
+      ],
+      "interfaces": [
+        {
+          "name": "ether2",
+          "description": null,
+          "mac": null,
+          "ipv4": [],
+          "speed_mbps": null,
+          "mtu": null,
+          "admin_up": null,
+          "oper_up": null,
+          "if_index": null,
+          "if_type": null,
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        }
+      ],
+      "neighbors": [],
+      "vlans": [],
+      "arp": [],
+      "routes": [],
+      "mac_table": [],
+      "errors": [],
+      "discovered_from": null,
+      "depth": 0,
+      "extra": {
+        "capabilities": [
+          "router"
+        ]
+      }
+    },
+    "stub-core-srl1": {
+      "id": "stub-core-srl1",
+      "hostname": "core-srl1",
+      "mgmt_ip": "172.20.20.21",
+      "vendor": "Nokia",
+      "os": "SR Linux",
+      "profile": "nokia_srl",
+      "model": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+      "os_version": null,
+      "serial": null,
+      "uptime": null,
+      "chassis_id": "1a:9f:00:ff:00:00",
+      "sys_object_id": null,
+      "sys_description": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+      "location": null,
+      "contact": null,
+      "role": "l3switch",
+      "tier": "access",
+      "reachable": false,
+      "stub": true,
+      "collected_via": [
+        "visto via lldp"
+      ],
+      "interfaces": [
+        {
+          "name": "ethernet-1/3",
+          "description": null,
+          "mac": null,
+          "ipv4": [],
+          "speed_mbps": null,
+          "mtu": null,
+          "admin_up": null,
+          "oper_up": null,
+          "if_index": null,
+          "if_type": null,
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        }
+      ],
+      "neighbors": [],
+      "vlans": [],
+      "arp": [],
+      "routes": [],
+      "mac_table": [],
+      "errors": [],
+      "discovered_from": null,
+      "depth": 0,
+      "extra": {
+        "capabilities": [
+          "router"
+        ]
+      }
+    },
+    "stub-core-srl2": {
+      "id": "stub-core-srl2",
+      "hostname": "core-srl2",
+      "mgmt_ip": "172.20.20.22",
+      "vendor": "Nokia",
+      "os": "SR Linux",
+      "profile": "nokia_srl",
+      "model": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+      "os_version": null,
+      "serial": null,
+      "uptime": null,
+      "chassis_id": "1a:ad:01:ff:00:00",
+      "sys_object_id": null,
+      "sys_description": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+      "location": null,
+      "contact": null,
+      "role": "l3switch",
+      "tier": "access",
+      "reachable": false,
+      "stub": true,
+      "collected_via": [
+        "visto via lldp"
+      ],
+      "interfaces": [
+        {
+          "name": "ethernet-1/3",
+          "description": null,
+          "mac": null,
+          "ipv4": [],
+          "speed_mbps": null,
+          "mtu": null,
+          "admin_up": null,
+          "oper_up": null,
+          "if_index": null,
+          "if_type": null,
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        },
+        {
+          "name": "ethernet-1/4",
+          "description": null,
+          "mac": null,
+          "ipv4": [],
+          "speed_mbps": null,
+          "mtu": null,
+          "admin_up": null,
+          "oper_up": null,
+          "if_index": null,
+          "if_type": null,
+          "mode": null,
+          "access_vlan": null,
+          "trunk_vlans": null,
+          "parent": null,
+          "vrf": null
+        }
+      ],
+      "neighbors": [],
+      "vlans": [],
+      "arp": [],
+      "routes": [],
+      "mac_table": [],
+      "errors": [],
+      "discovered_from": null,
+      "depth": 0,
+      "extra": {
+        "capabilities": [
+          "router"
+        ]
+      }
+    }
+  },
+  "links": [
+    {
+      "id": "L1",
+      "source": "isp-pe",
+      "source_interface": "eth1",
+      "target": "stub-edge-mk1",
+      "target_interface": "ether2",
+      "protocols": [
+        "lldp",
+        "bgp"
+      ],
+      "kind": "physical",
+      "subnet": "200.200.10.0/30",
+      "speed_mbps": 10000,
+      "lag": null
+    },
+    {
+      "id": "L2",
+      "source": "srv1",
+      "source_interface": "eth1",
+      "target": "dist-frr1",
+      "target_interface": "eth3",
+      "protocols": [
+        "lldp"
+      ],
+      "kind": "physical",
+      "subnet": "192.168.10.0/24",
+      "speed_mbps": 10000,
+      "lag": null
+    },
+    {
+      "id": "L3",
+      "source": "dist-frr1",
+      "source_interface": "eth1",
+      "target": "stub-core-srl1",
+      "target_interface": "ethernet-1/3",
+      "protocols": [
+        "lldp"
+      ],
+      "kind": "physical",
+      "subnet": "10.10.3.0/30",
+      "speed_mbps": 10000,
+      "lag": null
+    },
+    {
+      "id": "L4",
+      "source": "dist-frr1",
+      "source_interface": "eth2",
+      "target": "stub-core-srl2",
+      "target_interface": "ethernet-1/3",
+      "protocols": [
+        "lldp"
+      ],
+      "kind": "physical",
+      "subnet": "10.10.4.0/30",
+      "speed_mbps": 10000,
+      "lag": null
+    },
+    {
+      "id": "L5",
+      "source": "srv2",
+      "source_interface": "eth1",
+      "target": "stub-core-srl2",
+      "target_interface": "ethernet-1/4",
+      "protocols": [
+        "lldp"
+      ],
+      "kind": "physical",
+      "subnet": "192.168.20.0/24",
+      "speed_mbps": 10000,
+      "lag": null
+    }
+  ]
+}
