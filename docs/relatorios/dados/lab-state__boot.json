@@ -1,0 +1,13 @@
+{
+  "ssh_ready_s": {
+    "isp-pe": 0.0,
+    "edge-mk1": 0.2,
+    "edge-mk2": 0.4,
+    "core-srl1": 0.0,
+    "core-srl2": 0.0,
+    "dist-frr1": 0.0,
+    "srv1": 0.0,
+    "srv2": 0.0
+  },
+  "total_ready_s": 38.3
+}

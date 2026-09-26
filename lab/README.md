@@ -44,7 +44,7 @@ As senhas nos arquivos são as padrão de laboratório (containerlab / imagens d
 
 - **No GitHub:** aba *Actions* → *Simulação em laboratório (Containerlab)* → *Run workflow*.
   Também roda a cada push em `lab/`, `src/` ou no próprio workflow (~15 min).
-- **Resultados:** artefato `lab-results` do run e branch [`lab-results`](../../tree/lab-results)
+- **Resultados:** artefato `lab-results` do run e branch [`lab-results`](https://github.com/tanatielly/network-discovery-automation/tree/lab-results)
   (`runs/<id>/`: logs por etapa, saídas brutas, cenários, `metrics.json`, capturas de tela).
 - **Métricas localmente** (sobre resultados baixados): `python lab/scripts/score.py <pasta-do-run>`.
 - **Numa máquina Linux com Docker e KVM:** siga os passos do workflow
