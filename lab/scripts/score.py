@@ -68,12 +68,20 @@ def score(topo: Topology, truth: dict[str, Any], events: list[dict[str, Any]]) -
     truth_pairs = {frozenset((a, b)) for a, _, b, _ in truth["links"]}
     phys = [lk for lk in topo.links if lk.kind == "physical"]
     pair_hits, exact_hits, false_links = set(), set(), []
+    per_pair: Counter[frozenset[str]] = Counter()
+    expected_per_pair = Counter(frozenset((a, b)) for a, _, b, _ in truth["links"])
     for lk in phys:
         a, b = mapping.get(lk.source), mapping.get(lk.target)
+        desc = f"{a or lk.source}:{lk.source_interface} <-> {b or lk.target}:{lk.target_interface}"
         if not a or not b or frozenset((a, b)) not in truth_pairs:
-            false_links.append(f"{a or lk.source}:{lk.source_interface} <-> {b or lk.target}:{lk.target_interface}")
+            false_links.append(desc)
             continue
-        pair_hits.add(frozenset((a, b)))
+        pair = frozenset((a, b))
+        per_pair[pair] += 1
+        if per_pair[pair] > expected_per_pair[pair]:  # link a mais entre o mesmo par (duplicado/gerência)
+            false_links.append(desc + " (a mais)")
+            continue
+        pair_hits.add(pair)
         key = frozenset(((a, ifname_key(lk.source_interface)), (b, ifname_key(lk.target_interface))))
         if key in truth_links:
             exact_hits.add(key)

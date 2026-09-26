@@ -33,6 +33,9 @@ topology:
         SSH_USER: ispadmin
         SSH_PASS: "Isp#Secret-2026"
         SNMP_COMMUNITY: isp-secret
+        SNMPV3_USER: ispmon
+        SNMPV3_AUTH: "isp-auth-2026"
+        SNMPV3_PRIV: "isp-priv-2026"
       binds:
         - configs/isp-pe/frr.conf:/etc/frr/frr.conf
       exec:
