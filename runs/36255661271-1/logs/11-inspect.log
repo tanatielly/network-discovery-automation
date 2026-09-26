@@ -1,0 +1,7 @@
+16:30:33 INFO Parsing & checking topology file=nettopo-lab.clab.yml
+          
+   ERROR  
+          
+  Failed to list containers based on topology: could not get container for node clab-nettopo-dist-frr1: Node: clab-   
+  nettopo-dist-frr1. containers not found.                                                                            
+

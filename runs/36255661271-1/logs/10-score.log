@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/runner/work/network-discovery-automation/network-discovery-automation/lab/scripts/score.py", line 15, in <module>
+    import yaml
+ModuleNotFoundError: No module named 'yaml'
