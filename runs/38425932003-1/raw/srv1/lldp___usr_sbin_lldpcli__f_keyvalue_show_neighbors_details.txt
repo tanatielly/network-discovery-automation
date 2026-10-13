@@ -1,0 +1,2 @@
+
+-bash: /usr/sbin/lldpcli: Permission denied
