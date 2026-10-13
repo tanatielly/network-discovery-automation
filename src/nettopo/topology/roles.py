@@ -124,6 +124,17 @@ def assign_tiers(topo: Topology) -> None:
             downstream = [n for n in adj[s] & switching if level.get(n, 99) > lv]
             devs[s].tier = "distribution" if downstream else "access"
 
+    # Roteador interno (ex.: Linux/FRR entre o núcleo e os servidores) não é borda: sem vizinho
+    # roteador/firewall/externo, ligado ao núcleo e servindo endpoints vai para a distribuição.
+    endpoint_roles = {"server", "ap", "phone", "unknown", "wireless_controller"}
+    for i, d in devs.items():
+        if d.role != "router" or d.stub:
+            continue
+        roles = {devs[n].role for n in adj[i]}
+        if (not roles & {"router", "firewall", "external"} and adj[i] & core
+                and roles & endpoint_roles):
+            d.tier = "distribution"
+
 
 def _external_stubs(topo: Topology) -> None:
     """Roteadores não coletados pendurados na borda (ex.: PE da operadora) vão para a camada externa."""

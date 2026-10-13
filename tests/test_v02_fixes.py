@@ -347,3 +347,22 @@ def test_light_check_skips_session_when_saved_port_is_closed(monkeypatch):
     monkeypatch.setattr(orch_mod, "scan_ports", open_ssh)
     asyncio.run(orch.light_check("10.0.0.9", access))
     assert calls == ["ssh"]  # controle: com a porta aberta a checagem leve usa o acesso salvo
+
+
+def test_internal_router_between_core_and_servers_is_distribution_not_edge():
+    from nettopo.models import Link, Topology
+    from nettopo.topology.roles import assign_tiers
+
+    roles = {"edge": "router", "isp": "router", "c1": "l3switch", "c2": "l3switch", "frr": "router",
+             "srv": "server", "rt-only-core": "router"}
+    topo = Topology(meta=DiscoveryMeta(seeds=["10.0.0.1"]))
+    for i, r in roles.items():
+        topo.devices[i] = Device(id=i, hostname=i, role=r, stub=(i == "isp"))
+    for a, b in [("isp", "edge"), ("edge", "c1"), ("c1", "c2"), ("c1", "frr"), ("c2", "frr"), ("frr", "srv"),
+                 ("rt-only-core", "c2")]:
+        topo.links.append(Link(id=f"{a}-{b}", source=a, target=b))
+    assign_tiers(topo)
+    tiers = {i: d.tier for i, d in topo.devices.items()}
+    assert tiers["frr"] == "distribution" and tiers["edge"] == "edge"
+    assert tiers["c1"] == "core" and tiers["srv"] == "endpoint"
+    assert tiers["rt-only-core"] == "edge"  # sem endpoints: pode ser a borda com a operadora invisível

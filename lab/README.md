@@ -47,6 +47,9 @@ As senhas nos arquivos são as padrão de laboratório (containerlab / imagens d
 | `rapida` | a cada push em `lab/`, `src/` ou no workflow | semente única; semente + varredura (cria a memória); segunda execução com memória; só SSH; só SNMP; APIs; falha injetada + `verificar`; restauração |
 | `completa` | todo dia às 06:00 (Brasília), manual ou num push com `[lab completa]` na mensagem do commit | a rápida + DNS, credenciais erradas primeiro, escopo, sequencial, SNMPv3, carga conservadora, determinismo, API/UI com cofre, CLI |
 
+Tempo típico do job com a imagem do CHR em cache: rápida ~7 min (8 cenários), completa ~13 min (17 cenários +
+testes, cobertura, mypy e bandit). Sem cache, o build do CHR soma ~4 min uma única vez.
+
 O job **falha se qualquer cenário tiver um erro**: link falso, duplicado ou faltando, porta errada,
 equipamento duplicado/inesperado, fabricante ou papel errado, adjacência OSPF/BGP não detectada,
 coleta repetida, memória que não reaproveitou, evento esperado ausente, carga acima do limite ou
