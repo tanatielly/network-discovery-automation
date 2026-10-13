@@ -195,3 +195,11 @@ figcaption { margin-top: 8px; font-size: 13px; color: var(--muted); max-width: 9
   .shot img { max-height: 120mm; width: auto; margin: 0 auto; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* Antes x depois e observações em células */
+.compare th, .compare td { vertical-align: top; }
+.compare .before { color: var(--muted); font: 500 13px/1.35 var(--font-mono); }
+.compare .after { color: var(--ink); font: 600 13px/1.35 var(--font-mono); }
+.compare .arrow { color: var(--accent); padding-left: 0; padding-right: 0; }
+td.note { font-size: 12.5px; line-height: 1.35; color: var(--muted); min-width: 22ch; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

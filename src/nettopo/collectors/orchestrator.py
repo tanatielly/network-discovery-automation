@@ -9,7 +9,7 @@ from nettopo import ratelimit
 from nettopo.collectors.base import MethodResult
 from nettopo.collectors.netconf import NetconfCollector
 from nettopo.collectors.rest import RestCollector
-from nettopo.collectors.snmp import SnmpCollector, to_text
+from nettopo.collectors.snmp import SnmpCollector, covered_groups, to_text
 from nettopo.collectors.ssh import SSHCollector
 from nettopo.config import Credential, Settings
 from nettopo.discovery.fingerprint import PORTS, Fingerprint, read_ssh_banner, scan_ports
@@ -38,13 +38,26 @@ class Orchestrator:
         self._creds: dict[str, list[Credential]] = {
             t: settings.creds(t) for t in ("ssh", "snmp", "netconf", "rest")
         }
+        # credencial que funcionou por (método, perfil): numa rede multi-vendor a última que funcionou no
+        # geral pode ser de outro fabricante; esta vai primeiro e evita falhas de login (bloqueio no AAA)
+        self._good: dict[tuple[str, str], Credential] = {}
         self.throttles = ratelimit.ThrottleRegistry(settings.carga)
 
-    def _promote(self, kind: str, cred: Credential | None) -> None:
+    def _promote(self, kind: str, cred: Credential | None, profile_id: str | None = None) -> None:
         lst = self._creds.get(kind, [])
         if cred is not None and cred in lst and lst[0] is not cred:
             lst.remove(cred)
             lst.insert(0, cred)
+        if cred is not None and profile_id:
+            self._good[(kind, profile_id)] = cred
+
+    def _ordered(self, kind: str, profile_id: str | None, first: Credential | None = None) -> list[Credential]:
+        creds = list(self._creds.get(kind, []))
+        for c in reversed([c for c in (first, self._good.get((kind, profile_id or ""))) if c is not None]):
+            if c in creds:
+                creds.remove(c)
+                creds.insert(0, c)
+        return creds
 
     async def fingerprint(self, target: str) -> Fingerprint:
         fp = Fingerprint(target=target)
@@ -112,10 +125,8 @@ class Orchestrator:
             if method == "ssh" and (not self._creds["ssh"] or PORTS["ssh"] not in fp.open_ports):
                 continue
             collector: Any = {"rest": self.rest, "netconf": self.netconf, "ssh": self.ssh}[method]
-            creds = list(self._creds[method])
-            if method == "ssh" and fp.ssh_cred in creds:
-                creds.remove(fp.ssh_cred)
-                creds.insert(0, fp.ssh_cred)
+            creds = self._ordered(method, profile.id if profile else None,
+                                  fp.ssh_cred if method == "ssh" else None)
             try:
                 res = await collector.collect(target, profile, creds)
             except Exception as exc:  # proteção contra bugs de drivers
@@ -123,14 +134,15 @@ class Orchestrator:
                 res = MethodResult(method=method, errors=[f"{method}: {type(exc).__name__}: {exc}"])
             errors.extend(res.errors if not res.ok else [])
             if res.ok:
-                self._promote(method, res.credential)
+                self._promote(method, res.credential, profile.id if profile else None)
                 primary = res
                 break
 
         snmp_res: MethodResult | None = None
         if fp.snmp_cred and (primary is None or self.settings.snmp_complement):
             try:
-                snmp_res = await self.snmp.collect(target, profile, [fp.snmp_cred], system=fp.system)
+                skip = covered_groups(primary.device) if primary and primary.device else None
+                snmp_res = await self.snmp.collect(target, profile, [fp.snmp_cred], system=fp.system, skip=skip)
             except Exception as exc:
                 log.exception("SNMP falhou em %s", target)
                 errors.append(f"snmp: {type(exc).__name__}: {exc}")
@@ -202,6 +214,8 @@ class Orchestrator:
                     res = await collector.collect(target, profile, [cred], light=True)
                 except Exception:
                     log.debug("checagem leve %s falhou em %s", method, target, exc_info=True)
+                if res is not None and res.ok:
+                    self._promote(method, cred, profile.id)  # recoleta, se houver, já começa por ela
         if (res is None or not res.ok) and access.get("snmp"):
             cred = self._find_cred("snmp", access.get("snmp"))
             if cred is not None:

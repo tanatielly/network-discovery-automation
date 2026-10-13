@@ -27,6 +27,18 @@ methods: [rest, netconf, ssh, snmp]
 snmp_complement: true
 dns_resolve: true     # resolve hostnames de vizinhos sem IP de gerência
 infer_l3_links: true  # cria links L3 a partir de sub-redes /30 e /31 compartilhadas
+# ignore_interfaces: "^(mgmt|management|fxp0|me0|ma\\d)"   # LLDP recebido aqui é ignorado (gerência)
+
+# Rate limit por equipamento: conservador | equilibrado | rapido (+ ajustes por rede/fabricante)
+carga:
+  perfil: equilibrado
+  overrides: []
+  #  - {fabricante: hp_procurve, perfil: conservador}
+  #  - {cidr: 10.20.0.0/16, intervalo_min_ms: 1000, sessoes_por_equipamento: 1}
+
+# Varredura opcional das redes de gerência (acha equipamentos que ninguém anuncia)
+varredura: []
+#  - 10.0.0.0/24
 
 follow:               # fontes que alimentam a fila de descoberta
   lldp: true
@@ -45,7 +57,11 @@ collect:
   route_limit: 5000
 
 # Credenciais testadas em ordem; a que funcionar é priorizada nos próximos equipamentos.
+# Prefira o cofre: `nettopo cred add <nome> ...` e aqui `- ref: <nome>`, ou usar_cofre: true.
+usar_cofre: false
 credentials:
+  # - ref: ssh-noc            # credencial guardada no cofre
+
   - name: ssh-admin
     type: ssh
     username: ${NETTOPO_SSH_USER:-admin}

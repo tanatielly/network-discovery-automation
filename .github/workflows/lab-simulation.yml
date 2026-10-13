@@ -1,6 +1,7 @@
 name: Simulação em laboratório (Containerlab)
 
-# Suíte rápida a cada push; suíte completa todo dia às 06:00 (Brasília) e sob demanda.
+# Suíte rápida a cada push; suíte completa todo dia às 06:00 (Brasília), sob demanda (Run workflow)
+# ou num push cuja mensagem de commit contenha "[lab completa]".
 on:
   workflow_dispatch:
     inputs:
@@ -22,7 +23,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: lab-simulation-${{ github.event_name == 'push' && 'rapida' || 'completa' }}
+  group: lab-simulation-${{ github.event_name == 'push' && 'push' || 'completa' }}
   cancel-in-progress: ${{ github.event_name == 'push' }}
 
 env:
@@ -31,7 +32,8 @@ env:
   CHR_VERSION: "7.16.2"
   PYTHONUNBUFFERED: "1"
   LOGS: lab-results/logs
-  SUITE: ${{ github.event_name == 'push' && 'rapida' || inputs.suite || 'completa' }}
+  SUITE: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '[lab completa]')
+    && 'rapida' || inputs.suite || 'completa' }}
   IMAGE_CACHE: /tmp/image-cache
 
 jobs:

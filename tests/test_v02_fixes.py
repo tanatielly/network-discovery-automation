@@ -274,3 +274,35 @@ def test_l3_inference_ignores_interfaces_down():
     assert not build_topology({"a": a, "b": b}).links
     b.interfaces[0].oper_up = True
     assert [lk.kind for lk in build_topology({"a": a, "b": b}).links] == ["l3"]
+
+
+# --------------------------------------------------------------------------- desempenho / carga
+
+def test_snmp_complement_skips_what_primary_method_already_collected():
+    from nettopo.collectors.snmp import covered_groups
+
+    dev = Device(hostname="r1", interfaces=[Interface(name="eth1")],
+                 neighbors=[Neighbor(protocol="lldp", remote_hostname="r2"),
+                            Neighbor(protocol="bgp", remote_mgmt_ip="10.0.0.2")])
+    dev.extra["routing_daemons"] = ["bgpd"]
+    assert covered_groups(dev) == {"interfaces", "lldp", "routing_neighbors", "processes"}
+    assert "cdp" not in covered_groups(dev)  # LLDP lido não dispensa CDP
+    assert covered_groups(Device()) == set()
+
+
+def test_credential_that_worked_for_a_vendor_goes_first():
+    from nettopo.collectors.orchestrator import Orchestrator
+    from nettopo.config import Credential
+
+    s = Settings.model_validate({"seeds": ["10.0.0.1"], "credentials": [
+        {"type": "ssh", "name": "mk", "username": "admin", "password": "x"},
+        {"type": "ssh", "name": "linux", "username": "nettopo", "password": "y"}]})
+    orch = Orchestrator(s)
+    linux = next(c for c in s.creds("ssh") if c.name == "linux")
+    mk = next(c for c in s.creds("ssh") if c.name == "mk")
+    orch._promote("ssh", linux, "linux")
+    orch._promote("ssh", mk, "mikrotik_routeros")  # a última no geral é a do MikroTik...
+    assert [c.name for c in orch._ordered("ssh", "linux")] == ["linux", "mk"]  # ...mas Linux começa pela dele
+    assert [c.name for c in orch._ordered("ssh", None)] == ["mk", "linux"]
+    first = Credential(type="ssh", name="fp", username="u", password="p")
+    assert orch._ordered("ssh", "linux", first)[0].name == "linux"  # credencial fora da lista é ignorada

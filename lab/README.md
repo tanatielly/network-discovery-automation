@@ -34,18 +34,35 @@ As senhas nos arquivos são as padrão de laboratório (containerlab / imagens d
 | `nettopo-lab.clab.yml` | Topologia Containerlab |
 | `configs/` | Configuração de cada equipamento (SR Linux `.cfg`, MikroTik `.rsc`, FRR) |
 | `images/linux-net/` | Imagem Linux com FRR, lldpd, net-snmp e OpenSSH |
-| `ground_truth.yaml` | Gabarito: o que a ferramenta deveria encontrar |
+| `ground_truth.yaml` | Gabarito: o que a ferramenta deve encontrar, com expectativa por cenário |
 | `scripts/configure.py` | Espera o boot, garante a configuração e registra o estado real |
 | `scripts/dump_raw.py` | Saídas brutas dos comandos + matriz de parsing |
-| `scripts/run_scenarios.py` | 12 cenários (métodos, credenciais, escopo, falha, API/UI, CLI) |
-| `scripts/score.py` | Compara cada descoberta com o gabarito → `metrics.json` |
+| `scripts/run_scenarios.py` | Cenários das suítes `rapida` e `completa` |
+| `scripts/score.py` | Conta os erros de cada cenário contra o gabarito → `metrics.json`, `summary.md` |
+
+## Suítes e critério de aceite
+
+| Suíte | Quando | Cenários |
+|---|---|---|
+| `rapida` | a cada push em `lab/`, `src/` ou no workflow | semente única; semente + varredura (cria a memória); segunda execução com memória; só SSH; só SNMP; APIs; falha injetada + `verificar`; restauração |
+| `completa` | todo dia às 06:00 (Brasília), manual ou num push com `[lab completa]` na mensagem do commit | a rápida + DNS, credenciais erradas primeiro, escopo, sequencial, SNMPv3, carga conservadora, determinismo, API/UI com cofre, CLI |
+
+O job **falha se qualquer cenário tiver um erro**: link falso, duplicado ou faltando, porta errada,
+equipamento duplicado/inesperado, fabricante ou papel errado, adjacência OSPF/BGP não detectada,
+coleta repetida, memória que não reaproveitou, evento esperado ausente, carga acima do limite ou
+resultado diferente entre execuções. Um equipamento que nenhuma informação disponível permite
+alcançar (ex.: `edge-mk2` anunciado só pelo IP de trânsito, sem DNS nem memória) deve aparecer como
+"não coletado" **com o motivo** — isso está no gabarito e não conta como erro.
+
+A falha injetada congela o `srv2` (`docker pause`) e derruba o link `core-srl2`–`dist-frr1`; o LLDP
+do lab anuncia a cada 5 s (TTL 20 s) para que a mudança apareça rápido.
 
 ## Como executar
 
-- **No GitHub:** aba *Actions* → *Simulação em laboratório (Containerlab)* → *Run workflow*.
-  Também roda a cada push em `lab/`, `src/` ou no próprio workflow (~15 min).
+- **No GitHub:** aba *Actions* → *Simulação em laboratório (Containerlab)* → *Run workflow*
+  (escolha a suíte). A imagem do MikroTik CHR fica em cache entre execuções.
 - **Resultados:** artefato `lab-results` do run e branch [`lab-results`](https://github.com/tanatielly/network-discovery-automation/tree/lab-results)
   (`runs/<id>/`: logs por etapa, saídas brutas, cenários, `metrics.json`, capturas de tela).
-- **Métricas localmente** (sobre resultados baixados): `python lab/scripts/score.py <pasta-do-run>`.
+- **Métricas localmente** (sobre resultados baixados): `python lab/scripts/score.py <pasta-do-run> [--strict]`.
 - **Numa máquina Linux com Docker e KVM:** siga os passos do workflow
   `.github/workflows/lab-simulation.yml` (containerlab, build do CHR, `containerlab deploy`, scripts).

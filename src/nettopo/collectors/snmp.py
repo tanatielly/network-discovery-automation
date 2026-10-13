@@ -17,7 +17,7 @@ from typing import Any
 from nettopo import ratelimit
 from nettopo.collectors.base import MethodResult
 from nettopo.config import CollectOptions, Credential, Settings
-from nettopo.models import ArpEntry, Device, Interface, MacEntry, Neighbor, Route, Vlan
+from nettopo.models import ROUTING_PROTOCOLS, ArpEntry, Device, Interface, MacEntry, Neighbor, Route, Vlan
 from nettopo.utils import canonical_ifname, mask_to_prefix, normalize_mac, parse_ipv4
 from nettopo.vendors.registry import VendorProfile, VendorRegistry
 
@@ -147,6 +147,33 @@ def to_text(value: Any) -> str | None:
             return s.strip()
         return raw.hex(":") if raw else None
     return str(value).strip()
+
+
+def covered_groups(device: Device) -> set[str]:
+    """Grupos SNMP que o método principal (REST/NETCONF/SSH) já trouxe.
+
+    O complemento SNMP não percorre essas tabelas de novo: menos requisições no equipamento (rate limit)
+    e coleta mais rápida. Cada protocolo de vizinhança conta separadamente (CDP lido não dispensa LLDP).
+    """
+    have: set[str] = set()
+    if any(i.name for i in device.interfaces):
+        have.add("interfaces")
+    protos = {n.protocol for n in device.neighbors}
+    if "lldp" in protos:
+        have.add("lldp")
+    if "cdp" in protos:
+        have.add("cdp")
+    if protos & ROUTING_PROTOCOLS:
+        have.add("routing_neighbors")
+    for group, items in (("arp", device.arp), ("routes", device.routes), ("vlans", device.vlans),
+                         ("mac_table", device.mac_table)):
+        if items:
+            have.add(group)
+    if device.serial and device.model:
+        have.add("entity")
+    if device.extra.get("routing_daemons") is not None:
+        have.add("processes")
+    return have
 
 
 def id_value(subtype: int | None, value: Any) -> str | None:
@@ -599,7 +626,9 @@ class SnmpCollector:
         return None
 
     async def collect(self, target: str, profile: VendorProfile | None, credentials: list[Credential],
-                      system: dict[str, Any] | None = None, light: bool = False) -> MethodResult:
+                      system: dict[str, Any] | None = None, light: bool = False,
+                      skip: set[str] | None = None) -> MethodResult:
+        """Coleta por SNMP. ``skip``: grupos que o método principal já trouxe (complemento enxuto)."""
         res = MethodResult(method=self.name)
         if not credentials:
             res.errors.append("snmp: nenhuma credencial")
@@ -626,7 +655,10 @@ class SnmpCollector:
             groups.append("mac_table")
         if profile is None or profile.category == "server":
             groups.append("processes")
+        groups = [g for g in groups if g not in (skip or set())]
         columns = [c for g in groups for c in GROUPS[g]]
+        if "interfaces" not in groups and {"lldp", "cdp", "arp", "routes", "mac_table"} & set(groups):
+            columns = ["ifDescr", "ifName"] + columns  # ifIndex -> nome, para as tabelas que citam portas
         if light:  # revalidação: nomes de interface + vizinhança
             columns = ["ifName"] + GROUPS["lldp"] + GROUPS["cdp"]
         sess = SnmpSession(target, cred, timeout=self.settings.timeout, retries=self.settings.snmp_retries,
@@ -644,7 +676,7 @@ class SnmpCollector:
                         log.debug("walk %s em %s: %s", col, target, exc)
 
             await asyncio.gather(*(one(c) for c in columns))
-            if opts.routes and not light and not walks.get("ipCidrRouteIfIndex"):
+            if "routes" in groups and not light and not walks.get("ipCidrRouteIfIndex"):
                 await asyncio.gather(*(one(c) for c in GROUPS["routes_legacy"]))
         finally:
             sess.close()

@@ -16,6 +16,11 @@ pelas adjacências OSPF/BGP, coleta os dados de cada equipamento e gera:
 Inclui uma **API REST + interface web** para disparar descobertas, acompanhar o
 progresso em tempo real e baixar os resultados.
 
+Desde a 0.2 a ferramenta **lembra da rede**: cada descoberta grava um inventário local e, na
+próxima execução, confirma rapidamente que cada equipamento continua ativo e com os mesmos
+vizinhos, recoletando só o que mudou. Tem **rate limit por equipamento** (para não sobrecarregar
+equipamentos antigos) e um **cofre local** para as credenciais.
+
 ## Instalação
 
 ```bash
@@ -44,9 +49,16 @@ Outros comandos:
 
 | Comando | Descrição |
 |---|---|
+| `nettopo verificar -c config.yaml` | Só confirma o inventário conhecido (ativo, mudou ou inacessível), sem seguir vizinhos novos |
+| `nettopo inventario` | Lista o inventário com status, última confirmação e eventos recentes |
+| `nettopo cred add\|list\|remove\|import` | Gerencia o cofre de credenciais |
 | `nettopo vendors` | Lista fabricantes suportados e métodos de coleta |
 | `nettopo report snapshot.json -o out/` | Regenera diagramas/documentação a partir do JSON |
 | `nettopo diff antes.json depois.json` | Mostra equipamentos e links adicionados/removidos/alterados |
+
+Opções úteis do `discover`: `--carga conservador|equilibrado|rapido`, `--completo` (recoleta
+tudo, ignorando dados já confirmados), `--sem-memoria` (não lê nem grava o inventário) e
+`--dados DIR` (onde ficam inventário e cofre; padrão `NETTOPO_DATA` ou `./nettopo_data`).
 
 Também funciona com `python -m nettopo ...`.
 
@@ -65,15 +77,71 @@ semente ─► fingerprint ─► coleta ─► normalização ─► fila BFS (
 3. **Normalização** – saídas CLI são interpretadas por parsers próprios, templates
    TextFSM do *ntc-templates* ou parsers genéricos tolerantes; tudo vira o mesmo modelo
    (`Device`, `Interface`, `Neighbor`, `Link`...).
-4. **Descoberta recursiva** – vizinhos com IP de gerência dentro do escopo entram na
-   fila (BFS com profundidade máxima e concorrência configurável). Hostnames sem IP são
-   resolvidos via DNS.
-5. **Grafo** – deduplicação por serial / MAC do chassis / hostname / IPs; links
-   bidirecionais consolidados; vizinhos não acessíveis viram nós "não coletados";
-   links L3 inferidos por sub-redes /30-/31; adjacências OSPF/BGP; LAGs e velocidades.
+4. **Descoberta recursiva** – vizinhos dentro do escopo entram na fila (BFS com profundidade
+   máxima e concorrência configurável). Cada vizinho tem uma lista de **IPs candidatos**,
+   tentados em ordem: inventário/memória → IP anunciado → DNS do hostname → IP pelo MAC do
+   chassis nas tabelas ARP já coletadas. IPs sem resposta ficam num cache negativo (6 h).
+5. **Grafo** – deduplicação por serial / MAC do chassis / hostname / IPs (séries genéricas de
+   VMs são ignoradas); cada ponta do link usa o nome de porta do próprio equipamento; LLDP
+   recebido em interface de gerência é ignorado; vizinhos não acessíveis viram nós "não
+   coletados" **com o motivo**; links L3 inferidos por sub-redes /30-/31; adjacências OSPF/BGP;
+   LAGs e velocidades. A ordem do grafo é determinística.
 6. **Classificação** – papel (roteador, switch L3, switch, firewall, AP, servidor,
    telefone, externo) e camada (borda, segurança, núcleo, distribuição, acesso,
    endpoints), usada no layout hierárquico dos diagramas.
+
+## Memória persistente e revalidação
+
+Toda descoberta grava o inventário no diretório de dados (equipamentos, links, acesso que
+funcionou e histórico). Na execução seguinte, antes de seguir vizinhos, o NetTopo faz uma
+**checagem leve** de cada equipamento conhecido usando o acesso salvo (identidade + lista de
+vizinhos LLDP/CDP):
+
+| Resultado da checagem | O que acontece |
+|---|---|
+| mesma identidade e mesmos vizinhos | dados reaproveitados, marcado "confirmado agora" |
+| vizinhança mudou ou dados com mais de 24 h | coleta completa |
+| não responde | nó "inacessível desde ..." (evento no histórico); volta a "ativo" quando responder |
+
+Equipamentos novos continuam sendo descobertos normalmente. `nettopo verificar` faz só a
+checagem (útil em agendamentos); o relatório HTML, a UI e o Excel mostram status e "verificado em".
+
+## Rate limit (carga nos equipamentos)
+
+```yaml
+carga:
+  perfil: equilibrado        # conservador | equilibrado | rapido
+  overrides:                 # mais cuidado com equipamentos antigos
+    - {fabricante: hp_procurve, perfil: conservador}
+    - {cidr: 10.20.0.0/16, intervalo_min_ms: 1000}
+```
+
+| Perfil | Intervalo entre requisições | Sessões por equipamento | SNMP (max-repetitions / walks) | Atraso SSH | Falhas de login | Equipamentos em paralelo |
+|---|---|---|---|---|---|---|
+| conservador | 500 ms | 1 | 10 / 1 | 1,0 s | 2 | 4 |
+| equilibrado (padrão) | 100 ms | 1 | 25 / 2 | 0,2 s | 3 | 16 |
+| rapido | 0 | 2 | 50 / 4 | 0 | 5 | 64 |
+
+O limite vale para SNMP (cada PDU), REST, NETCONF, comandos SSH, teste de portas e tentativas de
+login (para não bloquear a conta no AAA). A carga aplicada fica registrada em cada equipamento.
+
+## Cofre de credenciais
+
+```bash
+nettopo cred add ssh-noc --tipo ssh -u noc        # a senha é pedida sem eco
+nettopo cred add snmp-ro --tipo snmp --versao 2c
+nettopo cred import config.yaml                   # move as credenciais do YAML para o cofre
+```
+
+No config, use `credentials: [{ref: ssh-noc}]` ou `usar_cofre: true` (todas as do cofre). Os segredos
+ficam no cofre do sistema (Windows Credential Manager, Keychain, Secret Service) ou, sem ele, num
+arquivo cifrado (`vault.enc`, Fernet + scrypt) com a senha em `NETTOPO_VAULT_PASSWORD`. Nem o
+inventário nem os logs guardam segredos.
+
+## Varredura opcional
+
+`varredura: [10.0.0.0/24]` testa cada IP da rede de gerência (portas 22/80/443/830 e SNMP, com o
+rate limit) para achar equipamentos que nenhum vizinho anuncia com IP alcançável. Desligada por padrão.
 
 ## Fabricantes suportados
 
@@ -119,11 +187,15 @@ O NetTopo **não altera configuração** — apenas executa comandos de leitura.
 | `GET` | `/api/discoveries/{id}/view` | Dados do diagrama/documentação (JSON) |
 | `GET` | `/api/discoveries/{id}/export/{html\|drawio\|xlsx\|md\|json}` | Download |
 | `WS` | `/api/discoveries/{id}/events` | Progresso em tempo real |
+| `POST` | `/api/verify` | Só revalida o inventário conhecido |
+| `GET` | `/api/inventory` · `/api/inventory/events` | Inventário com status e histórico |
+| `GET` `POST` `DELETE` | `/api/credentials` | Cofre (nunca devolve segredos) |
 | `GET` | `/api/vendors` | Perfis suportados |
 
-As credenciais enviadas à API são usadas apenas em memória e **não são gravadas** no
-banco (SQLite em `./nettopo_data`, configurável por `NETTOPO_DATA`). Defina
-`NETTOPO_API_TOKEN` para exigir o cabeçalho `Authorization: Bearer <token>`.
+`POST /api/discoveries` aceita `?completo=true` e `?memoria=false`. Credenciais digitadas na UI
+são usadas apenas em memória; para reutilizá-las, salve no cofre. Dados em `./nettopo_data`
+(`NETTOPO_DATA`). Defina `NETTOPO_API_TOKEN` para exigir `Authorization: Bearer <token>` — o
+token é **obrigatório** para servir fora de `127.0.0.1`.
 
 ## Laboratório e avaliação
 

@@ -2,7 +2,9 @@
 
 Uso:
     python docs/relatorios/build.py <pasta-do-run>      # ex.: ../nettopo-results/runs/<id>
-    python docs/relatorios/build.py <pasta-do-run> --pdf
+    python docs/relatorios/build.py <pasta-do-run> --pdf --antes <pasta-do-run-anterior>
+
+``--antes`` carrega uma rodada anterior (ex.: a avaliação da v0.1.0) para as comparações "antes x depois".
 
 O Markdown é a fonte do texto. Marcadores ``<!-- viz:NOME -->`` viram visualizações geradas
 a partir de ``metrics.json`` e demais arquivos do run (a tabela equivalente fica no Markdown).
@@ -34,6 +36,23 @@ CHROME = [r"C:\Program Files\Google\Chrome\Application\chrome.exe",
           r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", "google-chrome", "chromium"]
 
 SCENARIO_LABELS = {
+    # v0.2
+    "01-semente-unica": "Semente única, sem DNS nem memória",
+    "02-varredura": "Semente única + varredura da gerência",
+    "03-memoria": "Segunda execução, usando a memória",
+    "04-ssh": "Somente SSH",
+    "05-snmp": "Somente SNMP v2c + varredura",
+    "06-apis": "APIs (REST, JSON-RPC, NETCONF)",
+    "07-dns": "Semente única + DNS",
+    "10-sequencial": "Inventário, 1 coleta por vez",
+    "11-snmpv3": "Somente SNMPv3",
+    "12-carga-conservadora": "Carga conservadora (500 ms, 1 sessão)",
+    "13-determinismo": "Repetição sem memória (determinismo)",
+    "14-falha-verificar": "Verificação após falha injetada",
+    "15-restaurado": "Verificação após restaurar",
+    "16-api-ui": "API, cofre e interface web",
+    "cli": "Comandos da CLI",
+    # v0.1 (08-credenciais-mistas e 09-escopo existem nas duas versões)
     "01-completo": "Semente única, todos os métodos",
     "02-completo-dns": "Semente única + DNS",
     "03-inventario": "Inventário de IPs de gerência",
@@ -50,18 +69,31 @@ SCENARIO_LABELS = {
 
 # --------------------------------------------------------------------------- dados
 
+API_DIRS = ("16-api-ui", "12-api-ui")  # v0.2, v0.1
+DIFF_FILES = ("14-falha-verificar/diff.json", "11-falha-injetada/diff.json")
+
+
+def norm_metrics(raw: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """(cenários, resumo) do metrics.json: na v0.1 os cenários ficam no topo; na v0.2 em ``scenarios``."""
+    if "scenarios" in raw:
+        return raw["scenarios"], {k: v for k, v in raw.items() if k != "scenarios"}
+    return raw, {}
+
+
 def load_run(run: Path) -> dict[str, Any]:
     def j(rel: str, default: Any = None) -> Any:
         p = run / rel
         return json.loads(p.read_text(encoding="utf-8")) if p.exists() else default
 
+    metrics, summary = norm_metrics(j("metrics.json", {}))
     data = {
-        "metrics": j("metrics.json", {}),
+        "metrics": metrics,
+        "summary": summary,
         "parse": j("raw/parse-matrix.json", {}),
         "boot": j("lab-state/boot.json", {}),
-        "api": j("scenarios/12-api-ui/timing.json", {}),
+        "api": next((x for x in (j(f"scenarios/{a}/timing.json") for a in API_DIRS) if x), {}),
         "cli": j("scenarios/cli/cli.json", {}),
-        "diff": j("scenarios/11-falha-injetada/diff.json", {}),
+        "diff": next((x for x in (j(f"scenarios/{f}") for f in DIFF_FILES) if x), {}),
         "coverage": j("quality/coverage.json", {}),
         "bandit": j("quality/bandit.json", {}),
         "run": run.name,
@@ -75,15 +107,24 @@ def load_run(run: Path) -> dict[str, Any]:
 def copy_data(run: Path) -> None:
     DATA.mkdir(parents=True, exist_ok=True)
     for rel in ("metrics.json", "summary.md", "raw/parse-matrix.json", "lab-state/boot.json",
-                "scenarios/12-api-ui/timing.json", "scenarios/cli/cli.json", "scenarios/11-falha-injetada/diff.json"):
+                "scenarios/cli/cli.json", *(f"scenarios/{a}/timing.json" for a in API_DIRS),
+                *(f"scenarios/{f}" for f in DIFF_FILES)):
         src = run / rel
         if src.exists():
             shutil.copy(src, DATA / rel.replace("/", "__"))
-    shots = run / "scenarios" / "12-api-ui" / "screenshots"
-    if shots.exists():
+    shots = next((run / "scenarios" / a / "screenshots" for a in API_DIRS
+                  if (run / "scenarios" / a / "screenshots").exists()), None)
+    if shots:
         (DATA / "screenshots").mkdir(exist_ok=True)
         for p in shots.glob("*.png"):
             shutil.copy(p, DATA / "screenshots" / p.name)
+
+
+def copy_before(run: Path) -> None:
+    """Rodada de referência ("antes"): só as métricas, em dados/antes__metrics.json."""
+    DATA.mkdir(parents=True, exist_ok=True)
+    if (run / "metrics.json").exists():
+        shutil.copy(run / "metrics.json", DATA / "antes__metrics.json")
 
 
 # --------------------------------------------------------------------------- visualizações
@@ -100,7 +141,12 @@ def bar(value: float, label: str, kind: str = "") -> str:
 
 
 def viz_kpis(d: dict[str, Any]) -> str:
-    """Faixa de indicadores: melhor configuração (07-apis) x padrão com semente única (01-completo)."""
+    """Faixa de indicadores. v0.2: tiles do front matter (``data.kpis``: [valor, rótulo, nota]);
+    v0.1: melhor configuração (07-apis) x padrão com semente única (01-completo)."""
+    if d.get("kpis"):
+        cells = "".join(f'<div class="kpi"><b>{html.escape(str(v))}</b><span class="kpi-l">{html.escape(lab)}</span>'
+                        f'<span class="kpi-n">{html.escape(n)}</span></div>' for v, lab, n in d["kpis"])
+        return f'<div class="kpis">{cells}</div>'
     best, default = d["metrics"].get("07-apis", {}), d["metrics"].get("01-completo", {})
     false_best = len(best.get("false_links", []))
     drawn = best.get("links_found", 0) + false_best
@@ -121,6 +167,8 @@ def viz_kpis(d: dict[str, Any]) -> str:
 
 
 def viz_scenarios(d: dict[str, Any]) -> str:
+    if d.get("summary"):
+        return viz_scenarios_v2(d)
     rows = []
     for sid, m in d["metrics"].items():
         label = SCENARIO_LABELS.get(sid, m.get("title", sid))
@@ -142,6 +190,51 @@ def viz_scenarios(d: dict[str, Any]) -> str:
             f"{html.escape(d['run'])}.</figcaption></figure>")
 
 
+def viz_scenarios_v2(d: dict[str, Any]) -> str:
+    rows = []
+    for sid, m in d["metrics"].items():
+        label = SCENARIO_LABELS.get(sid, m.get("title", sid))
+        errs = m.get("error_count", 0)
+        err_cell = ("<span class='chip ok'><span aria-hidden='true'>✓</span> 0</span>" if not errs else
+                    f"<span class='chip fail'><span aria-hidden='true'>✕</span> {errs}</span>")
+        if "nodes_collected" in m:
+            nodes = "{}/{}".format(m["nodes_collected"], m["nodes_expected_collected"])
+            links = "{}/{}".format(m["links_found"], m["links_expected"])
+            mem = m.get("memoria") or {}
+            mem_txt = (f"{mem.get('reaproveitados', 0)} confirmados · {mem.get('recoletados', 0)} recoletados"
+                       + (f" · {mem['inacessiveis']} inacessível" if mem.get("inacessiveis") else "")
+                       if mem.get("conhecidos") else "—")
+            cells = (f"<td>{bar(m['nodes_collected'] / max(1, m['nodes_expected_collected']), nodes)}</td>"
+                     f"<td>{bar(m['links_found'] / max(1, m['links_expected']), links)}</td>"
+                     f"<td class='note'>{html.escape(mem_txt)}</td>")
+        else:
+            cells = "<td colspan='3' class='note'>verificações da API/UI e da CLI</td>"
+        rows.append(f"<tr><th scope='row'><span class='sid'>{html.escape(sid[:2])}</span>{html.escape(label)}</th>"
+                    f"<td>{err_cell}</td>{cells}<td class='num'>{m.get('duration_s') or '—'}</td></tr>")
+    return ("<figure class='viz'><div class='table-wrap'><table class='scen'><thead><tr><th scope='col'>Cenário</th>"
+            "<th scope='col'>Erros</th><th scope='col'>Coletados (esperados)</th><th scope='col'>Links</th>"
+            "<th scope='col'>Memória</th><th scope='col' class='num'>Tempo (s)</th></tr></thead><tbody>"
+            + "".join(rows) + "</tbody></table></div><figcaption>Cada cenário é comparado com a expectativa do "
+            "gabarito (<code>lab/ground_truth.yaml</code>); qualquer erro reprova a rodada. Fonte: "
+            f"<code>metrics.json</code> do run {html.escape(d['run'])}.</figcaption></figure>")
+
+
+def viz_compare(d: dict[str, Any]) -> str:
+    """Antes x depois: linhas definidas no front matter (``data.compare``) a partir das duas rodadas."""
+    rows = []
+    for item in d.get("compare", []):
+        label, before, after = item[0], item[1], item[2]
+        note = item[3] if len(item) > 3 else ""
+        rows.append(f"<tr><th scope='row'>{html.escape(label)}</th><td class='before'>{html.escape(str(before))}</td>"
+                    f"<td class='arrow' aria-hidden='true'>→</td><td class='after'>{html.escape(str(after))}</td>"
+                    f"<td class='note'>{html.escape(note)}</td></tr>")
+    return ("<figure class='viz'><div class='table-wrap'><table class='compare'><thead><tr><th scope='col'>Indicador"
+            "</th><th scope='col'>v0.1.0</th><th scope='col'><span class='sr-only'>para</span></th>"
+            "<th scope='col'>v0.2.0</th><th scope='col'>Observação</th></tr></thead><tbody>" + "".join(rows)
+            + "</tbody></table></div><figcaption>v0.1.0: run " + html.escape(str(d.get("before_run", "—")))
+            + " · v0.2.0: run " + html.escape(d["run"]) + ".</figcaption></figure>")
+
+
 STATUS = {"ok": ("✓", "funciona"), "partial": ("◐", "parcial"), "fail": ("✕", "falha"), "na": ("·", "não se aplica")}
 
 
@@ -156,8 +249,9 @@ def viz_matrix(d: dict[str, Any]) -> str:
     m = d["metrics"]
     groups = {"MikroTik CHR 7.16": ["edge-mk1", "edge-mk2"], "Nokia SR Linux 25.10": ["core-srl1", "core-srl2"],
               "Linux / FRR": ["dist-frr1", "srv1", "srv2"]}
-    cols = [("04-snmp-v2c", "SNMP v2c"), ("05-snmp-v3", "SNMPv3"), ("06-ssh", "SSH/CLI"),
-            ("07-apis", "APIs")]
+    cols = ([("05-snmp", "SNMP v2c"), ("11-snmpv3", "SNMPv3"), ("04-ssh", "SSH/CLI"), ("06-apis", "APIs")]
+            if "05-snmp" in m else
+            [("04-snmp-v2c", "SNMP v2c"), ("05-snmp-v3", "SNMPv3"), ("06-ssh", "SSH/CLI"), ("07-apis", "APIs")])
     head = "".join(f"<th scope='col'>{c}</th>" for _, c in cols)
     body = []
     for g, nodes in groups.items():
@@ -166,9 +260,11 @@ def viz_matrix(d: dict[str, Any]) -> str:
             per = m.get(sid, {}).get("per_node", {})
             got = [n for n in nodes if per.get(n, {}).get("collected")]
             state = "ok" if len(got) == len(nodes) else "partial" if got else "fail"
-            if sid == "05-snmp-v3" and g != "Linux / FRR":
+            if sid in ("05-snmp-v3", "11-snmpv3") and g != "Linux / FRR":
                 state = "na"
-            if sid == "07-apis" and g == "Linux / FRR":
+            if sid in ("07-apis", "06-apis") and g == "Linux / FRR":
+                state = "na"
+            if sid not in m:
                 state = "na"
             cells.append(f"<td>{chip(state, f'{len(got)}/{len(nodes)} coletados')}</td>")
         body.append(f"<tr><th scope='row'>{g}</th>{''.join(cells)}</tr>")
@@ -215,6 +311,7 @@ def viz_shot(name: str, caption: str) -> str:
 
 
 VIZ = {
+    "compare": viz_compare,
     "kpis": viz_kpis,
     "scenarios": viz_scenarios,
     "matrix": viz_matrix,
@@ -339,6 +436,11 @@ def main() -> None:
     run = Path(sys.argv[1])
     copy_data(run)
     d = load_run(run)
+    if "--antes" in sys.argv:
+        before = Path(sys.argv[sys.argv.index("--antes") + 1])
+        copy_before(before)
+        d["before"] = load_run(before)["metrics"]
+        d["before_run"] = before.name
     art_dir = None
     if "--artifact-dir" in sys.argv:
         art_dir = Path(sys.argv[sys.argv.index("--artifact-dir") + 1])
