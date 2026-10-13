@@ -1,6 +1,6 @@
 {
   "suite": "completa",
-  "scenarios_duration_s": 462.8,
+  "scenarios_duration_s": 509.9,
   "total_errors": 0,
   "scenarios": {
     "01-semente-unica": {
@@ -47,7 +47,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 37,
-            "espera_aplicada_s": 5.84,
+            "espera_aplicada_s": 5.59,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -71,7 +71,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 36,
-            "espera_aplicada_s": 5.75,
+            "espera_aplicada_s": 5.53,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -95,7 +95,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 40,
-            "espera_aplicada_s": 4.2,
+            "espera_aplicada_s": 4.17,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -119,7 +119,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.48,
+            "espera_aplicada_s": 3.38,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -173,7 +173,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 36,
-            "espera_aplicada_s": 4.53,
+            "espera_aplicada_s": 4.48,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -196,8 +196,8 @@
           "motivo": null,
           "carga": {
             "perfil": "equilibrado",
-            "requisicoes": 39,
-            "espera_aplicada_s": 4.51,
+            "requisicoes": 38,
+            "espera_aplicada_s": 4.48,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -208,7 +208,7 @@
       },
       "title": "Semente única, todos os métodos, sem DNS nem memória",
       "status": "ok",
-      "duration_s": 29.7
+      "duration_s": 30.3
     },
     "02-varredura": {
       "errors": [],
@@ -263,7 +263,7 @@
         }
       ],
       "failed_targets": {
-        "10.255.0.1": "IP anunciado 10.255.0.1: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+        "10.255.0.2": "IP anunciado 10.255.0.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
         "172.20.20.1": "varredura 172.20.20.1: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado",
         "172.20.20.2": "varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado"
       },
@@ -284,7 +284,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 37,
-            "espera_aplicada_s": 5.7,
+            "espera_aplicada_s": 5.38,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -308,7 +308,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 37,
-            "espera_aplicada_s": 5.68,
+            "espera_aplicada_s": 5.41,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -332,7 +332,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 40,
-            "espera_aplicada_s": 4.18,
+            "espera_aplicada_s": 4.03,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -356,7 +356,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.62,
+            "espera_aplicada_s": 3.51,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -380,7 +380,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.55,
+            "espera_aplicada_s": 3.4,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -419,7 +419,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 42,
-            "espera_aplicada_s": 4.48,
+            "espera_aplicada_s": 4.36,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -443,7 +443,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 43,
-            "espera_aplicada_s": 4.5,
+            "espera_aplicada_s": 4.42,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -454,7 +454,7 @@
       },
       "title": "Semente única + varredura da rede de gerência (cria a memória)",
       "status": "ok",
-      "duration_s": 32.4
+      "duration_s": 33.6
     },
     "03-memoria": {
       "errors": [],
@@ -480,7 +480,7 @@
       },
       "eventos": [],
       "failed_targets": {
-        "172.20.20.2": "IP anunciado 172.20.20.2: sem resposta na última tentativa (13/10 16:05, 1x); nova tentativa após 6 h ou com --completo: varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)"
+        "172.20.20.2": "IP anunciado 172.20.20.2: sem resposta na última tentativa (13/10 17:07, 1x); nova tentativa após 6 h ou com --completo: varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)"
       },
       "per_node": {
         "core-srl1": {
@@ -499,7 +499,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 3,
-            "espera_aplicada_s": 0.16,
+            "espera_aplicada_s": 0.12,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -523,7 +523,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 3,
-            "espera_aplicada_s": 0.16,
+            "espera_aplicada_s": 0.14,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -547,7 +547,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 6,
-            "espera_aplicada_s": 0.1,
+            "espera_aplicada_s": 0.09,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -571,7 +571,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 3,
-            "espera_aplicada_s": 0.18,
+            "espera_aplicada_s": 0.17,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -595,7 +595,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 3,
-            "espera_aplicada_s": 0.18,
+            "espera_aplicada_s": 0.17,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -614,7 +614,7 @@
           "profile": "linux",
           "status": null,
           "reutilizado": false,
-          "motivo": "IP anunciado 172.20.20.2: sem resposta na última tentativa (13/10 16:05, 1x); nova tentativa após 6 h ou com --completo: varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+          "motivo": "IP anunciado 172.20.20.2: sem resposta na última tentativa (13/10 17:07, 1x); nova tentativa após 6 h ou com --completo: varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
           "carga": null,
           "fingerprint": null
         },
@@ -669,7 +669,7 @@
       },
       "title": "Segunda execução: semente única usando a memória",
       "status": "ok",
-      "duration_s": 3.2
+      "duration_s": 3.3
     },
     "04-ssh": {
       "errors": [],
@@ -714,7 +714,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 10,
-            "espera_aplicada_s": 0.18,
+            "espera_aplicada_s": 0.17,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -737,7 +737,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 10,
-            "espera_aplicada_s": 0.18,
+            "espera_aplicada_s": 0.17,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -760,7 +760,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 21,
-            "espera_aplicada_s": 0.18,
+            "espera_aplicada_s": 0.17,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -867,7 +867,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 21,
-            "espera_aplicada_s": 0.18,
+            "espera_aplicada_s": 0.17,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -878,7 +878,7 @@
       },
       "title": "Somente SSH (identificação por banner/prompt, sem SNMP)",
       "status": "ok",
-      "duration_s": 16.3
+      "duration_s": 16.5
     },
     "05-snmp": {
       "errors": [],
@@ -924,7 +924,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 91,
-            "espera_aplicada_s": 17.04,
+            "espera_aplicada_s": 16.61,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -947,7 +947,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 91,
-            "espera_aplicada_s": 16.96,
+            "espera_aplicada_s": 16.58,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -970,7 +970,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 79,
-            "espera_aplicada_s": 14.63,
+            "espera_aplicada_s": 14.3,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -993,7 +993,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 81,
-            "espera_aplicada_s": 15.33,
+            "espera_aplicada_s": 15.04,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1016,7 +1016,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 79,
-            "espera_aplicada_s": 14.89,
+            "espera_aplicada_s": 14.56,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1054,7 +1054,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 79,
-            "espera_aplicada_s": 14.59,
+            "espera_aplicada_s": 14.21,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1077,7 +1077,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 79,
-            "espera_aplicada_s": 14.51,
+            "espera_aplicada_s": 14.07,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1088,7 +1088,7 @@
       },
       "title": "Somente SNMP v2c + varredura",
       "status": "ok",
-      "duration_s": 21.5
+      "duration_s": 22.3
     },
     "06-apis": {
       "errors": [],
@@ -1134,7 +1134,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 9,
-            "espera_aplicada_s": 0.58,
+            "espera_aplicada_s": 0.47,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1157,7 +1157,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 9,
-            "espera_aplicada_s": 0.57,
+            "espera_aplicada_s": 0.41,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1180,7 +1180,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 79,
-            "espera_aplicada_s": 14.87,
+            "espera_aplicada_s": 14.66,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1203,7 +1203,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 14,
-            "espera_aplicada_s": 1.2,
+            "espera_aplicada_s": 1.12,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1226,7 +1226,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 14,
-            "espera_aplicada_s": 1.2,
+            "espera_aplicada_s": 1.12,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1264,7 +1264,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 79,
-            "espera_aplicada_s": 14.82,
+            "espera_aplicada_s": 14.56,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1287,7 +1287,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 79,
-            "espera_aplicada_s": 14.76,
+            "espera_aplicada_s": 14.47,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1298,7 +1298,7 @@
       },
       "title": "APIs (REST, JSON-RPC, NETCONF); SNMP só para identificar",
       "status": "ok",
-      "duration_s": 16.6
+      "duration_s": 17.2
     },
     "07-dns": {
       "errors": [],
@@ -1343,7 +1343,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 37,
-            "espera_aplicada_s": 5.85,
+            "espera_aplicada_s": 5.7,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1367,7 +1367,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 36,
-            "espera_aplicada_s": 5.74,
+            "espera_aplicada_s": 5.63,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1391,7 +1391,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 40,
-            "espera_aplicada_s": 4.22,
+            "espera_aplicada_s": 4.02,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1415,7 +1415,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.58,
+            "espera_aplicada_s": 3.49,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1439,7 +1439,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.73,
+            "espera_aplicada_s": 3.66,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1478,7 +1478,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 37,
-            "espera_aplicada_s": 4.62,
+            "espera_aplicada_s": 4.57,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1502,7 +1502,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 39,
-            "espera_aplicada_s": 4.63,
+            "espera_aplicada_s": 4.57,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1513,7 +1513,7 @@
       },
       "title": "Semente única com DNS (hostnames resolvem para a gerência)",
       "status": "ok",
-      "duration_s": 29.3
+      "duration_s": 29.8
     },
     "08-credenciais-mistas": {
       "errors": [],
@@ -1559,7 +1559,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 39,
-            "espera_aplicada_s": 5.84,
+            "espera_aplicada_s": 5.61,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1583,7 +1583,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 39,
-            "espera_aplicada_s": 5.8,
+            "espera_aplicada_s": 5.62,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1606,7 +1606,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 84,
-            "espera_aplicada_s": 14.92,
+            "espera_aplicada_s": 14.76,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1630,7 +1630,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 29,
-            "espera_aplicada_s": 3.72,
+            "espera_aplicada_s": 3.63,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1654,7 +1654,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 29,
-            "espera_aplicada_s": 3.73,
+            "espera_aplicada_s": 3.65,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1692,7 +1692,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 83,
-            "espera_aplicada_s": 14.82,
+            "espera_aplicada_s": 14.62,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1715,7 +1715,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 83,
-            "espera_aplicada_s": 14.83,
+            "espera_aplicada_s": 14.64,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1726,7 +1726,7 @@
       },
       "title": "Credenciais erradas testadas primeiro",
       "status": "ok",
-      "duration_s": 19.1
+      "duration_s": 19.3
     },
     "09-escopo": {
       "errors": [],
@@ -1772,7 +1772,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 37,
-            "espera_aplicada_s": 5.89,
+            "espera_aplicada_s": 5.7,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1826,7 +1826,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.58,
+            "espera_aplicada_s": 3.5,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1867,7 +1867,7 @@
       },
       "title": "Profundidade 1 e exclusão da rede dos servidores",
       "status": "ok",
-      "duration_s": 14.8
+      "duration_s": 14.7
     },
     "10-sequencial": {
       "errors": [],
@@ -1912,7 +1912,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 37,
-            "espera_aplicada_s": 5.86,
+            "espera_aplicada_s": 5.7,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1936,7 +1936,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 36,
-            "espera_aplicada_s": 5.73,
+            "espera_aplicada_s": 5.62,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1960,7 +1960,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 40,
-            "espera_aplicada_s": 4.21,
+            "espera_aplicada_s": 4.17,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -1984,7 +1984,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.72,
+            "espera_aplicada_s": 3.66,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2008,7 +2008,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.72,
+            "espera_aplicada_s": 3.66,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2046,8 +2046,8 @@
           "motivo": null,
           "carga": {
             "perfil": "equilibrado",
-            "requisicoes": 38,
-            "espera_aplicada_s": 4.72,
+            "requisicoes": 37,
+            "espera_aplicada_s": 4.57,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2071,7 +2071,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 38,
-            "espera_aplicada_s": 4.72,
+            "espera_aplicada_s": 4.67,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2160,7 +2160,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 80,
-            "espera_aplicada_s": 14.76,
+            "espera_aplicada_s": 14.6,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2182,8 +2182,8 @@
           "motivo": null,
           "carga": {
             "perfil": "equilibrado",
-            "requisicoes": 80,
-            "espera_aplicada_s": 14.72,
+            "requisicoes": 79,
+            "espera_aplicada_s": 14.4,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2206,7 +2206,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 80,
-            "espera_aplicada_s": 14.71,
+            "espera_aplicada_s": 14.55,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2217,7 +2217,7 @@
       },
       "title": "Somente SNMPv3 (authPriv SHA/AES) a partir do inventário",
       "status": "ok",
-      "duration_s": 8.1
+      "duration_s": 8.3
     },
     "12-carga-conservadora": {
       "errors": [],
@@ -2262,7 +2262,7 @@
           "carga": {
             "perfil": "conservador",
             "requisicoes": 45,
-            "espera_aplicada_s": 21.22,
+            "espera_aplicada_s": 20.94,
             "menor_intervalo_ms": 500,
             "intervalo_configurado_ms": 500,
             "max_sessoes_simultaneas": 1,
@@ -2286,7 +2286,7 @@
           "carga": {
             "perfil": "conservador",
             "requisicoes": 44,
-            "espera_aplicada_s": 21.19,
+            "espera_aplicada_s": 21.01,
             "menor_intervalo_ms": 500,
             "intervalo_configurado_ms": 500,
             "max_sessoes_simultaneas": 1,
@@ -2309,7 +2309,7 @@
           "carga": {
             "perfil": "conservador",
             "requisicoes": 86,
-            "espera_aplicada_s": 41.31,
+            "espera_aplicada_s": 41.23,
             "menor_intervalo_ms": 500,
             "intervalo_configurado_ms": 500,
             "max_sessoes_simultaneas": 1,
@@ -2333,7 +2333,7 @@
           "carga": {
             "perfil": "conservador",
             "requisicoes": 27,
-            "espera_aplicada_s": 12.48,
+            "espera_aplicada_s": 12.33,
             "menor_intervalo_ms": 500,
             "intervalo_configurado_ms": 500,
             "max_sessoes_simultaneas": 1,
@@ -2357,7 +2357,7 @@
           "carga": {
             "perfil": "conservador",
             "requisicoes": 27,
-            "espera_aplicada_s": 12.47,
+            "espera_aplicada_s": 12.31,
             "menor_intervalo_ms": 500,
             "intervalo_configurado_ms": 500,
             "max_sessoes_simultaneas": 1,
@@ -2395,7 +2395,7 @@
           "carga": {
             "perfil": "conservador",
             "requisicoes": 85,
-            "espera_aplicada_s": 40.82,
+            "espera_aplicada_s": 40.73,
             "menor_intervalo_ms": 500,
             "intervalo_configurado_ms": 500,
             "max_sessoes_simultaneas": 1,
@@ -2418,7 +2418,7 @@
           "carga": {
             "perfil": "conservador",
             "requisicoes": 85,
-            "espera_aplicada_s": 40.83,
+            "espera_aplicada_s": 40.73,
             "menor_intervalo_ms": 500,
             "intervalo_configurado_ms": 500,
             "max_sessoes_simultaneas": 1,
@@ -2429,7 +2429,7 @@
       },
       "title": "Perfil de carga conservador (500 ms entre requisições, 1 sessão)",
       "status": "ok",
-      "duration_s": 68.6
+      "duration_s": 68.7
     },
     "13-determinismo": {
       "errors": [],
@@ -2476,7 +2476,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 37,
-            "espera_aplicada_s": 5.64,
+            "espera_aplicada_s": 5.6,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2500,7 +2500,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 37,
-            "espera_aplicada_s": 5.65,
+            "espera_aplicada_s": 5.52,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2524,7 +2524,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 40,
-            "espera_aplicada_s": 4.19,
+            "espera_aplicada_s": 4.12,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2548,7 +2548,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.62,
+            "espera_aplicada_s": 3.54,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2572,7 +2572,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 27,
-            "espera_aplicada_s": 3.6,
+            "espera_aplicada_s": 3.52,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2611,7 +2611,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 44,
-            "espera_aplicada_s": 4.69,
+            "espera_aplicada_s": 4.62,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2635,7 +2635,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 44,
-            "espera_aplicada_s": 4.68,
+            "espera_aplicada_s": 4.61,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2646,7 +2646,7 @@
       },
       "title": "Repetição do cenário 02 sem memória (mesmo resultado?)",
       "status": "ok",
-      "duration_s": 32.5
+      "duration_s": 33.6
     },
     "14-falha-verificar": {
       "errors": [],
@@ -2716,7 +2716,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 3,
-            "espera_aplicada_s": 0.17,
+            "espera_aplicada_s": 0.15,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2740,7 +2740,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 39,
-            "espera_aplicada_s": 5.88,
+            "espera_aplicada_s": 5.56,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2764,7 +2764,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 42,
-            "espera_aplicada_s": 4.31,
+            "espera_aplicada_s": 4.27,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2788,7 +2788,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 3,
-            "espera_aplicada_s": 0.19,
+            "espera_aplicada_s": 0.18,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2812,7 +2812,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 3,
-            "espera_aplicada_s": 0.19,
+            "espera_aplicada_s": 0.18,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2870,14 +2870,14 @@
           "profile": "linux",
           "status": "inacessivel",
           "reutilizado": false,
-          "motivo": "conhecido, mas sem resposta (última vez visto: 2026-10-13T16:05:51.149057+00:00): 172.20.20.42: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: NetmikoTimeoutException; ssh: fabricante não identificado",
+          "motivo": "conhecido, mas sem resposta (última vez visto: 2026-10-13T17:07:17.611437+00:00): 172.20.20.42: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: NetmikoTimeoutException; ssh: fabricante não identificado",
           "carga": null,
           "fingerprint": null
         }
       },
       "title": "Verificação após falha: srv2 congelado e link derrubado",
       "status": "ok",
-      "duration_s": 25.3
+      "duration_s": 25.2
     },
     "15-restaurado": {
       "errors": [],
@@ -2939,7 +2939,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 3,
-            "espera_aplicada_s": 0.16,
+            "espera_aplicada_s": 0.14,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2963,7 +2963,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 39,
-            "espera_aplicada_s": 5.87,
+            "espera_aplicada_s": 5.6,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -2987,7 +2987,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 42,
-            "espera_aplicada_s": 4.3,
+            "espera_aplicada_s": 4.27,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -3011,7 +3011,7 @@
           "carga": {
             "perfil": "equilibrado",
             "requisicoes": 3,
-            "espera_aplicada_s": 0.19,
+            "espera_aplicada_s": 0.18,
             "menor_intervalo_ms": 100,
             "intervalo_configurado_ms": 100,
             "max_sessoes_simultaneas": 1,
@@ -3109,12 +3109,12 @@
       },
       "title": "Verificação após restaurar srv2 e o link",
       "status": "ok",
-      "duration_s": 11.7
+      "duration_s": 11.9
     },
     "16-api-ui": {
       "errors": [],
       "error_count": 0,
-      "duration_s": 11.1,
+      "duration_s": 13.4,
       "title": "API REST + WebSocket + cofre + UI web",
       "status": "finished"
     },

@@ -1,13 +1,13 @@
 ---
-title: NetTopo em laboratório
+title: Mapa de Rede em laboratório
 kicker: Relatório de gestão técnica · 2ª avaliação
 lede: A versão 0.2.0 corrigiu os 14 defeitos da primeira avaliação, passou a lembrar da rede entre execuções e a limitar a carga nos equipamentos. No mesmo laboratório, agora com 17 cenários e critério automático de aceite, a ferramenta não cometeu nenhum erro.
 other_label: Relatório técnico completo
 toc: false
 tag:
   Documento: NT-AVL-2026-01 · rev. 2
-  Versão avaliada: NetTopo 0.2.0 · 01b1808
-  Execução: run 38427060651 (suíte completa)
+  Versão avaliada: Mapa de Rede 0.2.0 · 7586686
+  Execução: run 38434923523 (suíte completa)
   Comparada com: v0.1.0 · run 36256925269
   Data: 13/10/2026
   Ambiente: GitHub Actions + Containerlab
@@ -17,19 +17,19 @@ data:
     - ["0", "erros em 17 cenários", "qualquer erro em relação ao gabarito reprova a rodada"]
     - ["7 de 7", "equipamentos coletados", "partindo de um único IP, com varredura, memória ou DNS"]
     - ["9 de 9", "links, nenhum a mais", "portas corretas nas duas pontas em todos os cenários"]
-    - ["3,2 s", "para reconfirmar a rede inteira", "2ª execução, contra 32,4 s da descoberta inicial"]
+    - ["3,3 s", "para reconfirmar a rede inteira", "2ª execução, contra 33,6 s da descoberta inicial"]
     - ["500 ms", "entre requisições no perfil conservador", "e 1 sessão por equipamento, medidos em todos"]
     - ["6 min 54 s", "por rodada a cada mudança", "antes 16 min; suíte completa diária: 11 min 58 s"]
   compare:
     - ["Equipamentos coletados a partir de um IP", "4 de 7", "7 de 7", "com varredura, memória ou DNS; sem nenhum deles, 6 de 7 e o 7º aparece com o motivo"]
-    - ["Modo só SSH (sem SNMP)", "0 de 7 em 118 s", "7 de 7 em 16,3 s", "fabricante identificado pelo banner e pelo prompt"]
+    - ["Modo só SSH (sem SNMP)", "0 de 7 em 118 s", "7 de 7 em 16,5 s", "fabricante identificado pelo banner e pelo prompt"]
     - ["Modo só SNMP", "1 de 7", "7 de 7", "com a varredura da rede de gerência"]
     - ["Links desenhados que não existem", "2 de 11", "0", "em todos os cenários"]
     - ["Equipamentos fundidos indevidamente", "3 hosts em 1", "nenhum", "série genérica de VM deixou de identificar o host"]
     - ["Portas corretas nos links", "50 a 89%", "100%", "em todos os cenários"]
     - ["Vizinhos OSPF/BGP", "OSPF em 0 de 11 cenários", "OSPF e BGP detectados", "em todos os cenários que alcançam as bordas"]
     - ["Mesmo resultado ao repetir", "não", "sim", "cenário 13 idêntico ao 02"]
-    - ["Segunda descoberta da mesma rede", "recoleta tudo", "3,2 s", "7 de 7 confirmados ativos, sem recoleta"]
+    - ["Segunda descoberta da mesma rede", "recoleta tudo", "3,3 s", "7 de 7 confirmados ativos, sem recoleta"]
     - ["Equipamento que caiu", "só uma linha em falhas", "inacessível + histórico", "links removidos marcados; volta a ativo ao restaurar"]
     - ["Proteção contra sobrecarga", "nenhuma", "rate limit por equipamento", "três perfis e ajustes por rede, fabricante ou nome"]
     - ["Senhas", "digitadas a cada execução", "cofre cifrado local", "nenhum segredo gravado em disco (verificado)"]
@@ -59,7 +59,7 @@ repetição, falha injetada, API, interface web e linha de comando), o resultado
 | Erros em relação ao gabarito, 17 cenários | 0 |
 | Equipamentos coletados, partindo de um único IP | 7 de 7 |
 | Links encontrados, sem nenhum a mais | 9 de 9 |
-| Reconfirmar a rede inteira na 2ª execução | 3,2 s (descoberta inicial: 32,4 s) |
+| Reconfirmar a rede inteira na 2ª execução | 3,3 s (descoberta inicial: 33,6 s) |
 | Intervalo entre requisições no perfil conservador | 500 ms, 1 sessão por equipamento |
 | Rodada do laboratório a cada mudança | 6 min 54 s (antes 16 min) |
 
@@ -80,14 +80,14 @@ Fortinet), que ainda não foram testados com equipamentos reais.
 | Indicador | v0.1.0 | v0.2.0 | Observação |
 |---|---|---|---|
 | Equipamentos coletados a partir de um IP | 4 de 7 | 7 de 7 | com varredura, memória ou DNS; sem nenhum deles, 6 de 7 e o 7º aparece com o motivo |
-| Modo só SSH (sem SNMP) | 0 de 7 em 118 s | 7 de 7 em 16,3 s | fabricante identificado pelo banner e pelo prompt |
+| Modo só SSH (sem SNMP) | 0 de 7 em 118 s | 7 de 7 em 16,5 s | fabricante identificado pelo banner e pelo prompt |
 | Modo só SNMP | 1 de 7 | 7 de 7 | com a varredura da rede de gerência |
 | Links desenhados que não existem | 2 de 11 | 0 | em todos os cenários |
 | Equipamentos fundidos indevidamente | 3 hosts em 1 | nenhum | série genérica de VM deixou de identificar o host |
 | Portas corretas nos links | 50 a 89% | 100% | em todos os cenários |
 | Vizinhos OSPF/BGP | OSPF em 0 de 11 cenários | OSPF e BGP detectados | em todos os cenários que alcançam as bordas |
 | Mesmo resultado ao repetir | não | sim | cenário 13 idêntico ao 02 |
-| Segunda descoberta da mesma rede | recoleta tudo | 3,2 s | 7 de 7 confirmados ativos, sem recoleta |
+| Segunda descoberta da mesma rede | recoleta tudo | 3,3 s | 7 de 7 confirmados ativos, sem recoleta |
 | Equipamento que caiu | só uma linha em falhas | inacessível + histórico | links removidos marcados; volta a ativo ao restaurar |
 | Proteção contra sobrecarga | nenhuma | rate limit por equipamento | três perfis e ajustes por rede, fabricante ou nome |
 | Senhas | digitadas a cada execução | cofre cifrado local | nenhum segredo gravado em disco (verificado) |
@@ -120,22 +120,22 @@ Fortinet), que ainda não foram testados com equipamentos reais.
 
 | Cenário | Erros | Coletados | Links | Tempo (s) |
 |---|---|---|---|---|
-| 01 Semente única, sem DNS nem memória | 0 | 6/6 | 9/9 | 29,7 |
-| 02 Semente única + varredura da gerência | 0 | 7/7 | 9/9 | 32,4 |
-| 03 Segunda execução, usando a memória | 0 | 7/7 | 9/9 | 3,2 |
-| 04 Somente SSH | 0 | 7/7 | 9/9 | 16,3 |
-| 05 Somente SNMP v2c + varredura | 0 | 7/7 | 9/9 | 21,5 |
-| 06 APIs (REST, JSON-RPC, NETCONF) | 0 | 7/7 | 9/9 | 16,6 |
-| 07 Semente única + DNS | 0 | 7/7 | 9/9 | 29,3 |
-| 08 Credenciais erradas primeiro | 0 | 7/7 | 9/9 | 19,1 |
-| 09 Profundidade 1 + exclusão | 0 | 2/2 | 5/5 | 14,8 |
+| 01 Semente única, sem DNS nem memória | 0 | 6/6 | 9/9 | 30,3 |
+| 02 Semente única + varredura da gerência | 0 | 7/7 | 9/9 | 33,6 |
+| 03 Segunda execução, usando a memória | 0 | 7/7 | 9/9 | 3,3 |
+| 04 Somente SSH | 0 | 7/7 | 9/9 | 16,5 |
+| 05 Somente SNMP v2c + varredura | 0 | 7/7 | 9/9 | 22,3 |
+| 06 APIs (REST, JSON-RPC, NETCONF) | 0 | 7/7 | 9/9 | 17,2 |
+| 07 Semente única + DNS | 0 | 7/7 | 9/9 | 29,8 |
+| 08 Credenciais erradas primeiro | 0 | 7/7 | 9/9 | 19,3 |
+| 09 Profundidade 1 + exclusão | 0 | 2/2 | 5/5 | 14,7 |
 | 10 Inventário, 1 coleta por vez | 0 | 7/7 | 9/9 | 55,9 |
-| 11 Somente SNMPv3 | 0 | 3/3 | 4/4 | 8,1 |
-| 12 Carga conservadora (500 ms, 1 sessão) | 0 | 7/7 | 9/9 | 68,6 |
-| 13 Repetição sem memória (determinismo) | 0 | 7/7 | 9/9 | 32,5 |
-| 14 Verificação após falha injetada | 0 | 6/6 | 7/7 | 25,3 |
-| 15 Verificação após restaurar | 0 | 7/7 | 9/9 | 11,7 |
-| 16-api-ui API, cofre e interface web | 0 | — | — | 11,1 |
+| 11 Somente SNMPv3 | 0 | 3/3 | 4/4 | 8,3 |
+| 12 Carga conservadora (500 ms, 1 sessão) | 0 | 7/7 | 9/9 | 68,7 |
+| 13 Repetição sem memória (determinismo) | 0 | 7/7 | 9/9 | 33,6 |
+| 14 Verificação após falha injetada | 0 | 6/6 | 7/7 | 25,2 |
+| 15 Verificação após restaurar | 0 | 7/7 | 9/9 | 11,9 |
+| 16-api-ui API, cofre e interface web | 0 | — | — | 13,4 |
 | cli Comandos da CLI | 0 | — | — | — |
 
 <!-- /viz -->
@@ -143,7 +143,7 @@ Fortinet), que ainda não foram testados com equipamentos reais.
 - **01, sem DNS, memória nem varredura:** `edge-mk2` só é anunciado pelo IP do link de trânsito, que o servidor
   de descoberta não alcança. Nenhum protocolo revela outro endereço, então o resultado correto é "não coletado"
   com o motivo explícito, e é isso que aparece. Com DNS (07), varredura (02) ou memória (03), ele é coletado.
-- **03, segunda execução:** os 7 equipamentos foram confirmados ativos em 3,2 s, sem recoleta.
+- **03, segunda execução:** os 7 equipamentos foram confirmados ativos em 3,3 s, sem recoleta.
 - **14 e 15, falha e restauração:** com o `srv2` congelado e um link derrubado, a verificação marcou o `srv2`
   como inacessível e os dois links como removidos. Depois da restauração, ele voltou a ativo e o desenho
   voltou a ter os 9 links.

@@ -1,7 +1,7 @@
 {
   "id": "16-api-ui",
   "title": "API REST + WebSocket + cofre + UI web",
-  "duration_s": 11.1,
+  "duration_s": 13.4,
   "ws_events": {
     "memory": 1,
     "started": 1,
@@ -33,7 +33,7 @@
       "l3switch": 2,
       "server": 2
     },
-    "duration_s": 10.6,
+    "duration_s": 12.6,
     "ignored_mgmt_neighbors": 2,
     "memoria": {
       "conhecidos": 0,
@@ -90,23 +90,23 @@
   "exports": {
     "html": {
       "status": 200,
-      "bytes": 130624
+      "bytes": 130637
     },
     "drawio": {
       "status": 200,
-      "bytes": 37619
+      "bytes": 37636
     },
     "xlsx": {
       "status": 200,
-      "bytes": 30047
+      "bytes": 30065
     },
     "md": {
       "status": 200,
-      "bytes": 8687
+      "bytes": 8707
     },
     "json": {
       "status": 200,
-      "bytes": 110120
+      "bytes": 110123
     }
   },
   "secrets_in_data_dir": false,
