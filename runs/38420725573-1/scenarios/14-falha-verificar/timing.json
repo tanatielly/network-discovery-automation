@@ -1,0 +1,42 @@
+{
+  "id": "14-falha-verificar",
+  "title": "Verificação após falha: srv2 congelado e link derrubado",
+  "status": "ok",
+  "duration_s": 25.5,
+  "suite": "rapida",
+  "memoria": {
+    "conhecidos": 7,
+    "reaproveitados": 4,
+    "recoletados": 2,
+    "inacessiveis": 1,
+    "novos_coletados": 0,
+    "eventos": [
+      {
+        "device": "core-srl2",
+        "kind": "alterado",
+        "detail": [
+          "vizinhança mudou"
+        ]
+      },
+      {
+        "device": "dist-frr1",
+        "kind": "alterado",
+        "detail": [
+          "vizinhança mudou"
+        ]
+      },
+      {
+        "device": "srv2",
+        "kind": "inacessivel"
+      },
+      {
+        "kind": "link_removido",
+        "detail": "physical|core-srl2:ethernet-1/3|dist-frr1:eth2"
+      },
+      {
+        "kind": "link_removido",
+        "detail": "physical|core-srl2:ethernet-1/4|srv2:eth1"
+      }
+    ]
+  }
+}
