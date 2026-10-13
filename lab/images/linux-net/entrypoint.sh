@@ -19,6 +19,8 @@ id "$SSH_USER" >/dev/null 2>&1 || useradd -m -s /bin/bash "$SSH_USER"
 echo "$SSH_USER:$SSH_PASS" | chpasswd
 # Usuário de monitoração pode ler o lldpd e o FRR (como um usuário de NMS bem configurado)
 for g in _lldpd frrvty; do getent group "$g" >/dev/null && usermod -aG "$g" "$SSH_USER"; done
+echo "$SSH_USER ALL=(root) NOPASSWD: /usr/sbin/lldpcli, /usr/bin/vtysh" > /etc/sudoers.d/nettopo
+chmod 0440 /etc/sudoers.d/nettopo
 mkdir -p /run/sshd
 ssh-keygen -A >/dev/null 2>&1
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
@@ -64,6 +66,9 @@ fi
 
 # ---------------------------------------------------------------- LLDP
 # Só nas interfaces de dados (eth1..), anunciando o IP de gerência; LLDP-MIB exportada via AgentX.
+# Intervalo de 5 s (TTL 20 s): mudanças de vizinhança aparecem rápido no laboratório.
+mkdir -p /etc/lldpd.d
+echo 'configure lldp tx-interval 5' > /etc/lldpd.d/nettopo-lab.conf
 lldpd -x -X /var/agentx/master -I 'eth[1-9]*' -m "${MGMT_PATTERN}" && log "lldpd ok"
 
 exec sleep infinity

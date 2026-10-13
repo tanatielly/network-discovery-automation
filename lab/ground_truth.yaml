@@ -1,4 +1,4 @@
-# Gabarito do laboratório: o que o NetTopo DEVERIA encontrar.
+# Gabarito do laboratório: o que o NetTopo DEVE encontrar em cada cenário.
 # Interfaces com o nome nativo de cada sistema (MikroTik etherN, SR Linux ethernet-1/N, Linux ethN).
 nodes:
   edge-mk1:  {mgmt_ip: 172.20.20.11, vendor: MikroTik, collectable: true, roles: [router, l3switch]}
@@ -8,7 +8,7 @@ nodes:
   dist-frr1: {mgmt_ip: 172.20.20.31, vendor: Linux, collectable: true, roles: [router, l3switch]}
   srv1:      {mgmt_ip: 172.20.20.41, vendor: Linux, collectable: true, roles: [server]}
   srv2:      {mgmt_ip: 172.20.20.42, vendor: Linux, collectable: true, roles: [server]}
-  # Operadora: credenciais diferentes -> deve aparecer como "não coletado" (stub) via LLDP
+  # Operadora: credenciais diferentes -> deve aparecer como "não coletado" (visto por LLDP)
   isp-pe:    {mgmt_ip: 172.20.20.2, vendor: Linux, collectable: false, roles: [router, external]}
 
 links:
@@ -22,7 +22,52 @@ links:
   - [dist-frr1, eth3, srv1, eth1]
   - [core-srl2, ethernet-1/4, srv2, eth1]
 
-# Adjacências de roteamento esperadas (além dos links físicos)
 routing:
   - [edge-mk1, edge-mk2, ospf]
   - [edge-mk1, isp-pe, bgp]
+
+# Expectativa por cenário. Chaves omitidas herdam de "padrao".
+#   coletados / nao_coletados: "todos", "todos_exceto: [...]" ou lista
+#   links: "todos", lista de índices de "links" (0..8) ou "todos_exceto: [...]"
+#   roteamento: "todos", "nenhum" ou lista de protocolos esperados
+#   motivo: trecho que precisa aparecer no motivo de um nó não coletado
+#   memoria / eventos / status / carga / igual_a: verificações específicas
+scenarios:
+  padrao:
+    coletados: todos
+    nao_coletados: [isp-pe]
+    links: todos
+    roteamento: todos
+  01-semente-unica:
+    # Sem DNS nem memória, edge-mk2 só é anunciado pelo IP de trânsito 10.255.0.2 (não roteável para o
+    # servidor). Limite físico: o resultado correto é "não coletado" com o motivo explícito.
+    coletados: {todos_exceto: [edge-mk2]}
+    nao_coletados: [isp-pe, edge-mk2]
+    motivo: {edge-mk2: "10.255.0.2"}
+  03-memoria:
+    memoria: {conhecidos: 7, reaproveitados: 7, recoletados: 0, inacessiveis: 0}
+    eventos_ausentes: [novo, alterado, inacessivel]
+  05-snmp:
+    roteamento: [bgp]  # RouterOS não exporta OSPF-MIB; BGP4-MIB sim
+  09-escopo:
+    coletados: [edge-mk1, core-srl1]
+    nao_coletados: [isp-pe, edge-mk2, core-srl2, dist-frr1]
+    links: [0, 1, 2, 4, 5]
+    roteamento: todos
+  11-snmpv3:
+    coletados: [dist-frr1, srv1, srv2]
+    nao_coletados: [core-srl1, core-srl2]
+    links: [5, 6, 7, 8]
+    roteamento: nenhum
+  12-carga-conservadora:
+    carga: {intervalo_min_ms: 500, max_sessoes: 1}
+  13-determinismo:
+    igual_a: 02-varredura
+  14-falha-verificar:
+    coletados: {todos_exceto: [srv2]}
+    nao_coletados: [isp-pe, srv2]
+    status: {srv2: inacessivel}
+    links: {todos_exceto: [6, 8]}
+    eventos: [{kind: inacessivel, device: srv2}, {kind: link_removido}]
+  15-restaurado:
+    eventos: [{kind: voltou, device: srv2}]

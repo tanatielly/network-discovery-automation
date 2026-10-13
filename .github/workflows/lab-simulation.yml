@@ -1,7 +1,16 @@
 name: Simulação em laboratório (Containerlab)
 
+# Suíte rápida a cada push; suíte completa todo dia às 06:00 (Brasília) e sob demanda.
 on:
   workflow_dispatch:
+    inputs:
+      suite:
+        description: "Suíte de cenários"
+        type: choice
+        options: [completa, rapida]
+        default: completa
+  schedule:
+    - cron: "0 9 * * *"
   push:
     branches: [main]
     paths:
@@ -13,8 +22,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: lab-simulation
-  cancel-in-progress: true
+  group: lab-simulation-${{ github.event_name == 'push' && 'rapida' || 'completa' }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 env:
   CLAB_VERSION: "0.79.0"
@@ -22,11 +31,13 @@ env:
   CHR_VERSION: "7.16.2"
   PYTHONUNBUFFERED: "1"
   LOGS: lab-results/logs
+  SUITE: ${{ github.event_name == 'push' && 'rapida' || inputs.suite || 'completa' }}
+  IMAGE_CACHE: /tmp/image-cache
 
 jobs:
   lab:
     runs-on: ubuntu-24.04
-    timeout-minutes: 100
+    timeout-minutes: 45
     permissions:
       contents: write # publica os resultados no branch lab-results
     defaults:
@@ -38,11 +49,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
 
       - name: Recursos do runner
         run: |
           mkdir -p "$LOGS"
-          { nproc; free -h; df -h /; ls -l /dev/kvm || true; uname -a; } 2>&1 | tee "$LOGS/00-runner.log"
+          { echo "suíte: $SUITE"; nproc; free -h; df -h /; ls -l /dev/kvm || true; uname -a; } 2>&1 | tee "$LOGS/00-runner.log"
 
       - name: Habilitar KVM (VMs MikroTik CHR)
         run: |
@@ -56,7 +69,22 @@ jobs:
           bash -c "$(curl -sL https://get.containerlab.dev)" -- -v "${CLAB_VERSION}" 2>&1 | tail -20 | tee "$LOGS/02-containerlab.log"
           containerlab version | tee -a "$LOGS/02-containerlab.log"
 
+      # A imagem do CHR (vrnetlab + disco do RouterOS) só muda com as versões: fica em cache.
+      - name: Cache da imagem MikroTik CHR
+        id: chr-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.IMAGE_CACHE }}/chr.tar.zst
+          key: chr-${{ env.CHR_VERSION }}-vrnetlab-${{ env.VRNETLAB_VERSION }}
+
+      - name: Carregar imagem MikroTik CHR do cache
+        if: steps.chr-cache.outputs.cache-hit == 'true'
+        run: |
+          zstd -dc "$IMAGE_CACHE/chr.tar.zst" | docker load 2>&1 | tee "$LOGS/03-build-chr.log"
+          docker image inspect nettopo/chr:lab > /dev/null
+
       - name: Construir imagem MikroTik CHR (vrnetlab)
+        if: steps.chr-cache.outputs.cache-hit != 'true'
         run: |
           {
             git clone --depth 1 --branch "${VRNETLAB_VERSION}" https://github.com/srl-labs/vrnetlab /tmp/vrnetlab
@@ -72,17 +100,31 @@ jobs:
           IMG=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -i routeros | head -1)
           echo "imagem gerada: $IMG" | tee -a "$LOGS/03-build-chr.log"
           docker tag "$IMG" nettopo/chr:lab
+          mkdir -p "$IMAGE_CACHE"
+          docker save nettopo/chr:lab | zstd -T0 -3 -o "$IMAGE_CACHE/chr.tar.zst"
+          ls -lh "$IMAGE_CACHE" | tee -a "$LOGS/03-build-chr.log"
+
+      # Salva já aqui (e não no fim do job): um cenário reprovado não pode impedir o cache.
+      - name: Guardar imagem MikroTik CHR no cache
+        if: steps.chr-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.IMAGE_CACHE }}/chr.tar.zst
+          key: ${{ steps.chr-cache.outputs.cache-primary-key }}
 
       - name: Construir imagem Linux (FRR + lldpd + SNMP + SSH)
         run: docker build -t nettopo/linux-net:lab lab/images/linux-net 2>&1 | tee "$LOGS/04-build-linux.log"
 
-      - name: Subir o laboratório
-        run: sudo containerlab deploy -t lab/nettopo-lab.clab.yml --reconfigure 2>&1 | tee "$LOGS/05-deploy.log"
-
-      - name: Instalar NetTopo
+      # O NetTopo é instalado enquanto o laboratório sobe (as VMs levam ~1 min para iniciar).
+      - name: Subir o laboratório e instalar o NetTopo
         run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]" pytest-cov mypy bandit types-PyYAML 2>&1 | tail -5 | tee "$LOGS/06-install.log"
+          EXTRA=""
+          if [ "$SUITE" = "completa" ]; then EXTRA="pytest-cov mypy bandit types-PyYAML"; fi
+          ( pip install -e ".[dev]" $EXTRA > "$LOGS/06-install.log" 2>&1; echo $? > /tmp/pip.rc ) &
+          sudo containerlab deploy -t lab/nettopo-lab.clab.yml --reconfigure 2>&1 | tee "$LOGS/05-deploy.log"
+          wait
+          tail -5 "$LOGS/06-install.log"
+          test "$(cat /tmp/pip.rc)" = 0
 
       - name: Aguardar e configurar equipamentos
         working-directory: lab/scripts
@@ -94,15 +136,18 @@ jobs:
 
       - name: Cenários da simulação
         working-directory: lab/scripts
-        run: python run_scenarios.py "$GITHUB_WORKSPACE/lab-results" 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/09-scenarios.log"
+        run: python run_scenarios.py "$GITHUB_WORKSPACE/lab-results" "$SUITE" 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/09-scenarios.log"
 
-      - name: Métricas (gabarito x descoberto)
+      # Critério de aceite: o job falha se qualquer cenário tiver um erro em relação ao gabarito.
+      - name: Erros em relação ao gabarito
+        id: score
         if: always()
         working-directory: lab/scripts
-        run: python score.py "$GITHUB_WORKSPACE/lab-results" 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/10-score.log"
+        run: python score.py "$GITHUB_WORKSPACE/lab-results" --strict 2>&1 | tee "$GITHUB_WORKSPACE/$LOGS/10-score.log"
 
+      # Testes e lint rodam no ci.yml a cada push; aqui só na suíte completa, para os relatórios.
       - name: Qualidade de código
-        if: always()
+        if: always() && env.SUITE == 'completa'
         run: |
           mkdir -p lab-results/quality
           pytest -q --cov=nettopo --cov-report=term --cov-report=json:lab-results/quality/coverage.json \
@@ -144,12 +189,12 @@ jobs:
           RUN_DIR="runs/${RUN_ID}-${RUN_ATTEMPT}"
           mkdir -p "$DEST/$RUN_DIR"
           cp -r lab-results/. "$DEST/$RUN_DIR/"
-          echo "{\"run_id\": \"${RUN_ID}\", \"attempt\": \"${RUN_ATTEMPT}\", \"sha\": \"${GITHUB_SHA}\", \"dir\": \"${RUN_DIR}\"}" > "$DEST/latest.json"
+          echo "{\"run_id\": \"${RUN_ID}\", \"attempt\": \"${RUN_ATTEMPT}\", \"sha\": \"${GITHUB_SHA}\", \"suite\": \"${SUITE}\", \"dir\": \"${RUN_DIR}\"}" > "$DEST/latest.json"
           cd "$DEST"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -q -m "Resultados da simulação: run ${RUN_ID} (${GITHUB_SHA::7})"
+          git commit -q -m "Resultados da simulação ($SUITE): run ${RUN_ID} (${GITHUB_SHA::7})"
           git push -q origin lab-results
 
       - name: Destruir o laboratório

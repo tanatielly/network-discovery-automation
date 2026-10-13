@@ -4,7 +4,7 @@ FROM debian:bookworm-slim
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        frr frr-snmp lldpd snmpd snmp openssh-server iproute2 iputils-ping procps tcpdump ca-certificates \
+        frr frr-snmp lldpd snmpd snmp openssh-server iproute2 iputils-ping procps tcpdump ca-certificates sudo \
     && rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /entrypoint.sh
