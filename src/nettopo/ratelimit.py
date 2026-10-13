@@ -84,7 +84,7 @@ class LoadSettings(BaseModel):
 
     def resolve(self, ip: str | None = None, profile_id: str | None = None,
                 hostname: str | None = None) -> tuple[str, LoadProfile]:
-        name = self.perfil
+        name: str = self.perfil
         values = PRESETS[name].model_dump()
         for ov in self.overrides:
             if not ov.matches(ip, profile_id, hostname):

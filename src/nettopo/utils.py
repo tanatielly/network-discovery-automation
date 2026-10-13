@@ -112,11 +112,12 @@ def ip_with_prefix(ip: Any, prefix: Any = None) -> str | None:
         parts = s.split()
         if len(parts) == 2:  # "10.0.0.1 255.255.255.0" (FortiOS, ASA)
             s, prefix = parts
-    addr = parse_ipv4(s)
-    if not addr:
+    parsed = parse_ipv4(s)
+    if not parsed:
         return None
-    pfx = mask_to_prefix(prefix) if prefix not in (None, "") else None
-    return f"{addr}/{pfx}" if pfx is not None else addr
+    addr = parsed
+    plen = mask_to_prefix(prefix) if prefix not in (None, "") else None
+    return f"{addr}/{plen}" if plen is not None else addr
 
 
 def ip_only(value: str) -> str:

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from sqlalchemy import Column, Text
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Field, Session, SQLModel, col, create_engine, select
 
 from nettopo.models import Topology, utcnow
 
@@ -75,7 +75,7 @@ class Store:
 
     def list(self, limit: int = 100) -> list[DiscoveryRecord]:
         with Session(self.engine) as s:
-            stmt = select(DiscoveryRecord).order_by(DiscoveryRecord.created_at.desc()).limit(limit)
+            stmt = select(DiscoveryRecord).order_by(col(DiscoveryRecord.created_at).desc()).limit(limit)
             return list(s.exec(stmt))
 
     def delete(self, rid: str) -> bool:
@@ -96,7 +96,7 @@ class Store:
     def mark_interrupted(self) -> None:
         """Descobertas que estavam rodando quando o servidor caiu."""
         with Session(self.engine) as s:
-            for rec in s.exec(select(DiscoveryRecord).where(DiscoveryRecord.status.in_(["queued", "running"]))):
+            for rec in s.exec(select(DiscoveryRecord).where(col(DiscoveryRecord.status).in_(["queued", "running"]))):
                 rec.status = "failed"
                 rec.error = "interrompida (servidor reiniciado)"
                 s.add(rec)

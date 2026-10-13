@@ -9,6 +9,7 @@ qualquer vendor.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from typing import Any
 
 from nettopo.models import ArpEntry, Device, MacEntry, Neighbor, Route, Vlan
@@ -342,7 +343,7 @@ def _bgp(device: Device, rows: list[Row]) -> int:
     return n
 
 
-_HANDLERS = {
+_HANDLERS: dict[str, Callable[..., int]] = {
     "facts": _facts,
     "hostname": _hostname,
     "interfaces": _interfaces,

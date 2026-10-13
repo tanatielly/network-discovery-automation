@@ -18,6 +18,10 @@ def _cell(v: object) -> str:
     return s.replace("|", "\\|").replace("\n", " ")
 
 
+def _updown(value: bool | None) -> str:
+    return "" if value is None else "up" if value else "down"
+
+
 def _table(headers: list[str], rows: list[list[object]]) -> str:
     if not rows:
         return "_Nenhum registro._\n"
@@ -80,7 +84,7 @@ def device_markdown(topo: Topology, d: Device) -> str:
         md += ["## Interfaces", ""]
         md.append(_table(["Interface", "Descrição", "IPv4", "Admin", "Oper", "Velocidade", "MTU", "LAG"], [
             [i.name, i.description, " ".join(i.ipv4),
-             {True: "up", False: "down"}.get(i.admin_up, ""), {True: "up", False: "down"}.get(i.oper_up, ""),
+             _updown(i.admin_up), _updown(i.oper_up),
              f"{i.speed_mbps} Mbps" if i.speed_mbps else "", i.mtu, i.parent] for i in d.interfaces]))
     if d.neighbors:
         md += ["## Vizinhos anunciados", ""]

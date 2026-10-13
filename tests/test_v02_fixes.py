@@ -306,3 +306,44 @@ def test_credential_that_worked_for_a_vendor_goes_first():
     assert [c.name for c in orch._ordered("ssh", None)] == ["mk", "linux"]
     first = Credential(type="ssh", name="fp", username="u", password="p")
     assert orch._ordered("ssh", "linux", first)[0].name == "linux"  # credencial fora da lista é ignorada
+
+
+def test_ssh_remembers_accepted_command_variant_per_profile():
+    from nettopo.collectors.ssh import SSHCollector
+
+    reg = default_registry()
+    linux = reg.get("linux")
+    ssh = SSHCollector(Settings.model_validate({"seeds": ["10.0.0.1"]}), reg)
+    variants = linux.commands_for("lldp")
+    assert len(variants) > 1 and ssh._commands(linux, "lldp") == variants
+    ssh._cmd_ok[("linux", "lldp")] = variants[-1]  # ex.: só "sudo -n /usr/sbin/lldpcli" funcionou
+    assert ssh._commands(linux, "lldp")[0] == variants[-1]
+    assert sorted(ssh._commands(linux, "lldp")) == sorted(variants)  # nenhuma variante se perde
+
+
+def test_light_check_skips_session_when_saved_port_is_closed(monkeypatch):
+    from nettopo.collectors import orchestrator as orch_mod
+
+    s = Settings.model_validate({"seeds": ["10.0.0.1"], "credentials": [
+        {"type": "ssh", "name": "linux", "username": "nettopo", "password": "y"}]})
+    orch = orch_mod.Orchestrator(s)
+    calls: list[str] = []
+
+    async def closed(host, ports, timeout=2.0):
+        return set()
+
+    async def spy(*a, **kw):
+        calls.append("ssh")
+
+    monkeypatch.setattr(orch_mod, "scan_ports", closed)
+    monkeypatch.setattr(orch.ssh, "collect", spy)
+    access = {"metodo": "ssh", "credencial": "linux", "perfil": "linux", "snmp": None}
+    assert asyncio.run(orch.light_check("10.0.0.9", access)) is None
+    assert calls == []  # desligado: não espera o timeout da sessão SSH
+
+    async def open_ssh(host, ports, timeout=2.0):
+        return {22}
+
+    monkeypatch.setattr(orch_mod, "scan_ports", open_ssh)
+    asyncio.run(orch.light_check("10.0.0.9", access))
+    assert calls == ["ssh"]  # controle: com a porta aberta a checagem leve usa o acesso salvo

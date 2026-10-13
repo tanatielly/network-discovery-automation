@@ -14,6 +14,7 @@ chaves SNMPv3 e tokens nunca são gravados em texto.
 from __future__ import annotations
 
 import base64
+import builtins
 import json
 import os
 from pathlib import Path
@@ -166,7 +167,7 @@ class Vault:
     def list(self) -> list[dict[str, Any]]:
         return sorted(self._index().values(), key=lambda x: x["name"])
 
-    def all(self) -> list[Credential]:
+    def all(self) -> builtins.list[Credential]:
         return [self.get(item["name"]) for item in self.list()]
 
 

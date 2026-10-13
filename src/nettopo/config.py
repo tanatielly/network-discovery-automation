@@ -23,6 +23,10 @@ def _secret(v: SecretStr | None) -> str | None:
     return v.get_secret_value() if v is not None else None
 
 
+Method = Literal["rest", "netconf", "ssh", "snmp"]
+DEFAULT_METHODS: list[Method] = ["rest", "netconf", "ssh", "snmp"]
+
+
 class Credential(BaseModel):
     """Credencial de acesso. Várias podem ser informadas; são testadas em ordem."""
 
@@ -128,8 +132,8 @@ class Settings(BaseModel):
     timeout: int = 15
     snmp_retries: int = 1
     snmp_probe_timeout: float = 2.0  # identificação inicial: curto e sem retentativa
-    methods: list[Literal["rest", "netconf", "ssh", "snmp"]] = Field(
-        default_factory=lambda: ["rest", "netconf", "ssh", "snmp"]
+    methods: list[Method] = Field(
+        default_factory=lambda: list(DEFAULT_METHODS)
     )
     snmp_complement: bool = True  # usa SNMP para completar dados mesmo com SSH/API ok
     dns_resolve: bool = True

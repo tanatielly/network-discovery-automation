@@ -208,6 +208,11 @@ class Orchestrator:
         res: MethodResult | None = None
         if method in ("rest", "netconf", "ssh") and profile is not None:
             cred = self._find_cred(method, access.get("credencial"))
+            ports = {"ssh": [PORTS["ssh"]], "netconf": [PORTS["netconf"]],
+                     "rest": [PORTS["https"], PORTS["http"]]}[method]
+            # equipamento desligado não responde TCP: descobre em segundos, sem esperar o timeout da sessão
+            if cred is not None and not await scan_ports(target, ports, timeout=min(3, self.settings.timeout)):
+                cred = None
             if cred is not None:
                 collector: Any = {"rest": self.rest, "netconf": self.netconf, "ssh": self.ssh}[method]
                 try:

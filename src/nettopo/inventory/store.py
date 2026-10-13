@@ -46,7 +46,7 @@ def neighbor_pairs(device: Device) -> list[list[str]]:
 
 
 def signature(device: Device) -> str:
-    return hashlib.sha1(json.dumps(neighbor_pairs(device)).encode()).hexdigest()[:16]
+    return hashlib.sha1(json.dumps(neighbor_pairs(device)).encode(), usedforsecurity=False).hexdigest()[:16]
 
 
 def link_key(topo: Topology, lk: Link) -> str:

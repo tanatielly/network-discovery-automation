@@ -81,6 +81,17 @@ class SSHCollector:
     def __init__(self, settings: Settings, registry: VendorRegistry):
         self.settings = settings
         self.registry = registry
+        # variante de comando aceita por (perfil, tipo): ex. "sudo -n /usr/sbin/lldpcli" nos Linux da rede.
+        # Os próximos equipamentos do mesmo perfil começam por ela (menos comandos rejeitados, menos carga).
+        self._cmd_ok: dict[tuple[str, str], str] = {}
+
+    def _commands(self, profile: VendorProfile, kind: str) -> list[str]:
+        cmds = list(profile.commands_for(kind))
+        ok = self._cmd_ok.get((profile.id, kind))
+        if ok in cmds:
+            cmds.remove(ok)
+            cmds.insert(0, ok)
+        return cmds
 
     # ------------------------------------------------------------------ autodetecção
     async def autodetect(self, target: str, credentials: list[Credential]) -> tuple[str, Credential] | None:
@@ -247,7 +258,7 @@ class SSHCollector:
             except Exception:
                 pass
             for kind in kinds or kinds_for(self.settings):
-                for cmd in profile.commands_for(kind):
+                for cmd in self._commands(profile, kind):
                     ratelimit.pace_sync(ratelimit.ssh_command_delay())
                     try:
                         out = conn.send_command(cmd, read_timeout=max(30, self.settings.timeout * 4))
@@ -257,6 +268,7 @@ class SSHCollector:
                     if not isinstance(out, str) or not out.strip() or _ERROR_MARKERS.search(out[:300]):
                         continue
                     outputs[kind] = (cmd, out)
+                    self._cmd_ok[(profile.id, kind)] = cmd
                     break
         finally:
             try:

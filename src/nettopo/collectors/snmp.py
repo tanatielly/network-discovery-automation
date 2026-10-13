@@ -303,7 +303,8 @@ def build_device(target: str, system: dict[str, Any], walks: dict[str, Walk],
 
     for idx, ifindex in w("ipAdEntIfIndex").items():
         ip = _ip_from_index(idx)
-        itf = by_index.get(_int(ifindex))
+        ifx = _int(ifindex)
+        itf = by_index.get(ifx) if ifx is not None else None
         if not ip or itf is None:
             continue
         mask = w("ipAdEntNetMask").get(idx)
@@ -318,15 +319,16 @@ def build_device(target: str, system: dict[str, Any], walks: dict[str, Walk],
     for idx, pid in w("lldpLocPortId").items():
         port = idx[0]
         subtype = _int(w("lldpLocPortIdSubtype").get(idx))
+        lname: str | None
         if subtype in (5, 7, 1):
-            name = to_text(pid)
+            lname = to_text(pid)
         elif port in ifnames:
-            name = ifnames[port]
+            lname = ifnames[port]
         else:
-            name = to_text(w("lldpLocPortDesc").get(idx)) or to_text(pid)
-        if name:
-            loc_port_name[port] = canonical_ifname(name) or name
-    mgmt_by_rem: dict[tuple[int, int, int], str] = {}
+            lname = to_text(w("lldpLocPortDesc").get(idx)) or to_text(pid)
+        if lname:
+            loc_port_name[port] = canonical_ifname(lname) or lname
+    mgmt_by_rem: dict[tuple[int, ...], str] = {}
     for idx in w("lldpRemManAddrIfSubtype"):
         if len(idx) >= 9 and idx[3] == 1 and idx[4] == 4:
             mgmt_by_rem.setdefault(idx[:3], ".".join(str(x) for x in idx[5:9]))
@@ -336,15 +338,15 @@ def build_device(target: str, system: dict[str, Any], walks: dict[str, Walk],
             continue
         local_port = idx[1]
         port_sub = _int(w("lldpRemPortIdSubtype").get(idx))
-        port = id_value(port_sub, w("lldpRemPortId").get(idx))
+        rport = id_value(port_sub, w("lldpRemPortId").get(idx))
         port_desc = to_text(w("lldpRemPortDesc").get(idx))
-        if port and normalize_mac(port) and port_desc:
-            port = port_desc
+        if rport and normalize_mac(rport) and port_desc:
+            rport = port_desc
         dev.neighbors.append(Neighbor(
             protocol="lldp",
             local_interface=loc_port_name.get(local_port) or ifnames.get(local_port),
             remote_hostname=to_text(w("lldpRemSysName").get(idx)) or None,
-            remote_interface=port,
+            remote_interface=rport,
             remote_mgmt_ip=mgmt_by_rem.get(idx[:3]),
             remote_description=to_text(w("lldpRemSysDesc").get(idx)) or None,
             remote_platform=(to_text(w("lldpRemSysDesc").get(idx)) or "")[:120] or None,
@@ -496,7 +498,7 @@ def close_engine(engine: Any) -> None:
 
 
 class SnmpSession:
-    def __init__(self, target: str, cred: Credential, timeout: int = 5, retries: int = 1, engine: Any = None):
+    def __init__(self, target: str, cred: Credential, timeout: float = 5, retries: int = 1, engine: Any = None):
         self.target = target
         self.cred = cred
         self.timeout = timeout

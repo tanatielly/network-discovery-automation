@@ -82,8 +82,9 @@ class DiscoveryEngine:
         if target.hostname and self.settings.dns_resolve and host:
             if host not in self._dns_cache:
                 self._dns_cache[host] = await resolve_hostname(target.hostname)
-            if self._dns_cache[host]:
-                out.append((self._dns_cache[host], "dns"))
+            resolved = self._dns_cache[host]
+            if resolved:
+                out.append((resolved, "dns"))
         for mac in target.macs:
             for ip in self._hints.ips_for_mac(mac):
                 out.append((ip, "arp"))

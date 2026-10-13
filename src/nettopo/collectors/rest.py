@@ -356,10 +356,10 @@ class MikrotikRestDriver:
                 dev.arp.append(ArpEntry(ip=ip, mac=normalize_mac(a.get("mac-address")), interface=a.get("interface")))
         for r in _as_list(raw.get("routes")):
             gw = r.get("gateway") or ""
-            proto = next((p for p in ("ospf", "bgp", "static", "connect", "rip") if truthy_status(r.get(p))), None)
+            rproto = next((p for p in ("ospf", "bgp", "static", "connect", "rip") if truthy_status(r.get(p))), None)
             dev.routes.append(Route(prefix=r.get("dst-address", ""), next_hop=parse_ipv4(gw),
                                     interface=None if parse_ipv4(gw) else gw or None,
-                                    protocol="connected" if proto == "connect" else proto,
+                                    protocol="connected" if rproto == "connect" else rproto,
                                     vrf=r.get("routing-table")))
         for o in _as_list(raw.get("ospf")):
             if parse_ipv4(o.get("address")):
@@ -520,8 +520,9 @@ class SrlJsonRpcDriver:
             eth = i.get("ethernet") or {}
             itf.mac = normalize_mac(eth.get("hw-mac-address")) or itf.mac
             speed = str(eth.get("port-speed") or "")
-            itf.speed_mbps = itf.speed_mbps or (to_int(speed) * 1000 if speed.upper().endswith("G") and to_int(speed)
-                                                 else to_int(speed) if speed.upper().endswith("M") else None)
+            n = to_int(speed)
+            itf.speed_mbps = itf.speed_mbps or (n * 1000 if n and speed.upper().endswith("G")
+                                                 else n if speed.upper().endswith("M") else None)
             itf.mtu = to_int(i.get("mtu")) or itf.mtu
             for sub in _as_list(i.get("subinterface")):
                 for addr in _as_list((sub.get("ipv4") or {}).get("address")):

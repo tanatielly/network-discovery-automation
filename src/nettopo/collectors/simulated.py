@@ -24,7 +24,7 @@ DEMO_VLANS = [(1, "default"), (10, "USUARIOS"), (20, "VOZ"), (30, "WIFI"), (99, 
 
 
 def _mac(seed: str) -> str:
-    h = hashlib.md5(seed.encode()).hexdigest()[:10]
+    h = hashlib.md5(seed.encode(), usedforsecurity=False).hexdigest()[:10]
     return "02:" + ":".join(h[i : i + 2] for i in range(0, 10, 2))
 
 
@@ -35,6 +35,7 @@ class SimulatedCollector:
             lab = DEMO_LAB
         if isinstance(lab, (str, Path)):
             lab = yaml.safe_load(Path(lab).read_text(encoding="utf-8"))
+        assert isinstance(lab, dict)
         self.lab: dict[str, Any] = lab
         self.registry = registry or default_registry()
         self.delay = delay
@@ -125,7 +126,8 @@ class SimulatedCollector:
                 for ip, (host, _) in all_ips.items():
                     if host != d.hostname and ipaddress.IPv4Address(ip) in net:
                         d.arp.append(ArpEntry(ip=ip, mac=self.devices[host].chassis_id, interface=itf.name))
-        if d.profile and self.registry.get(d.profile) and self.registry.get(d.profile).category in ("router", "firewall"):
+        prof = self.registry.get(d.profile) if d.profile else None
+        if prof is not None and prof.category in ("router", "firewall"):
             d.routes.append(Route(prefix="0.0.0.0/0", next_hop=next((a.ip for a in d.arp), None), protocol="static"))
         if "bridge" in d.extra.get("caps", []) and d.profile:
             d.vlans = [Vlan(id=v, name=n) for v, n in DEMO_VLANS]

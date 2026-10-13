@@ -32,7 +32,8 @@ def lldpctl_keyvalue(text: str) -> list[Row]:
             row[field] = value
         elif key.startswith("chassis.") and key.endswith(".enabled") and value.lower() == "on":
             caps = row.setdefault("capabilities", [])
-            caps.append(key.split(".")[1])  # type: ignore[union-attr]
+            if isinstance(caps, list):
+                caps.append(key.split(".")[1])
     return list(by_if.values())
 
 
@@ -97,7 +98,10 @@ def linux_facts(text: str) -> list[Row]:
     série pela posição da linha: o nome do produto DMI ("Virtual Machine") não identifica o host.
     """
     lines = (text or "").splitlines()
-    marked = dict(m.groups() for ln in lines if (m := re.match(r"^NT_([A-Z_]+)=(.*)$", ln.strip())))
+    marked: dict[str, str] = {}
+    for ln in lines:
+        if m := re.match(r"^NT_([A-Z_]+)=(.*)$", ln.strip()):
+            marked[m.group(1)] = m.group(2)
     if marked:
         serial = marked.get("SERIAL", "").strip()
         product = marked.get("PRODUCT", "").strip()

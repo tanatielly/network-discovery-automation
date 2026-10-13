@@ -151,7 +151,7 @@ def parse_openconfig_interfaces(xml: Any, device: Device) -> None:
         for addr in _all(itf, "address"):
             ip = _text(addr, "ip", ("state", "ip"), ("config", "ip"))
             pfx = _text(addr, ("state", "prefix-length"), ("config", "prefix-length"))
-            if parse_ipv4(ip):
+            if ip and parse_ipv4(ip):
                 cidr = f"{ip}/{pfx}" if pfx else ip
                 if cidr not in obj.ipv4:
                     obj.ipv4.append(cidr)
@@ -208,7 +208,7 @@ def parse_junos_interfaces(xml: Any, device: Device) -> None:
                 local = _text(af, "ifa-local")
                 dest = _text(af, "ifa-destination") or ""
                 pfx = dest.split("/")[1] if "/" in dest else None
-                if parse_ipv4(local):
+                if local and parse_ipv4(local):
                     cidr = f"{local}/{pfx}" if pfx else local
                     if cidr not in itf.ipv4:
                         itf.ipv4.append(cidr)
