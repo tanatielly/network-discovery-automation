@@ -51,3 +51,32 @@ def test_api_token(tmp_path, monkeypatch):
     with TestClient(app) as client:
         assert client.get("/api/discoveries").status_code == 401
         assert client.get("/api/discoveries", headers={"Authorization": "Bearer abc"}).status_code == 200
+
+
+def _wait(client, rid):
+    for _ in range(100):
+        st = client.get(f"/api/discoveries/{rid}").json()
+        if st["status"] in ("finished", "failed"):
+            return st
+        time.sleep(0.1)
+    return st
+
+
+def test_api_credentials_memory_and_verify(tmp_path, monkeypatch):
+    monkeypatch.setenv("NETTOPO_VAULT_BACKEND", "arquivo")
+    monkeypatch.setenv("NETTOPO_VAULT_PASSWORD", "senha-teste")
+    app = create_app(tmp_path)
+    with TestClient(app) as client:
+        r = client.post("/api/credentials", json={"name": "snmp-lab", "type": "snmp", "community": "segredo-xyz"})
+        assert r.status_code == 201
+        listed = client.get("/api/credentials").json()
+        assert listed["backend"] == "arquivo" and listed["items"][0]["name"] == "snmp-lab"
+        assert "segredo-xyz" not in str(listed)
+        assert client.post("/api/verify").status_code == 409  # memória vazia
+
+        first = _wait(client, client.post("/api/demo").json()["id"])
+        second = _wait(client, client.post("/api/demo").json()["id"])
+        assert first["stats"]["memoria"]["conhecidos"] == 0
+        assert second["stats"]["memoria"]["reaproveitados"] == second["stats"]["collected"] == 16
+        assert client.get("/api/inventory").json()["devices"] == []  # demo usa memória separada
+        assert client.delete("/api/credentials/snmp-lab").json()["deleted"]

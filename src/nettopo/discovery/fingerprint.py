@@ -6,6 +6,7 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import Any
 
+from nettopo import ratelimit
 from nettopo.config import Credential
 from nettopo.vendors.registry import VendorProfile
 
@@ -40,6 +41,7 @@ async def port_open(host: str, port: int, timeout: float = 2.0) -> bool:
 
 async def read_ssh_banner(host: str, port: int = 22, timeout: float = 3.0) -> str | None:
     """Lê a linha de versão do servidor SSH (RFC 4253), antes de qualquer autenticação."""
+    await ratelimit.pace()
     try:
         reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout)
     except (OSError, asyncio.TimeoutError):
@@ -64,5 +66,6 @@ async def read_ssh_banner(host: str, port: int = 22, timeout: float = 3.0) -> st
 
 
 async def scan_ports(host: str, ports: list[int], timeout: float = 2.0) -> set[int]:
+    await ratelimit.pace()
     results = await asyncio.gather(*(port_open(host, p, timeout) for p in ports))
     return {p for p, ok in zip(ports, results, strict=True) if ok}

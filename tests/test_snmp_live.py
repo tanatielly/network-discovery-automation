@@ -60,3 +60,17 @@ def test_discovery_over_real_snmp(agent):
     assert {link.source_interface, link.target_interface} == {"GigabitEthernet0/0/1", "Ethernet1"}
     stub = topo.devices["stub-core-sw-01"]
     assert stub.stub and stub.vendor == "Arista" and stub.mgmt_ip == "10.0.0.10"
+
+
+def test_rate_limit_applies_to_real_snmp(agent):
+    """Perfil conservador com intervalo de 150 ms: cada PDU SNMP respeita o intervalo e há 1 sessão por vez."""
+    settings = Settings.model_validate({
+        "seeds": ["127.0.0.1"], "timeout": 2, "max_depth": 0,
+        "carga": {"perfil": "conservador", "overrides": [{"cidr": "127.0.0.0/8", "intervalo_min_ms": 150}]},
+        "credentials": [{"type": "snmp", "version": "2c", "community": "public", "port": agent}],
+    })
+    topo = asyncio.run(discover(settings))
+    carga = topo.devices["pe-huawei-01"].extra["carga"]
+    assert carga["requisicoes"] > 20
+    assert carga["menor_intervalo_ms"] >= 145
+    assert carga["max_sessoes_simultaneas"] == 1

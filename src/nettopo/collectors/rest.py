@@ -12,6 +12,7 @@ from typing import Any
 
 import httpx
 
+from nettopo import ratelimit
 from nettopo.collectors.base import MethodResult
 from nettopo.config import Credential, Settings
 from nettopo.models import ArpEntry, Device, Neighbor, Route, Vlan
@@ -53,9 +54,12 @@ class EapiDriver:
     commands = ["show version", "show hostname", "show interfaces", "show lldp neighbors detail",
                 "show ip arp", "show vlan", "show ip route"]
 
-    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential) -> Raw:
+    light_keys = ["show hostname", "show lldp neighbors detail"]
+
+    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential,
+                    keys: list[str] | None = None) -> Raw:
         raw: Raw = {}
-        for i, cmd in enumerate(self.commands):
+        for i, cmd in enumerate(keys or self.commands):
             payload = {"jsonrpc": "2.0", "method": "runCmds", "id": i,
                        "params": {"version": 1, "cmds": [cmd], "format": "json"}}
             r = await client.post(f"{base}/command-api", json=payload,
@@ -131,9 +135,12 @@ class NxapiDriver:
     commands = ["show version", "show hostname", "show interface", "show lldp neighbors detail",
                 "show cdp neighbors detail", "show ip arp", "show vlan brief"]
 
-    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential) -> Raw:
+    light_keys = ["show hostname", "show lldp neighbors detail", "show cdp neighbors detail"]
+
+    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential,
+                    keys: list[str] | None = None) -> Raw:
         raw: Raw = {}
-        for i, cmd in enumerate(self.commands, start=1):
+        for i, cmd in enumerate(keys or self.commands, start=1):
             payload = [{"jsonrpc": "2.0", "method": "cli", "params": {"cmd": cmd, "version": 1}, "id": i}]
             r = await client.post(f"{base}/ins", json=payload, headers={"content-type": "application/json-rpc"},
                                   auth=(cred.username or "", cred.secret("password") or ""))
@@ -211,6 +218,7 @@ class NxapiDriver:
 # =========================================================================== IOS-XE RESTCONF
 
 class RestconfIosxeDriver:
+    light_keys = ["hostname", "lldp", "cdp"]
     paths = {
         "hostname": "Cisco-IOS-XE-native:native/hostname",
         "version": "Cisco-IOS-XE-native:native/version",
@@ -221,9 +229,12 @@ class RestconfIosxeDriver:
         "hardware": "Cisco-IOS-XE-device-hardware-oper:device-hardware-data",
     }
 
-    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential) -> Raw:
+    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential,
+                    keys: list[str] | None = None) -> Raw:
         raw: Raw = {}
         for key, path in self.paths.items():
+            if keys and key not in keys:
+                continue
             r = await client.get(f"{base}/restconf/data/{path}",
                                  headers={"Accept": "application/yang-data+json"},
                                  auth=(cred.username or "", cred.secret("password") or ""))
@@ -284,6 +295,7 @@ class RestconfIosxeDriver:
 # =========================================================================== MikroTik REST
 
 class MikrotikRestDriver:
+    light_keys = ["identity", "neighbors"]
     paths = {
         "identity": "system/identity", "resource": "system/resource", "routerboard": "system/routerboard",
         "interfaces": "interface", "addresses": "ip/address", "neighbors": "ip/neighbor", "arp": "ip/arp",
@@ -291,9 +303,12 @@ class MikrotikRestDriver:
         "bgp": "routing/bgp/session", "license": "system/license",
     }
 
-    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential) -> Raw:
+    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential,
+                    keys: list[str] | None = None) -> Raw:
         raw: Raw = {}
         for key, path in self.paths.items():
+            if keys and key not in keys:
+                continue
             r = await client.get(f"{base}/rest/{path}", auth=(cred.username or "", cred.secret("password") or ""))
             if r.status_code in (401, 403):
                 raise PermissionError("MikroTik REST: autenticação negada")
@@ -366,15 +381,19 @@ class MikrotikRestDriver:
 # =========================================================================== FortiOS REST
 
 class FortiosDriver:
+    light_keys = ["status", "lldp"]
     paths = {
         "status": "monitor/system/status", "interfaces": "cmdb/system/interface",
         "lldp": "monitor/network/lldp/neighbors", "arp": "monitor/network/arp", "routes": "monitor/router/ipv4",
     }
 
-    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential) -> Raw:
+    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential,
+                    keys: list[str] | None = None) -> Raw:
         headers = {"Authorization": f"Bearer {cred.secret('token')}"} if cred.token else {}
         raw: Raw = {}
         for key, path in self.paths.items():
+            if keys and key not in keys:
+                continue
             r = await client.get(f"{base}/api/v2/{path}", headers=headers)
             if r.status_code in (401, 403):
                 raise PermissionError("FortiOS: token inválido")
@@ -446,6 +465,7 @@ def _strip_ns(d: Any) -> Any:
 class SrlJsonRpcDriver:
     """SR Linux: ``POST /jsonrpc`` com ``method: get`` no datastore ``state``."""
 
+    light_keys = ["hostname", "lldp"]
     paths = {
         "hostname": "/system/name/host-name",
         "information": "/system/information",
@@ -455,10 +475,13 @@ class SrlJsonRpcDriver:
         "bgp": "/network-instance[name=*]/protocols/bgp/neighbor[peer-address=*]",
     }
 
-    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential) -> Raw:
+    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential,
+                    keys: list[str] | None = None) -> Raw:
         raw: Raw = {}
         auth = (cred.username or "", cred.secret("password") or "")
         for key, path in self.paths.items():
+            if keys and key not in keys:
+                continue
             body = {"jsonrpc": "2.0", "id": 1, "method": "get",
                     "params": {"commands": [{"path": path, "datastore": "state"}]}}
             r = await client.post(f"{base}/jsonrpc", json=body, auth=auth)
@@ -547,7 +570,7 @@ class RestCollector:
         self.registry = registry
 
     async def collect(self, target: str, profile: VendorProfile | None,
-                      credentials: list[Credential]) -> MethodResult:
+                      credentials: list[Credential], light: bool = False) -> MethodResult:
         res = MethodResult(method=self.name)
         if not profile or not profile.rest or profile.rest not in DRIVERS:
             res.errors.append("rest: perfil sem driver de API")
@@ -556,14 +579,24 @@ class RestCollector:
             res.errors.append("rest: nenhuma credencial")
             return res
         driver = DRIVERS[profile.rest]()
+
+        async def _pace(_request: httpx.Request) -> None:
+            await ratelimit.pace()
+
         for cred in credentials:
+            if not ratelimit.auth_allowed():
+                res.errors.append("rest: limite de falhas de autenticação do equipamento atingido")
+                break
             scheme = "https" if cred.https else "http"
             port = f":{cred.port}" if cred.port else ""
             base = f"{scheme}://{target}{port}"
             try:
-                async with httpx.AsyncClient(verify=cred.verify_ssl, timeout=self.settings.timeout) as client:
-                    raw = await driver.fetch(client, base, cred)
+                async with httpx.AsyncClient(verify=cred.verify_ssl, timeout=self.settings.timeout,
+                                             event_hooks={"request": [_pace]}) as client:
+                    raw = await driver.fetch(client, base, cred, keys=getattr(driver, "light_keys", None)
+                                             if light else None)
             except PermissionError as exc:
+                ratelimit.auth_failed()
                 res.errors.append(f"rest[{cred.display}]: {exc}")
                 continue
             except (httpx.HTTPError, ValueError) as exc:
@@ -579,7 +612,7 @@ class RestCollector:
             except Exception as exc:  # resposta inesperada
                 res.errors.append(f"rest: erro ao interpretar resposta: {exc}")
                 continue
-            if not dev.hostname and not dev.interfaces:  # API respondeu, mas sem dados úteis
+            if not dev.hostname and not dev.interfaces and not dev.neighbors:  # API respondeu, mas vazia
                 res.errors.append(f"rest[{cred.display}]: resposta sem hostname nem interfaces")
                 continue
             res.device = dev

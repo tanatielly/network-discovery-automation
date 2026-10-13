@@ -77,8 +77,12 @@ profiles:
         - /usr/sbin/lldpcli -f keyvalue show neighbors details
         - sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details
       arp: ip -4 neigh show
-      bgp: vtysh -c "show bgp summary json"
-      ospf: vtysh -c "show ip ospf neighbor json"
+      bgp:
+        - vtysh -c "show bgp summary json"
+        - sudo -n /usr/bin/vtysh -c "show bgp summary json"
+      ospf:
+        - vtysh -c "show ip ospf neighbor json"
+        - sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"
       routes: ip -4 route show
     parsers:
       facts: linux_facts

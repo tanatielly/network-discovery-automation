@@ -176,13 +176,30 @@
       var h = "<h2>" + esc(d.hostname || d.mgmt_ip || d.id) + "</h2>";
       h += '<span class="nt-badge">' + esc(ROLE_PT[d.role] || d.role) + "</span>";
       if (d.tier) h += '<span class="nt-badge">' + esc(TIER_PT[d.tier] || d.tier) + "</span>";
-      h += d.stub ? '<span class="nt-badge stub">não coletado</span>' : '<span class="nt-badge ok">coletado</span>';
+      var ex = d.extra || {};
+      var STATUS_PT = { ativo: "ativo", alterado: "alterado", inacessivel: "inacessível", novo: "novo" };
+      if (ex.status === "inacessivel") h += '<span class="nt-badge err">inacessível</span>';
+      else if (d.stub) h += '<span class="nt-badge stub">não coletado</span>';
+      else h += '<span class="nt-badge ok">' + esc(STATUS_PT[ex.status] || "coletado") + "</span>";
+      if (ex.reutilizado) h += '<span class="nt-badge">confirmado, sem recoleta</span>';
+      if (ex.motivo) h += '<h3>Por que não foi coletado</h3><p class="nt-muted" style="margin:0;font-size:12.5px">' + esc(ex.motivo) + "</p>";
+      if (ex.verificado_em || ex.motivo_recoleta) {
+        h += "<h3>Confirmação</h3>" + kv([["Confirmado em", ex.verificado_em ? fmtDate(ex.verificado_em) : ""],
+          ["Recoletado porque", ex.motivo_recoleta], ["Alcançado por", ex.reached_via]]);
+      }
       h += "<h3>Identificação</h3>" + kv([
         ["IP gerência", d.mgmt_ip], ["Fabricante", d.vendor], ["Sistema", d.os], ["Versão", d.os_version],
         ["Modelo", d.model], ["Serial", d.serial], ["Uptime", d.uptime], ["Local", d.location], ["Contato", d.contact],
         ["Chassis MAC", d.chassis_id], ["Coletado via", (d.collected_via || []).join(", ")],
         ["Descoberto por", d.discovered_from ? devName(d.discovered_from) : ""],
         ["Descrição", d.sys_description]]);
+      if (ex.carga) {
+        var cg = ex.carga;
+        h += "<h3>Carga aplicada</h3>" + kv([["Perfil", cg.perfil], ["Requisições", cg.requisicoes],
+          ["Menor intervalo", cg.menor_intervalo_ms !== null && cg.menor_intervalo_ms !== undefined ? cg.menor_intervalo_ms + " ms (mín. " + cg.intervalo_configurado_ms + " ms)" : ""],
+          ["Espera aplicada", cg.espera_aplicada_s + " s"], ["Sessões simultâneas", cg.max_sessoes_simultaneas],
+          ["Falhas de login", cg.falhas_autenticacao]]);
+      }
       var lk = links.filter(function (x) { return x.source === id || x.target === id; });
       if (lk.length) {
         h += "<h3>Conexões (" + lk.length + ")</h3><table class='nt-table'><tr><th>Local</th><th>Vizinho</th><th>Remota</th></tr>" +
@@ -275,6 +292,12 @@
           { title: "Camada", get: function (d) { return TIER_PT[d.tier] || d.tier || ""; } },
           { title: "Fabricante", key: "vendor" }, { title: "Sistema", key: "os" }, { title: "Versão", key: "os_version" },
           { title: "Modelo", key: "model" }, { title: "Serial", key: "serial" },
+          { title: "Status", get: function (d) {
+              var st = (d.extra || {}).status;
+              if (st === "inacessivel") return "inacessível";
+              if (d.stub) return "não coletado";
+              return (d.extra || {}).reutilizado ? "confirmado" : (st === "alterado" ? "alterado" : "coletado");
+            } },
           { title: "Coleta", get: function (d) { return d.stub ? "vizinho" : (d.collected_via || []).join(", "); } },
           { title: "Interfaces", get: function (d) { return (d.interfaces || []).length; } }
         ], devList, { onRow: function (d) { openDevice(d.id); }, sort: 0 });

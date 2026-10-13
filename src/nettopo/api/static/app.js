@@ -128,7 +128,13 @@
     current.ws = ws;
     ws.onmessage = function (m) {
       var ev = JSON.parse(m.data);
-      if (ev.type === "started") { c.queued += (ev.seeds || []).length; line("q", "Sementes: " + (ev.seeds || []).join(", ")); }
+      if (ev.type === "started") { c.queued += (ev.seeds || []).length; if ((ev.seeds || []).length) line("q", "Sementes: " + ev.seeds.join(", ")); }
+      else if (ev.type === "memory") { c.queued += ev.known || 0; if (ev.known) line("q", "Memória: confirmando " + ev.known + " equipamento(s) conhecido(s)"); }
+      else if (ev.type === "revalidated") {
+        if (ev.status === "inacessivel") { c.failed++; line("err", "INATIVO " + (ev.hostname || "") + "  " + (ev.reason || "")); }
+        else { c.done++; line("ok", (ev.reused ? "CONFIRMADO " : "RECOLETADO ") + (ev.hostname || "") + "  " + (ev.target || "") + (ev.reused ? "  · dados reaproveitados" : "  · " + (ev.reason || ""))); }
+      }
+      else if (ev.type === "sweep") { line("q", "Varredura: " + ev.found + " de " + ev.tested + " endereços responderam"); }
       else if (ev.type === "queued") { c.queued++; line("q", "  + fila: " + ev.target + (ev.hostname ? " (" + ev.hostname + ")" : "") + " nível " + ev.depth); }
       else if (ev.type === "device_done") { c.done++; line("ok", "OK  " + (ev.hostname || ev.target) + "  " + ev.target + "  " + (ev.vendor || "?") + " " + (ev.model || "") + "  via " + (ev.via || []).join(",") + "  · " + ev.neighbors + " vizinhos"); }
       else if (ev.type === "device_failed") { c.failed++; line("err", "ERRO " + ev.target + "  " + (ev.reason || "")); }
@@ -155,10 +161,13 @@
         else if (w === "user") show = t !== "snmp" || v === "3";
         else if (w === "pass") show = t !== "snmp";
         else show = t === w;
-        f.hidden = !show;
+        if (f.getAttribute("data-f") !== "name") f.hidden = !show;
       });
     }
     node.addEventListener("change", sync);
+    node.querySelector("[data-save]").addEventListener("change", function (e) {
+      node.querySelector('[data-f="name"]').hidden = !e.target.checked;
+    });
     node.querySelector("[data-remove]").addEventListener("click", function () { node.remove(); });
     sync();
     return node;
@@ -172,6 +181,14 @@
     Array.prototype.forEach.call(historyEl.children, function (li) { li.classList.remove("active"); });
     main.appendChild(document.getElementById("tpl-form").content.cloneNode(true));
     var form = document.getElementById("discovery-form"), creds = document.getElementById("creds");
+    var vaultBox = document.getElementById("vault-list");
+    api("/api/credentials").then(function (v) {
+      document.getElementById("vault-backend").textContent = "(" + (v.backend === "keyring" ? "cofre do sistema operacional" : "arquivo cifrado") + ")";
+      vaultBox.innerHTML = v.items.length ? v.items.map(function (c) {
+        return '<label class="nt-toggle"><input type="checkbox" data-ref="' + esc(c.name) + '" checked> ' + esc(c.name) +
+          ' <span class="nt-muted">' + esc(c.type) + (c.username ? " · " + esc(c.username) : "") + "</span></label>";
+      }).join("") : '<span class="nt-muted">Nenhuma credencial guardada. Marque "Salvar no cofre" numa credencial abaixo.</span>';
+    }).catch(function (e) { vaultBox.innerHTML = '<span class="nt-muted">Cofre indisponível: ' + esc(e.message) + "</span>"; });
     creds.appendChild(credRow({ type: "ssh" }));
     creds.appendChild(credRow({ type: "snmp", version: "2c" }));
     document.getElementById("add-cred").addEventListener("click", function () { creds.appendChild(credRow({ type: "ssh" })); });
@@ -180,27 +197,69 @@
       var f = form.elements, err = document.getElementById("form-error");
       err.textContent = "";
       var methods = ["rest", "netconf", "ssh", "snmp"].filter(function (m) { return f["m_" + m].checked; });
+      var refs = Array.prototype.map.call(form.querySelectorAll("[data-ref]:checked"), function (x) { return { ref: x.getAttribute("data-ref") }; });
+      var toSave = [];
       var body = {
         name: f.name.value || null, seeds: lines(f.seeds.value),
         scope: { include: lines(f.include.value), exclude: lines(f.exclude.value) },
         max_depth: +f.max_depth.value, concurrency: +f.concurrency.value, timeout: +f.timeout.value, methods: methods,
         follow: { routing: f.f_routing.checked, arp: f.f_arp.checked },
         collect: { mac_table: f.c_mac.checked },
-        credentials: Array.prototype.map.call(creds.children, function (row) {
+        carga: { perfil: f.load.value }, varredura: lines(f.sweep.value),
+        credentials: refs.concat(Array.prototype.map.call(creds.children, function (row) {
           var c = {};
           row.querySelectorAll("[data-f]").forEach(function (x) { if (!x.hidden && x.value !== "") c[x.getAttribute("data-f")] = x.value; });
           if (c.port) c.port = +c.port;
+          if (row.querySelector("[data-save]").checked && c.name && (c.username || c.community || c.token)) { toSave.push(c); return { ref: c.name }; }
+          delete c.name;
           return c;
-        }).filter(function (c) { return c.username || c.community || c.token; })
+        }).filter(function (c) { return c.ref || c.username || c.community || c.token; }))
       };
-      if (!body.seeds.length) { err.textContent = "Informe ao menos uma semente."; return; }
+      if (!body.seeds.length && !body.varredura.length && !f.o_memory.checked) { err.textContent = "Informe ao menos uma semente."; return; }
       if (!methods.length) { err.textContent = "Selecione ao menos um método de coleta."; return; }
-      api("/api/discoveries", { method: "POST", body: JSON.stringify(body) }).then(function (r) {
-        return loadHistory().then(function () { select(r.id); });
-      }).catch(function (e2) { err.textContent = e2.message; });
+      var qs = "?memoria=" + (f.o_memory.checked ? "true" : "false") + "&completo=" + (f.o_full.checked ? "true" : "false");
+      Promise.all(toSave.map(function (c) { return api("/api/credentials", { method: "POST", body: JSON.stringify(c) }); }))
+        .then(function () { return api("/api/discoveries" + qs, { method: "POST", body: JSON.stringify(body) }); })
+        .then(function (r) { return loadHistory().then(function () { select(r.id); }); })
+        .catch(function (e2) { err.textContent = e2.message; });
     });
   }
 
+  /* ------------------------------------------------------------------ inventário */
+  var STATUS_LABEL = { ativo: "ativo", novo: "novo", alterado: "alterado", inacessivel: "inacessível", retirado: "retirado" };
+  function showInventory() {
+    clearMain();
+    current.id = null;
+    Array.prototype.forEach.call(historyEl.children, function (li) { li.classList.remove("active"); });
+    var box = document.createElement("div");
+    box.className = "ui-inv";
+    box.innerHTML = '<h1>Inventário</h1><p class="nt-muted">O que a ferramenta já conhece. Cada descoberta confirma esses equipamentos antes de procurar novos.</p>' +
+      '<div class="bar"><button class="nt-btn primary" type="button" id="btn-verify">Verificar agora</button><span class="nt-muted" id="inv-counts"></span></div>' +
+      '<div class="nt-tablewrap"><table class="nt-table" id="inv-table"><thead><tr><th>Equipamento</th><th>IP de gerência</th><th>Fabricante</th><th>Status</th><th>Confirmado em</th><th>Acesso</th><th>Observação</th></tr></thead><tbody><tr><td colspan="7" class="nt-muted">Carregando…</td></tr></tbody></table></div>' +
+      '<h2 style="font-size:15px;margin:22px 0 4px">Mudanças recentes</h2><ul class="ui-events" id="inv-events"></ul>';
+    main.appendChild(box);
+    box.querySelector("#btn-verify").addEventListener("click", function () {
+      api("/api/verify", { method: "POST" }).then(function (r) { return loadHistory().then(function () { select(r.id); }); })
+        .catch(function (e) { window.alert(e.message); });
+    });
+    api("/api/inventory").then(function (inv) {
+      var tb = box.querySelector("tbody");
+      box.querySelector("#inv-counts").textContent = Object.keys(inv.counts).map(function (k) { return inv.counts[k] + " " + (STATUS_LABEL[k] || k); }).join(" · ");
+      tb.innerHTML = inv.devices.length ? inv.devices.map(function (d) {
+        var acc = d.access || {};
+        return "<tr><td>" + esc(d.hostname || d.key) + "</td><td class='nt-mono'>" + esc(d.mgmt_ip || "") + "</td><td>" + esc(d.vendor || "") +
+          "</td><td><span class='st " + esc(d.status) + "'>" + esc(d.status_label) + "</span></td><td>" + esc(fmt(d.last_verified)) +
+          "</td><td>" + esc((acc.metodo || "") + " " + (acc.credencial || acc.snmp || "")) + "</td><td class='nt-muted'>" + esc((d.last_error || "").slice(0, 120)) + "</td></tr>";
+      }).join("") : '<tr><td colspan="7" class="nt-muted">Nada ainda. Faça uma descoberta: os equipamentos encontrados ficam guardados aqui.</td></tr>';
+    }).catch(function (e) { box.querySelector("tbody").innerHTML = '<tr><td colspan="7" class="ui-error">' + esc(e.message) + "</td></tr>"; });
+    api("/api/inventory/events?limit=30").then(function (evs) {
+      box.querySelector("#inv-events").innerHTML = evs.map(function (e) {
+        return "<li><time>" + esc(fmt(e.ts)) + "</time><strong>" + esc(e.kind.replace("_", " ")) + "</strong> " + esc(e.device || "") + " <span class='nt-muted'>" + esc(e.detail || "") + "</span></li>";
+      }).join("") || '<li class="nt-muted">Sem eventos.</li>';
+    });
+  }
+
+  document.getElementById("btn-inventory").addEventListener("click", showInventory);
   document.getElementById("btn-new").addEventListener("click", showForm);
   document.getElementById("btn-demo").addEventListener("click", function () {
     api("/api/demo", { method: "POST" }).then(function (r) { return loadHistory().then(function () { select(r.id); }); })
@@ -209,7 +268,9 @@
 
   loadHistory().then(function (list) {
     var hash = location.hash.replace("#", "");
-    if (hash) select(hash);
+    if (hash === "nova") showForm();
+    else if (hash === "inventario") showInventory();
+    else if (hash) select(hash);
     else if (list && list.length && list[0].status === "finished") select(list[0].id);
     else showForm();
   });

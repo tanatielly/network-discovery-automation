@@ -6,6 +6,7 @@ import asyncio
 import logging
 from typing import Any
 
+from nettopo import ratelimit
 from nettopo.collectors.base import MethodResult
 from nettopo.config import Credential, Settings
 from nettopo.models import ArpEntry, Device, Neighbor
@@ -234,7 +235,7 @@ class NetconfCollector:
         self.registry = registry
 
     async def collect(self, target: str, profile: VendorProfile | None,
-                      credentials: list[Credential]) -> MethodResult:
+                      credentials: list[Credential], light: bool = False) -> MethodResult:
         res = MethodResult(method=self.name)
         if profile is not None and not profile.netconf:
             res.errors.append("netconf: perfil sem suporte")
@@ -242,10 +243,10 @@ class NetconfCollector:
         if not credentials:
             res.errors.append("netconf: nenhuma credencial")
             return res
-        return await asyncio.to_thread(self._collect_sync, target, profile, credentials, res)
+        return await asyncio.to_thread(self._collect_sync, target, profile, credentials, res, light)
 
     def _collect_sync(self, target: str, profile: VendorProfile | None, credentials: list[Credential],
-                      res: MethodResult) -> MethodResult:
+                      res: MethodResult, light: bool = False) -> MethodResult:
         try:
             from ncclient import manager
         except ImportError:  # pragma: no cover
@@ -253,6 +254,10 @@ class NetconfCollector:
             return res
         handler = (profile.netconf if profile else None) or "default"
         for cred in credentials:
+            if not ratelimit.auth_allowed():
+                res.errors.append("netconf: limite de falhas de autenticação do equipamento atingido")
+                break
+            ratelimit.pace_sync()
             try:
                 with manager.connect(host=target, port=cred.port or 830, username=cred.username,
                                      password=cred.secret("password"), hostkey_verify=False,
@@ -262,37 +267,40 @@ class NetconfCollector:
                     if profile:
                         dev.vendor, dev.os, dev.profile = profile.vendor, profile.os, profile.id
                     if handler == "junos":
-                        self._junos(m, dev)
+                        self._junos(m, dev, light)
                     else:
-                        self._openconfig(m, dev)
+                        self._openconfig(m, dev, light)
                     res.device = dev
                     res.credential = cred
                     return res
             except Exception as exc:
+                if "auth" in type(exc).__name__.lower() or "authentication" in str(exc).lower():
+                    ratelimit.auth_failed()
                 res.errors.append(f"netconf[{cred.display}]: {type(exc).__name__}: {str(exc)[:160]}")
                 if "timed out" in str(exc).lower() or "refused" in str(exc).lower():
                     break
         return res
 
     def _get(self, m: Any, subtree: str) -> str | None:
+        ratelimit.pace_sync()
         try:
             return m.get(filter=("subtree", subtree)).data_xml
         except Exception as exc:
             log.debug("netconf get %s: %s", subtree[:40], exc)
             return None
 
-    def _openconfig(self, m: Any, dev: Device) -> None:
+    def _openconfig(self, m: Any, dev: Device, light: bool = False) -> None:
         xml = self._get(m, OC_SYSTEM)
         if xml:
             info = parse_openconfig_system(xml)
             dev.hostname = info.get("hostname")
             dev.os_version = info.get("version")
-        xml = self._get(m, OC_PLATFORM)
+        xml = None if light else self._get(m, OC_PLATFORM)
         if xml:
             plat = parse_openconfig_platform(xml)
             dev.serial = dev.serial or plat.get("serial")
             dev.model = dev.model or plat.get("model")
-        xml = self._get(m, OC_INTERFACES)
+        xml = None if light else self._get(m, OC_INTERFACES)
         if xml:
             parse_openconfig_interfaces(xml, dev)
         xml = self._get(m, OC_LLDP)
@@ -301,13 +309,14 @@ class NetconfCollector:
         if not (dev.hostname or dev.interfaces or dev.neighbors):
             raise RuntimeError("equipamento não suporta modelos OpenConfig")
 
-    def _junos(self, m: Any, dev: Device) -> None:
+    def _junos(self, m: Any, dev: Device, light: bool = False) -> None:
         from ncclient.xml_ import new_ele, sub_ele
 
         def rpc(name: str, **children: bool) -> Any:
             ele = new_ele(name)
             for child in children:
                 sub_ele(ele, child.replace("_", "-"))
+            ratelimit.pace_sync()
             try:
                 return m.rpc(ele)
             except Exception as exc:
@@ -318,6 +327,11 @@ class NetconfCollector:
         if r is not None:
             info = parse_junos_software(r.xml if hasattr(r, "xml") else str(r))
             dev.hostname, dev.model, dev.os_version = info.get("hostname"), info.get("model"), info.get("version")
+        if light:
+            r = rpc("get-lldp-neighbors-information")
+            if r is not None:
+                dev.neighbors.extend(parse_junos_lldp(r.xml if hasattr(r, "xml") else str(r)))
+            return
         r = rpc("get-chassis-inventory")
         if r is not None:
             root = _root(r.xml if hasattr(r, "xml") else str(r))

@@ -266,3 +266,11 @@ def test_d4_ssh_banner_and_prompt_identification():
     assert {p.id for p in reg.match_prompt("A:core-srl1#")} == {"nokia_srl", "nokia_sros"}
     assert reg.match_snmp(None, read("srlinux/show_version.txt")).id == "nokia_srl"
     assert reg.match_snmp(None, "Linux srv1 6.17.0 #22-Ubuntu SMP x86_64 GNU/Linux").id == "linux"
+
+
+def test_l3_inference_ignores_interfaces_down():
+    a = Device(id="a", hostname="a", interfaces=[Interface(name="e1", ipv4=["10.10.4.1/30"], oper_up=True)])
+    b = Device(id="b", hostname="b", interfaces=[Interface(name="eth2", ipv4=["10.10.4.2/30"], oper_up=False)])
+    assert not build_topology({"a": a, "b": b}).links
+    b.interfaces[0].oper_up = True
+    assert [lk.kind for lk in build_topology({"a": a, "b": b}).links] == ["l3"]

@@ -45,7 +45,7 @@ def infer_l3_links(topo: Topology, settings: Settings | None = None) -> None:
         if d.stub:
             continue
         for itf in d.interfaces:
-            if _skip_interface(itf.name, settings):
+            if _skip_interface(itf.name, settings) or itf.oper_up is False:  # enlace caído não é link
                 continue
             for cidr in itf.ipv4:
                 net = network_of(cidr)

@@ -14,6 +14,7 @@ import asyncio
 import logging
 from typing import Any
 
+from nettopo import ratelimit
 from nettopo.collectors.base import MethodResult
 from nettopo.config import CollectOptions, Credential, Settings
 from nettopo.models import ArpEntry, Device, Interface, MacEntry, Neighbor, Route, Vlan
@@ -251,7 +252,8 @@ def build_device(target: str, system: dict[str, Any], walks: dict[str, Walk],
 
     # Interfaces
     ifnames: dict[int, str] = {}
-    for idx, v in w("ifDescr").items():
+    for idx in sorted(set(w("ifDescr")) | set(w("ifName"))):
+        v = w("ifDescr").get(idx)
         ifindex = idx[0]
         name = to_text(w("ifName").get(idx)) or to_text(v) or f"ifIndex{ifindex}"
         ifnames[ifindex] = canonical_ifname(name) or name
@@ -510,6 +512,7 @@ class SnmpSession:
     async def get(self, oids: dict[str, str]) -> dict[str, Any]:
         hl = self._hl
         names = list(oids)
+        await ratelimit.pace()
         err, status, _, binds = await hl.get_cmd(
             self._engine, self._auth, self._transport, self._context(),
             *[hl.ObjectType(hl.ObjectIdentity(oids[n])) for n in names], lookupMib=False)
@@ -523,11 +526,13 @@ class SnmpSession:
         hl = self._hl
         base = tuple(int(x) for x in oid.split("."))
         out: Walk = {}
+        max_rep, _ = ratelimit.snmp_params()
+        await ratelimit.pace()
         if self.cred.version == "1":
             gen = hl.walk_cmd(self._engine, self._auth, self._transport, self._context(),
                               hl.ObjectType(hl.ObjectIdentity(oid)), lexicographicMode=False, lookupMib=False)
         else:
-            gen = hl.bulk_walk_cmd(self._engine, self._auth, self._transport, self._context(), 0, 25,
+            gen = hl.bulk_walk_cmd(self._engine, self._auth, self._transport, self._context(), 0, max_rep,
                                    hl.ObjectType(hl.ObjectIdentity(oid)), lexicographicMode=False, lookupMib=False)
         async for err, status, _, binds in gen:
             if err or status:
@@ -541,6 +546,7 @@ class SnmpSession:
                     out[t[len(base):]] = v
             if len(out) >= limit:
                 break
+            await ratelimit.pace()  # próxima PDU só depois do intervalo mínimo
         return out
 
     def close(self) -> None:
@@ -593,7 +599,7 @@ class SnmpCollector:
         return None
 
     async def collect(self, target: str, profile: VendorProfile | None, credentials: list[Credential],
-                      system: dict[str, Any] | None = None) -> MethodResult:
+                      system: dict[str, Any] | None = None, light: bool = False) -> MethodResult:
         res = MethodResult(method=self.name)
         if not credentials:
             res.errors.append("snmp: nenhuma credencial")
@@ -621,12 +627,14 @@ class SnmpCollector:
         if profile is None or profile.category == "server":
             groups.append("processes")
         columns = [c for g in groups for c in GROUPS[g]]
+        if light:  # revalidação: nomes de interface + vizinhança
+            columns = ["ifName"] + GROUPS["lldp"] + GROUPS["cdp"]
         sess = SnmpSession(target, cred, timeout=self.settings.timeout, retries=self.settings.snmp_retries,
                            engine=self.engine())
         walks: dict[str, Walk] = {}
         try:
             await sess.open()
-            sem = asyncio.Semaphore(4)
+            sem = asyncio.Semaphore(ratelimit.snmp_params()[1])
 
             async def one(col: str) -> None:
                 async with sem:
@@ -636,7 +644,7 @@ class SnmpCollector:
                         log.debug("walk %s em %s: %s", col, target, exc)
 
             await asyncio.gather(*(one(c) for c in columns))
-            if opts.routes and not walks.get("ipCidrRouteIfIndex"):
+            if opts.routes and not light and not walks.get("ipCidrRouteIfIndex"):
                 await asyncio.gather(*(one(c) for c in GROUPS["routes_legacy"]))
         finally:
             sess.close()

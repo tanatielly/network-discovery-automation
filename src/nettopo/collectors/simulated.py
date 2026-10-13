@@ -40,6 +40,8 @@ class SimulatedCollector:
         self.delay = delay
         self.devices: dict[str, Device] = {}
         self.reachable: dict[str, bool] = {}
+        self.full_collections = 0
+        self.light_checks = 0
         self._build()
 
     @property
@@ -138,8 +140,23 @@ class SimulatedCollector:
                     break
                 out = dev.model_copy(deep=True)
                 out.extra.pop("caps", None)
+                out.extra["acesso"] = {"metodo": "simulado", "perfil": dev.profile}
+                self.full_collections += 1
                 return out
         return Device(mgmt_ip=target, reachable=False, errors=["simulado: sem resposta (timeout)"])
+
+    async def light_check(self, target: str, access: dict) -> Device | None:
+        """Checagem leve simulada: só hostname e vizinhança (como a real)."""
+        if self.delay:
+            await asyncio.sleep(self.delay / 4)
+        for host, dev in self.devices.items():
+            if target == dev.mgmt_ip or target in dev.ip_addresses():
+                if not self.reachable[host]:
+                    return None
+                self.light_checks += 1
+                return Device(hostname=dev.hostname, mgmt_ip=target,
+                              neighbors=[n.model_copy() for n in dev.neighbors])
+        return None
 
     async def close(self) -> None:
         return None

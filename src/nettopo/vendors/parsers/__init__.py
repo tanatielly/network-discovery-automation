@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 
-from nettopo.vendors.parsers import frr, generic, linux, mikrotik
+from nettopo.vendors.parsers import frr, generic, linux, mikrotik, srlinux
 
 log = logging.getLogger(__name__)
 
@@ -37,6 +37,7 @@ CUSTOM_PARSERS: dict[str, Parser] = {
     "linux_facts": linux.linux_facts,
     "frr_bgp_json": frr.frr_bgp_json,
     "frr_ospf_json": frr.frr_ospf_json,
+    "srl_json_lldp": srlinux.srl_json_lldp,
 }
 
 # Fallback genérico por tipo de dado

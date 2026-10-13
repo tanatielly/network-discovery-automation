@@ -21,7 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from nettopo import __version__
 from nettopo.api.store import DiscoveryRecord, Store
 from nettopo.collectors.base import DeviceCollector
-from nettopo.config import Settings
+from nettopo.config import Credential, Settings
 from nettopo.models import utcnow
 from nettopo.output import FORMATS, export
 from nettopo.output.html import viewer_payload
@@ -56,8 +56,9 @@ class JobManager:
         self.store = store
         self.jobs: dict[str, Job] = {}
 
-    def start(self, settings: Settings, collector: DeviceCollector | None = None, demo: bool = False) -> str:
-        from nettopo.discovery.engine import discover
+    def start(self, settings: Settings, collector: DeviceCollector | None = None, demo: bool = False,
+              inventory: Any = None, full: bool = False, verify_only: bool = False) -> str:
+        from nettopo.inventory.revalidate import discover_with_memory
 
         rid = uuid.uuid4().hex[:12]
         self.store.add(DiscoveryRecord(id=rid, name=settings.name, demo=demo, seeds=json.dumps(settings.seeds),
@@ -68,7 +69,8 @@ class JobManager:
         async def run() -> None:
             self.store.update(rid, status="running")
             try:
-                topo = await discover(settings, collector=collector, progress=job.publish)
+                topo = await discover_with_memory(settings, store=inventory, collector=collector,
+                                                  progress=job.publish, full=full, verify_only=verify_only)
                 self.store.update(rid, status="finished", finished_at=utcnow(),
                                   stats_json=json.dumps(topo.meta.stats), topology_json=topo.model_dump_json())
             except Exception as exc:  # erro inesperado vira status "failed"
@@ -92,8 +94,27 @@ def _auth(request: Request) -> None:
 
 
 def create_app(data_dir: Path | None = None) -> FastAPI:
+    from nettopo.inventory.store import InventoryStore
+    from nettopo.vault import Vault, VaultError, resolve_credentials
+
     store = Store(data_dir)
     manager = JobManager(store)
+    inventory = InventoryStore(store.data_dir)
+    demo_inventory = InventoryStore(store.data_dir / "demo")
+
+    def vault() -> Vault:
+        try:
+            return Vault(store.data_dir)
+        except VaultError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    def with_vault(settings: Settings) -> Settings:
+        if not (settings.usar_cofre or any(c.ref for c in settings.credentials)):
+            return settings
+        try:
+            return resolve_credentials(settings, vault())
+        except VaultError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @asynccontextmanager
     async def lifespan(_: FastAPI):  # noqa: ANN202
@@ -117,18 +138,59 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
                 for p in sorted(default_registry().all(), key=lambda p: (p.vendor, p.os))]
 
     @app.post("/api/discoveries", status_code=202, dependencies=guard)
-    async def start_discovery(settings: Settings) -> dict[str, Any]:
-        if not settings.seeds:
+    async def start_discovery(settings: Settings, completo: bool = False, memoria: bool = True) -> dict[str, Any]:
+        if not settings.seeds and not settings.varredura and not (memoria and inventory.devices()):
             raise HTTPException(status_code=422, detail="informe ao menos uma semente")
-        rid = manager.start(settings)
+        rid = manager.start(with_vault(settings), inventory=inventory if memoria else None, full=completo)
         return {"id": rid, "status": "queued"}
+
+    @app.post("/api/verify", status_code=202, dependencies=guard)
+    async def start_verify(settings: Settings | None = None) -> dict[str, Any]:
+        """Confirma os equipamentos conhecidos (credenciais do corpo ou todas do cofre)."""
+        if not inventory.devices():
+            raise HTTPException(status_code=409, detail="a memória está vazia: faça uma descoberta primeiro")
+        settings = settings or Settings(usar_cofre=True, name="Verificação")
+        if not settings.credentials and not settings.usar_cofre:
+            settings = settings.model_copy(update={"usar_cofre": True})
+        rid = manager.start(with_vault(settings), inventory=inventory, verify_only=True)
+        return {"id": rid, "status": "queued"}
+
+    @app.get("/api/inventory", dependencies=guard)
+    def list_inventory() -> dict[str, Any]:
+        rows = [r.summary() for r in inventory.devices(include_retired=True)]
+        counts: dict[str, int] = {}
+        for r in rows:
+            counts[r["status"]] = counts.get(r["status"], 0) + 1
+        return {"devices": rows, "counts": counts}
+
+    @app.get("/api/inventory/events", dependencies=guard)
+    def list_events(limit: int = 100) -> list[dict[str, Any]]:
+        return [e.summary() for e in inventory.events(limit)]
+
+    @app.get("/api/credentials", dependencies=guard)
+    def list_credentials() -> dict[str, Any]:
+        v = vault()
+        return {"backend": v.backend, "items": v.list()}
+
+    @app.post("/api/credentials", status_code=201, dependencies=guard)
+    def add_credential(cred: Credential) -> dict[str, Any]:
+        if not cred.name or cred.ref:
+            raise HTTPException(status_code=422, detail="informe 'name' e os campos da credencial")
+        vault().add(cred)
+        return {"saved": cred.name}
+
+    @app.delete("/api/credentials/{name}", dependencies=guard)
+    def delete_credential(name: str) -> dict[str, bool]:
+        if not vault().remove(name):
+            raise HTTPException(status_code=404, detail="credencial não encontrada")
+        return {"deleted": True}
 
     @app.post("/api/demo", status_code=202, dependencies=guard)
     async def start_demo() -> dict[str, Any]:
         from nettopo.collectors.simulated import SimulatedCollector, demo_settings
 
         sim = SimulatedCollector(delay=0.25)
-        rid = manager.start(demo_settings(sim, concurrency=4), collector=sim, demo=True)
+        rid = manager.start(demo_settings(sim, concurrency=4), collector=sim, demo=True, inventory=demo_inventory)
         return {"id": rid, "status": "queued"}
 
     @app.get("/api/discoveries", dependencies=guard)

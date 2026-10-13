@@ -155,8 +155,11 @@ profiles:
     netconf: default
     commands:
       facts: show version
-      lldp: show system lldp neighbor
+      lldp:
+        - info from state /system lldp interface * neighbor * | as json
+        - show system lldp neighbor
       ip_interfaces: show interface brief
       arp: show arpnd arp-entries
     parsers:
       facts: kv_colon
+      lldp: srl_json_lldp

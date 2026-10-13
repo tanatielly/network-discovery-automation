@@ -9,8 +9,9 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, Field, SecretStr, field_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator, model_validator
 
+from nettopo.ratelimit import LoadSettings
 from nettopo.utils import parse_ipv4
 
 _ENV_RE = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-([^}]*))?\}")
@@ -26,7 +27,8 @@ class Credential(BaseModel):
     """Credencial de acesso. Várias podem ser informadas; são testadas em ordem."""
 
     name: str = ""
-    type: Literal["ssh", "snmp", "netconf", "rest"]
+    ref: str | None = None  # referência a uma credencial do cofre (nettopo cred add)
+    type: Literal["ssh", "snmp", "netconf", "rest"] | None = None
     username: str | None = None
     password: SecretStr | None = None
     enable_secret: SecretStr | None = None
@@ -43,6 +45,12 @@ class Credential(BaseModel):
     token: SecretStr | None = None
     verify_ssl: bool = False
     https: bool = True
+
+    @model_validator(mode="after")
+    def _check_type(self) -> Credential:
+        if not self.ref and self.type is None:
+            raise ValueError("credencial sem 'type' (ssh, snmp, netconf ou rest) e sem 'ref' para o cofre")
+        return self
 
     @field_validator("version", mode="before")
     @classmethod
@@ -129,6 +137,11 @@ class Settings(BaseModel):
     # Regex de interfaces de gerência fora de banda: LLDP nelas não vira link (None = padrão)
     ignore_interfaces: str | None = None
     credentials: list[Credential] = Field(default_factory=list)
+    usar_cofre: bool = False  # inclui todas as credenciais do cofre local
+    carga: LoadSettings = Field(default_factory=LoadSettings)  # rate limit por equipamento
+    # Varredura opcional das redes de gerência (vazio = desligada)
+    varredura: list[str] = Field(default_factory=list)
+    varredura_max_hosts: int = 4096
     follow: FollowOptions = Field(default_factory=FollowOptions)
     collect: CollectOptions = Field(default_factory=CollectOptions)
 

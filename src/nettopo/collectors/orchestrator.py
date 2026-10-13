@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from nettopo import ratelimit
 from nettopo.collectors.base import MethodResult
 from nettopo.collectors.netconf import NetconfCollector
 from nettopo.collectors.rest import RestCollector
@@ -37,6 +38,7 @@ class Orchestrator:
         self._creds: dict[str, list[Credential]] = {
             t: settings.creds(t) for t in ("ssh", "snmp", "netconf", "rest")
         }
+        self.throttles = ratelimit.ThrottleRegistry(settings.carga)
 
     def _promote(self, kind: str, cred: Credential | None) -> None:
         lst = self._creds.get(kind, [])
@@ -81,8 +83,21 @@ class Orchestrator:
         return fp
 
     async def collect(self, target: str) -> Device:
+        throttle = self.throttles.get(target)
+        token = ratelimit.use(throttle)
+        try:
+            async with throttle.session():
+                device = await self._collect(target, throttle)
+        finally:
+            ratelimit.reset(token)
+        device.extra["carga"] = throttle.stats()
+        return device
+
+    async def _collect(self, target: str, throttle: ratelimit.DeviceThrottle) -> Device:
         fp = await self.fingerprint(target)
         profile = fp.profile
+        if profile is not None:  # ajustes de carga por fabricante passam a valer daqui em diante
+            self.throttles.get(target, profile.id, to_text((fp.system or {}).get("name")))
         errors: list[str] = []
         primary: MethodResult | None = None
 
@@ -144,8 +159,60 @@ class Orchestrator:
             device.profile = device.profile or profile.id
             device.os_version = device.os_version or self.registry.extract_version(profile, device.sys_description)
         device.extra["fingerprint"] = fp.method
+        device.extra["acesso"] = {
+            "metodo": primary.method if primary else "snmp",
+            "credencial": primary.credential.display if primary and primary.credential else None,
+            "snmp": fp.snmp_cred.display if fp.snmp_cred else None,
+            "perfil": profile.id if profile else None,
+        }
         device.errors.extend(e for e in errors if e not in device.errors)
         return device
+
+    def _find_cred(self, kind: str, name: str | None) -> Credential | None:
+        for c in self._creds.get(kind, []):
+            if c.display == name:
+                return c
+        return None
+
+    async def light_check(self, target: str, access: dict[str, Any]) -> Device | None:
+        """Checagem leve com o acesso que funcionou da última vez: identidade + vizinhança.
+
+        Devolve ``None`` se o acesso salvo não serve mais (credencial removida, método sem resposta).
+        """
+        throttle = self.throttles.get(target, access.get("perfil"))
+        token = ratelimit.use(throttle)
+        try:
+            async with throttle.session():
+                device = await self._light(target, access)
+        finally:
+            ratelimit.reset(token)
+        if device is not None:
+            device.extra["carga"] = throttle.stats()
+        return device
+
+    async def _light(self, target: str, access: dict[str, Any]) -> Device | None:
+        profile = self.registry.get(access.get("perfil"))
+        method = access.get("metodo")
+        res: MethodResult | None = None
+        if method in ("rest", "netconf", "ssh") and profile is not None:
+            cred = self._find_cred(method, access.get("credencial"))
+            if cred is not None:
+                collector: Any = {"rest": self.rest, "netconf": self.netconf, "ssh": self.ssh}[method]
+                try:
+                    res = await collector.collect(target, profile, [cred], light=True)
+                except Exception:
+                    log.debug("checagem leve %s falhou em %s", method, target, exc_info=True)
+        if (res is None or not res.ok) and access.get("snmp"):
+            cred = self._find_cred("snmp", access.get("snmp"))
+            if cred is not None:
+                try:
+                    res = await self.snmp.collect(target, profile, [cred], light=True)
+                except Exception:
+                    log.debug("checagem leve snmp falhou em %s", target, exc_info=True)
+        if res is None or not res.ok or res.device is None:
+            return None
+        res.device.mgmt_ip = target
+        return res.device
 
     async def close(self) -> None:
         self.snmp.close()

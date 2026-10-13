@@ -51,7 +51,7 @@ class _Hints:
 class DiscoveryEngine:
     def __init__(self, settings: Settings, collector: DeviceCollector | None = None,
                  registry: VendorRegistry | None = None, progress: ProgressCallback | None = None,
-                 known_hosts: dict[str, list[str]] | None = None):
+                 known_hosts: dict[str, list[str]] | None = None, skip_ips: dict[str, str] | None = None):
         self.settings = settings
         self.registry = registry or default_registry()
         if collector is None:
@@ -66,7 +66,8 @@ class DiscoveryEngine:
         self.known_hosts: dict[str, list[str]] = dict(known_hosts or {})
         self._queued: set[str] = set()
         self._queued_hosts: set[str] = set()  # hostnames anunciados já enfileirados
-        self._dead: dict[str, str] = {}  # cache negativo: IP -> motivo da falha nesta execução
+        # cache negativo: IP -> motivo (falhas desta execução + falhas recentes lembradas pela memória)
+        self._dead: dict[str, str] = dict(skip_ips or {})
         self._lock = asyncio.Lock()
         self._processed = 0
         self._hints = _Hints(self)
@@ -144,7 +145,8 @@ class DiscoveryEngine:
         for dev in preloaded or []:
             await self._enqueue_neighbors(queue, dev, dev.depth)
 
-        workers = [asyncio.create_task(self._worker(queue)) for _ in range(max(1, self.settings.concurrency))]
+        n_workers = max(1, min(self.settings.concurrency, self.settings.carga.concurrency))
+        workers = [asyncio.create_task(self._worker(queue)) for _ in range(n_workers)]
         try:
             await queue.join()
         finally:

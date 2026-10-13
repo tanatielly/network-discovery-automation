@@ -15,6 +15,7 @@
   <div class="ui-brand"><span class="ui-logo" aria-hidden="true"></span>NetTopo</div>
   <nav class="ui-actions">
     <button class="nt-btn primary" id="btn-new" type="button">Nova descoberta</button>
+    <button class="nt-btn" id="btn-inventory" type="button">Inventário</button>
     <button class="nt-btn" id="btn-demo" type="button" title="Descoberta em rede simulada multi-vendor">Demo</button>
   </nav>
 </header>
@@ -52,7 +53,26 @@
       <label class="nt-toggle"><input type="checkbox" name="c_mac"> Coletar tabela MAC</label>
     </fieldset>
     <fieldset class="ui-fieldset">
-      <legend>Credenciais <span class="nt-muted">(usadas apenas em memória, não são gravadas)</span></legend>
+      <legend>Memória e carga</legend>
+      <label class="nt-toggle"><input type="checkbox" name="o_memory" checked> Usar memória (confirma o que já é conhecido)</label>
+      <label class="nt-toggle"><input type="checkbox" name="o_full"> Coleta completa (não reaproveitar dados)</label>
+      <label class="ui-inline">Perfil de carga
+        <select class="nt-select" name="load" aria-label="Perfil de carga">
+          <option value="equilibrado" selected>Equilibrado</option>
+          <option value="conservador">Conservador (equipamentos antigos)</option>
+          <option value="rapido">Rápido</option>
+        </select>
+      </label>
+      <label class="ui-grow">Varredura das redes de gerência (opcional, uma por linha)
+        <textarea class="nt-input" name="sweep" rows="2" placeholder="172.20.20.0/24"></textarea>
+      </label>
+    </fieldset>
+    <fieldset class="ui-fieldset">
+      <legend>Credenciais do cofre <span class="nt-muted" id="vault-backend"></span></legend>
+      <div id="vault-list" class="ui-vault"><span class="nt-muted">Carregando…</span></div>
+    </fieldset>
+    <fieldset class="ui-fieldset">
+      <legend>Novas credenciais <span class="nt-muted">(sem "salvar no cofre", ficam só nesta descoberta)</span></legend>
       <div id="creds"></div>
       <button class="nt-btn" type="button" id="add-cred">+ Adicionar credencial</button>
     </fieldset>
@@ -86,6 +106,8 @@
     <input class="nt-input" data-f="priv_key" data-for="snmp-v3" placeholder="priv key" type="password">
     <input class="nt-input" data-f="token" data-for="rest" placeholder="token (FortiOS)" type="password">
     <input class="nt-input ui-port" data-f="port" placeholder="porta" type="number">
+    <label class="nt-toggle"><input type="checkbox" data-save> Salvar no cofre</label>
+    <input class="nt-input" data-f="name" placeholder="nome no cofre" hidden>
     <button class="nt-btn" type="button" data-remove title="Remover">×</button>
   </div>
 </template>

@@ -7,6 +7,7 @@ import logging
 import re
 from typing import Any
 
+from nettopo import ratelimit
 from nettopo.collectors.base import MethodResult
 from nettopo.config import Credential, Settings
 from nettopo.models import Device
@@ -61,13 +62,17 @@ def parse_cli_outputs(device: Device, profile: VendorProfile, outputs: dict[str,
         log.debug("%s %s '%s' -> %d registros (%s)", device.mgmt_ip, kind, command, count, source)
 
 
+# Checagem leve (revalidação): identidade e vizinhança
+LIGHT_KINDS = ["hostname", "lldp", "cdp", "other_l2"]
+
 # Comandos inofensivos usados para reconhecer o sistema quando banner e prompt não bastam
 PROBE_COMMANDS = ["show version", "uname -a", "display version", "/system resource print", "get system status",
                   "show system info"]
 
 _ERROR_MARKERS = re.compile(
     r"(% ?Invalid|% ?Unknown|Unrecognized command|syntax error|Error:|% ?Incomplete|invalid input|"
-    r"Command not found|not supported|bad command)", re.I)
+    r"Command not found|not supported|bad command|Permission denied|not permitted|must be root|"
+    r"Parsing error)", re.I)
 
 
 class SSHCollector:
@@ -97,6 +102,10 @@ class SSHCollector:
         errors: list[str] = []
         auth_failures = 0
         for cred in credentials:
+            if not ratelimit.auth_allowed():
+                errors.append("ssh: limite de falhas de autenticação do equipamento atingido")
+                break
+            ratelimit.pace_sync()
             try:
                 conn = ConnectHandler(device_type="generic", host=target, username=cred.username,
                                       password=cred.secret("password"), port=cred.port or 22,
@@ -108,6 +117,7 @@ class SSHCollector:
                     errors.append(f"ssh: {type(exc).__name__}")
                     return None, None, errors, None
                 auth_failures += 1
+                ratelimit.auth_failed()
                 continue
             try:
                 prompt = ""
@@ -120,6 +130,7 @@ class SSHCollector:
                     return found[0], cred, errors, "ssh-prompt"
                 pool = found or candidates
                 for cmd in PROBE_COMMANDS:
+                    ratelimit.pace_sync(ratelimit.ssh_command_delay())
                     try:
                         out = conn.send_command_timing(cmd, read_timeout=10, last_read=1.0)
                     except Exception:
@@ -147,6 +158,9 @@ class SSHCollector:
         except ImportError:  # pragma: no cover
             return None
         for cred in credentials:
+            if not ratelimit.auth_allowed():
+                break
+            ratelimit.pace_sync()
             try:
                 det = SSHDetect(device_type="autodetect", host=target, username=cred.username,
                                 password=cred.secret("password"), port=cred.port or 22,
@@ -164,7 +178,7 @@ class SSHCollector:
 
     # ------------------------------------------------------------------ coleta
     async def collect(self, target: str, profile: VendorProfile | None,
-                      credentials: list[Credential]) -> MethodResult:
+                      credentials: list[Credential], light: bool = False) -> MethodResult:
         res = MethodResult(method=self.name)
         if not profile:
             res.errors.append("ssh: fabricante não identificado")
@@ -175,13 +189,19 @@ class SSHCollector:
         if not credentials:
             res.errors.append("ssh: nenhuma credencial")
             return res
-        return await asyncio.to_thread(self._collect_sync, target, profile, credentials, res)
+        kinds = LIGHT_KINDS if light else kinds_for(self.settings)
+        return await asyncio.to_thread(self._collect_sync, target, profile, credentials, res, kinds)
 
     def _connect(self, target: str, profile: VendorProfile, credentials: list[Credential],
                  res: MethodResult) -> tuple[Any, Credential] | None:
         from netmiko import ConnectHandler
 
         for cred in credentials:
+            if not ratelimit.auth_allowed():
+                res.errors.append("ssh: limite de falhas de autenticação do equipamento atingido "
+                                  "(protege contra bloqueio de conta no AAA)")
+                return None
+            ratelimit.pace_sync()
             params: dict[str, Any] = {
                 "device_type": profile.netmiko,
                 "host": target,
@@ -202,6 +222,7 @@ class SSHCollector:
                 res.errors.append(f"ssh[{cred.display}]: {type(exc).__name__}: {str(exc).splitlines()[0][:160]}")
                 if _is_unreachable(exc):
                     return None
+                ratelimit.auth_failed()
                 continue
             if cred.enable_secret:
                 try:
@@ -212,7 +233,7 @@ class SSHCollector:
         return None
 
     def _collect_sync(self, target: str, profile: VendorProfile, credentials: list[Credential],
-                      res: MethodResult) -> MethodResult:
+                      res: MethodResult, kinds: list[str] | None = None) -> MethodResult:
         connected = self._connect(target, profile, credentials, res)
         if not connected:
             return res
@@ -225,8 +246,9 @@ class SSHCollector:
                 dev.hostname = hostname_from_prompt(conn.find_prompt())
             except Exception:
                 pass
-            for kind in kinds_for(self.settings):
+            for kind in kinds or kinds_for(self.settings):
                 for cmd in profile.commands_for(kind):
+                    ratelimit.pace_sync(ratelimit.ssh_command_delay())
                     try:
                         out = conn.send_command(cmd, read_timeout=max(30, self.settings.timeout * 4))
                     except Exception as exc:
