@@ -1,0 +1,484 @@
+{
+  "edge-mk1": {
+    "_prompt": {
+      "prompt": "[admin@edge-mk1] >",
+      "hostname": "edge-mk1"
+    },
+    "facts": {
+      "command": "/system resource print without-paging",
+      "lines": 17,
+      "parser": "mikrotik_facts",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "hostname": {
+      "command": "/system identity print",
+      "lines": 1,
+      "parser": "mikrotik_identity",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "interfaces": {
+      "command": "/interface print detail without-paging",
+      "lines": 13,
+      "parser": "mikrotik_interfaces",
+      "rows": 5,
+      "records": 5,
+      "rejected_by_tool": false
+    },
+    "ip_interfaces": {
+      "command": "/ip address print terse without-paging",
+      "lines": 4,
+      "parser": "mikrotik_ip_address",
+      "rows": 4,
+      "records": 4,
+      "rejected_by_tool": false
+    },
+    "other_l2": {
+      "command": "/ip neighbor print detail without-paging",
+      "lines": 5,
+      "parser": "mikrotik_neighbors",
+      "rows": 3,
+      "records": 3,
+      "rejected_by_tool": false
+    },
+    "arp": {
+      "command": "/ip arp print terse without-paging",
+      "lines": 3,
+      "parser": "mikrotik_arp",
+      "rows": 3,
+      "records": 3,
+      "rejected_by_tool": false
+    },
+    "routes": {
+      "command": "/ip route print terse without-paging",
+      "lines": 6,
+      "parser": "mikrotik_routes",
+      "rows": 6,
+      "records": 6,
+      "rejected_by_tool": false
+    },
+    "vlans": {
+      "command": "/interface vlan print terse without-paging",
+      "lines": 0,
+      "parser": "none",
+      "rows": 0,
+      "records": 0,
+      "rejected_by_tool": false
+    },
+    "ospf": {
+      "command": "/routing ospf neighbor print detail without-paging",
+      "lines": 2,
+      "parser": "mikrotik_ospf",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "bgp": {
+      "command": "/routing bgp session print detail without-paging",
+      "lines": 7,
+      "parser": "mikrotik_bgp",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    }
+  },
+  "edge-mk2": {
+    "_prompt": {
+      "prompt": "[admin@edge-mk2] >",
+      "hostname": "edge-mk2"
+    },
+    "facts": {
+      "command": "/system resource print without-paging",
+      "lines": 17,
+      "parser": "mikrotik_facts",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "hostname": {
+      "command": "/system identity print",
+      "lines": 1,
+      "parser": "mikrotik_identity",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "interfaces": {
+      "command": "/interface print detail without-paging",
+      "lines": 12,
+      "parser": "mikrotik_interfaces",
+      "rows": 5,
+      "records": 5,
+      "rejected_by_tool": false
+    },
+    "ip_interfaces": {
+      "command": "/ip address print terse without-paging",
+      "lines": 3,
+      "parser": "mikrotik_ip_address",
+      "rows": 3,
+      "records": 3,
+      "rejected_by_tool": false
+    },
+    "other_l2": {
+      "command": "/ip neighbor print detail without-paging",
+      "lines": 3,
+      "parser": "mikrotik_neighbors",
+      "rows": 2,
+      "records": 2,
+      "rejected_by_tool": false
+    },
+    "arp": {
+      "command": "/ip arp print terse without-paging",
+      "lines": 2,
+      "parser": "mikrotik_arp",
+      "rows": 2,
+      "records": 2,
+      "rejected_by_tool": false
+    },
+    "routes": {
+      "command": "/ip route print terse without-paging",
+      "lines": 4,
+      "parser": "mikrotik_routes",
+      "rows": 4,
+      "records": 4,
+      "rejected_by_tool": false
+    },
+    "vlans": {
+      "command": "/interface vlan print terse without-paging",
+      "lines": 0,
+      "parser": "none",
+      "rows": 0,
+      "records": 0,
+      "rejected_by_tool": false
+    },
+    "ospf": {
+      "command": "/routing ospf neighbor print detail without-paging",
+      "lines": 2,
+      "parser": "mikrotik_ospf",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "bgp": {
+      "command": "/routing bgp session print detail without-paging",
+      "lines": 1,
+      "parser": "none",
+      "rows": 0,
+      "records": 0,
+      "rejected_by_tool": false
+    }
+  },
+  "core-srl1": {
+    "_prompt": {
+      "prompt": "A:admin@core-srl1#",
+      "hostname": "core-srl1"
+    },
+    "facts": {
+      "command": "show version",
+      "lines": 14,
+      "parser": "kv_colon",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "ip_interfaces": {
+      "command": "show interface brief",
+      "lines": 63,
+      "parser": "generic",
+      "rows": 59,
+      "records": 59,
+      "rejected_by_tool": false
+    },
+    "lldp": {
+      "command": "info from state /system lldp interface * neighbor * | as json",
+      "lines": 140,
+      "parser": "srl_json_lldp",
+      "rows": 4,
+      "records": 4,
+      "rejected_by_tool": false
+    },
+    "arp": {
+      "command": "show arpnd arp-entries",
+      "lines": 8,
+      "parser": "generic",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    }
+  },
+  "core-srl2": {
+    "_prompt": {
+      "prompt": "A:admin@core-srl2#",
+      "hostname": "core-srl2"
+    },
+    "facts": {
+      "command": "show version",
+      "lines": 14,
+      "parser": "kv_colon",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "ip_interfaces": {
+      "command": "show interface brief",
+      "lines": 63,
+      "parser": "generic",
+      "rows": 59,
+      "records": 59,
+      "rejected_by_tool": false
+    },
+    "lldp": {
+      "command": "info from state /system lldp interface * neighbor * | as json",
+      "lines": 181,
+      "parser": "srl_json_lldp",
+      "rows": 5,
+      "records": 5,
+      "rejected_by_tool": false
+    },
+    "arp": {
+      "command": "show arpnd arp-entries",
+      "lines": 8,
+      "parser": "generic",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    }
+  },
+  "dist-frr1": {
+    "_prompt": {
+      "prompt": "nettopo@dist-frr1:~$",
+      "hostname": "dist-frr1"
+    },
+    "facts": {
+      "command": "echo \"NT_OS=$(. /etc/os-release 2>/dev/null; echo $PRETTY_NAME)\"; echo \"NT_KERNEL=$(uname -r)\"; echo \"NT_SERIAL=$(cat /sys/class/dmi/id/product_serial 2>/dev/null)\"; echo \"NT_PRODUCT=$(cat /sys/class/dmi/id/product_name 2>/dev/null)\"; echo \"NT_ROUTING=$(ps -eo comm 2>/dev/null | grep -E '^(zebra|bgpd|ospfd|ospf6d|isisd|ripd|bird|bird6|quagga)$' | sort -u | tr '\\n' ',')\"",
+      "lines": 6,
+      "parser": "linux_facts",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "hostname": {
+      "command": "hostname",
+      "lines": 2,
+      "parser": "first_line",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "interfaces": {
+      "command": "ip -o link show",
+      "lines": 6,
+      "parser": "linux_links",
+      "rows": 4,
+      "records": 4,
+      "rejected_by_tool": false
+    },
+    "ip_interfaces": {
+      "command": "ip -o -4 addr show",
+      "lines": 6,
+      "parser": "linux_addrs",
+      "rows": 4,
+      "records": 4,
+      "rejected_by_tool": false
+    },
+    "lldp": {
+      "command": "sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details",
+      "lines": 43,
+      "parser": "lldpctl_keyvalue",
+      "rows": 3,
+      "records": 3,
+      "rejected_by_tool": false
+    },
+    "arp": {
+      "command": "ip -4 neigh show",
+      "lines": 2,
+      "parser": "linux_neigh",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "routes": {
+      "command": "ip -4 route show",
+      "lines": 6,
+      "parser": "linux_routes",
+      "rows": 5,
+      "records": 5,
+      "rejected_by_tool": false
+    },
+    "ospf": {
+      "command": "sudo -n /usr/bin/vtysh -c \"show ip ospf neighbor json\"",
+      "lines": 3,
+      "parser": "none",
+      "rows": 0,
+      "records": 0,
+      "rejected_by_tool": false
+    },
+    "bgp": {
+      "command": "sudo -n /usr/bin/vtysh -c \"show bgp summary json\"",
+      "lines": 2,
+      "parser": "none",
+      "rows": 0,
+      "records": 0,
+      "rejected_by_tool": false
+    }
+  },
+  "srv1": {
+    "_prompt": {
+      "prompt": "nettopo@srv1:~$",
+      "hostname": "srv1"
+    },
+    "facts": {
+      "command": "echo \"NT_OS=$(. /etc/os-release 2>/dev/null; echo $PRETTY_NAME)\"; echo \"NT_KERNEL=$(uname -r)\"; echo \"NT_SERIAL=$(cat /sys/class/dmi/id/product_serial 2>/dev/null)\"; echo \"NT_PRODUCT=$(cat /sys/class/dmi/id/product_name 2>/dev/null)\"; echo \"NT_ROUTING=$(ps -eo comm 2>/dev/null | grep -E '^(zebra|bgpd|ospfd|ospf6d|isisd|ripd|bird|bird6|quagga)$' | sort -u | tr '\\n' ',')\"",
+      "lines": 6,
+      "parser": "linux_facts",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "hostname": {
+      "command": "hostname",
+      "lines": 2,
+      "parser": "first_line",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "interfaces": {
+      "command": "ip -o link show",
+      "lines": 4,
+      "parser": "linux_links",
+      "rows": 2,
+      "records": 2,
+      "rejected_by_tool": false
+    },
+    "ip_interfaces": {
+      "command": "ip -o -4 addr show",
+      "lines": 4,
+      "parser": "linux_addrs",
+      "rows": 2,
+      "records": 2,
+      "rejected_by_tool": false
+    },
+    "lldp": {
+      "command": "sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details",
+      "lines": 19,
+      "parser": "lldpctl_keyvalue",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "arp": {
+      "command": "ip -4 neigh show",
+      "lines": 2,
+      "parser": "linux_neigh",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "routes": {
+      "command": "ip -4 route show",
+      "lines": 4,
+      "parser": "linux_routes",
+      "rows": 3,
+      "records": 3,
+      "rejected_by_tool": false
+    },
+    "ospf": {
+      "command": "sudo -n /usr/bin/vtysh -c \"show ip ospf neighbor json\"",
+      "lines": 2,
+      "parser": "none",
+      "rows": 0,
+      "records": 0,
+      "rejected_by_tool": false
+    },
+    "bgp": {
+      "command": "sudo -n /usr/bin/vtysh -c \"show bgp summary json\"",
+      "lines": 2,
+      "parser": "none",
+      "rows": 0,
+      "records": 0,
+      "rejected_by_tool": false
+    }
+  },
+  "srv2": {
+    "_prompt": {
+      "prompt": "nettopo@srv2:~$",
+      "hostname": "srv2"
+    },
+    "facts": {
+      "command": "echo \"NT_OS=$(. /etc/os-release 2>/dev/null; echo $PRETTY_NAME)\"; echo \"NT_KERNEL=$(uname -r)\"; echo \"NT_SERIAL=$(cat /sys/class/dmi/id/product_serial 2>/dev/null)\"; echo \"NT_PRODUCT=$(cat /sys/class/dmi/id/product_name 2>/dev/null)\"; echo \"NT_ROUTING=$(ps -eo comm 2>/dev/null | grep -E '^(zebra|bgpd|ospfd|ospf6d|isisd|ripd|bird|bird6|quagga)$' | sort -u | tr '\\n' ',')\"",
+      "lines": 6,
+      "parser": "linux_facts",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "hostname": {
+      "command": "hostname",
+      "lines": 2,
+      "parser": "first_line",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "interfaces": {
+      "command": "ip -o link show",
+      "lines": 4,
+      "parser": "linux_links",
+      "rows": 2,
+      "records": 2,
+      "rejected_by_tool": false
+    },
+    "ip_interfaces": {
+      "command": "ip -o -4 addr show",
+      "lines": 4,
+      "parser": "linux_addrs",
+      "rows": 2,
+      "records": 2,
+      "rejected_by_tool": false
+    },
+    "lldp": {
+      "command": "sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details",
+      "lines": 13,
+      "parser": "lldpctl_keyvalue",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "arp": {
+      "command": "ip -4 neigh show",
+      "lines": 2,
+      "parser": "linux_neigh",
+      "rows": 1,
+      "records": 1,
+      "rejected_by_tool": false
+    },
+    "routes": {
+      "command": "ip -4 route show",
+      "lines": 4,
+      "parser": "linux_routes",
+      "rows": 3,
+      "records": 3,
+      "rejected_by_tool": false
+    },
+    "ospf": {
+      "command": "sudo -n /usr/bin/vtysh -c \"show ip ospf neighbor json\"",
+      "lines": 2,
+      "parser": "none",
+      "rows": 0,
+      "records": 0,
+      "rejected_by_tool": false
+    },
+    "bgp": {
+      "command": "sudo -n /usr/bin/vtysh -c \"show bgp summary json\"",
+      "lines": 2,
+      "parser": "none",
+      "rows": 0,
+      "records": 0,
+      "rejected_by_tool": false
+    }
+  }
+}

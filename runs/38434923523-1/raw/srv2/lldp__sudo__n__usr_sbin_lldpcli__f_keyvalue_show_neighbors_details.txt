@@ -1,0 +1,13 @@
+
+lldp.eth1.via=LLDP
+lldp.eth1.rid=1
+lldp.eth1.age=0 day, 00:01:23
+lldp.eth1.chassis.mac=1a:b8:01:ff:00:00
+lldp.eth1.chassis.name=core-srl2
+lldp.eth1.chassis.descr=SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026
+lldp.eth1.chassis.mgmt-ip=172.20.20.22
+lldp.eth1.chassis.mgmt-iface=1
+lldp.eth1.chassis.Router.enabled=on
+lldp.eth1.port.ifname=ethernet-1/4
+lldp.eth1.port.descr=to srv2 eth1
+lldp.eth1.port.ttl=20
