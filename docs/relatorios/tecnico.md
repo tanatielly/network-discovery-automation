@@ -1,37 +1,58 @@
 ---
 title: NetTopo contra sistemas reais
-kicker: Relatório técnico
-lede: Metodologia, resultados por cenário, análise por fabricante e protocolo, defeitos com localização no código, desempenho, qualidade, segurança e plano de melhorias da primeira simulação do NetTopo em laboratório Containerlab.
+kicker: Relatório técnico · 2ª avaliação
+lede: Correção dos 14 defeitos da primeira avaliação, memória persistente com revalidação, rate limit por equipamento, cofre de credenciais e um laboratório que reprova qualquer divergência do gabarito. Metodologia, resultados, implementação, desempenho e qualidade da versão 0.2.0.
 other_label: Relatório de gestão técnica
 toc: true
 tag:
-  Documento: NT-AVL-2026-02
-  Versão avaliada: NetTopo 0.1.0 · f2823ea
-  Execução: run 36256925269
-  Data: 26/09/2026
+  Documento: NT-AVL-2026-02 · rev. 2
+  Versão avaliada: NetTopo 0.2.0 · 03f0d2b
+  Execução: run 38427060651 (suíte completa)
+  Comparada com: v0.1.0 · run 36256925269
+  Data: 13/10/2026
   Runner: ubuntu-24.04 · 4 vCPU · 16 GB · KVM
   Público: Engenharia de redes e desenvolvimento
+data:
+  compare:
+    - ["Coletados, semente única (todos os métodos)", "4 de 7", "6 de 7 · 7 de 7", "sem DNS/memória/varredura · com qualquer um deles"]
+    - ["Coletados, inventário de IPs de gerência", "5 de 7", "7 de 7", "fusão de hosts Linux eliminada (D1)"]
+    - ["Só SSH", "0 de 7 · 118,1 s", "7 de 7 · 16,3 s", "banner, prompt e sondas (D4)"]
+    - ["Só SNMP v2c", "1 de 7", "7 de 7", "com varredura; LLDP-MIB do SR Linux e do lldpd"]
+    - ["Precisão de links (melhor configuração)", "82%", "100%", "100% em todos os 15 cenários de descoberta"]
+    - ["Portas corretas", "50 a 89%", "100%", "endpoints autoritativos (D2)"]
+    - ["Links de gerência desenhados", "8 de 11 cenários", "0", "LLDP em mgmt ignorado (D5)"]
+    - ["Nó extra do par BGP", "8 de 11 cenários", "0", "par junta-se ao nó do link físico (D12)"]
+    - ["Rotas RouterOS 7 lidas", "1 de 6", "6 de 6", "registro terse por linha (D7)"]
+    - ["Determinismo", "não", "sim", "13 idêntico ao 02 (links, portas e coletados)"]
+    - ["Requisições por equipamento (todos os métodos)", "—", "27 a 44", "eram 91 a 98 antes do complemento SNMP enxuto"]
+    - ["Revalidação da rede conhecida", "—", "3,2 s", "descoberta inicial 32,4 s; 0 recoletas"]
+    - ["Testes automatizados", "46", "90", "inclui saídas reais do laboratório como fixtures"]
+    - ["mypy", "22 erros", "0", ""]
+    - ["bandit alto", "1", "0", "hashes não criptográficos marcados"]
+    - ["Rodada do laboratório", "16 min 19 s", "6 min 54 s · 11 min 58 s", "rápida a cada push · completa diária"]
 ---
 
 ## Objetivo e escopo
 
-Validar a ferramenta contra sistemas operacionais de rede reais, e não mais contra o coletor simulado
-usado nos testes unitários. A avaliação cobre descoberta, identificação de fabricante, leitura dos dados
-(parsing), montagem do grafo, saídas, API, interface web e linha de comando.
+A primeira avaliação (NT-AVL-2026-02, 26/09/2026) registrou 14 defeitos na versão 0.1.0 (D1 a D14, além do
+D0, corrigido durante a própria avaliação). Esta revisão avalia a versão 0.2.0 no mesmo laboratório e cobre:
 
-A versão 0.1.0 foi avaliada **como está**. Houve uma única correção durante a simulação, porque impedia a
-execução (defeito D0, abaixo). Todas as demais falhas estão registradas como recomendação, sem correção.
+- a correção de cada defeito, com a evidência no laboratório;
+- as funções novas pedidas para uso contínuo: **memória persistente com revalidação**, **rate limit por
+  equipamento**, **cofre de credenciais** e **varredura opcional** da rede de gerência;
+- um laboratório mais rápido, com **suítes rápida e completa** e **critério automático de aceite**: a rodada
+  é reprovada se qualquer cenário divergir do gabarito.
 
 ## Ambiente
 
 | Item | Versão / configuração |
 |---|---|
-| Execução | GitHub Actions, `ubuntu-24.04`, 4 vCPU, 15 GiB, `/dev/kvm` habilitado |
+| Execução | GitHub Actions, `ubuntu-24.04`, 4 vCPU, 16 GB, `/dev/kvm` habilitado |
 | Orquestração | Containerlab 0.79.0 |
-| MikroTik | RouterOS 7.16.2 CHR em VM QEMU/KVM, imagem gerada com vrnetlab v0.21.0 |
-| Nokia | SR Linux 25.10.5 (`ghcr.io/nokia/srlinux`), NETCONF + OpenConfig habilitados |
-| Linux | Debian 12, FRR, lldpd com AgentX (LLDP-MIB via net-snmp), OpenSSH |
-| NetTopo | 0.1.0, Python 3.12, commit `f2823ea` |
+| MikroTik | RouterOS 7.16.2 CHR em VM QEMU/KVM (vrnetlab v0.21.0), imagem em cache do Actions |
+| Nokia | SR Linux 25.10.5, JSON-RPC, NETCONF + OpenConfig, LLDP com `hello-timer 5` |
+| Linux | Debian 12, FRR, lldpd (anúncio a cada 5 s) com AgentX, net-snmp, OpenSSH; usuário de monitoração com `sudo -n` restrito a `lldpcli` e `vtysh` |
+| NetTopo | 0.2.0, Python 3.12, commit `03f0d2b` |
 
 ```
                  isp-pe (Linux/FRR, BGP AS64500, sem credenciais do NetTopo)
@@ -45,75 +66,236 @@ execução (defeito D0, abaixo). Todas as demais falhas estão registradas como 
                        srv1 (Linux)
 ```
 
-Gerência em `172.20.20.0/24`, alcançável pelo servidor de descoberta. Os endereços dos links de dados
-(`10.x`, `192.168.x`, `200.200.10.0/30`) **não** são alcançáveis por ele, como costuma acontecer com
-interfaces de trânsito numa rede real.
-
-Uma rodada completa levou 16 min 19 s: build do CHR 2 min 55 s, deploy 1 min 37 s, boot e
-configuração 52 s, cenários 9 min 08 s e qualidade de código 48 s.
+Gerência em `172.20.20.0/24`, alcançável pelo servidor de descoberta; os endereços dos links de dados não
+são. A topologia e as credenciais são as mesmas da primeira avaliação.
 
 ## Metodologia
 
-O arquivo `lab/ground_truth.yaml` descreve o que deveria ser encontrado: 7 equipamentos coletáveis, 1
-roteador de operadora que deve aparecer como "não coletado", 9 links físicos com as interfaces nativas de
-cada lado e 2 adjacências de roteamento. O script `lab/scripts/score.py` compara cada descoberta com
-esse gabarito:
+O gabarito (`lab/ground_truth.yaml`) descreve os 8 equipamentos, os 9 links físicos com as interfaces nativas de
+cada lado e as 2 adjacências de roteamento, e agora também a **expectativa de cada cenário**: quem deve ser
+coletado, quem deve aparecer como "não coletado" e com qual motivo, quais links devem existir, o status
+esperado na memória, os eventos de histórico, os limites de carga e a igualdade com outro cenário.
 
-- **Equipamentos coletados:** equipamentos coletáveis presentes e coletados (não apenas vistos por vizinhos).
-- **Links encontrados:** pares de equipamentos do gabarito ligados por ao menos um link físico.
-- **Precisão de links:** links corretos ÷ links desenhados. Links a mais entre o mesmo par (duplicados ou da
-  rede de gerência) e links para pares inexistentes contam como erro.
-- **Portas corretas:** links encontrados com o nome de interface certo nas duas pontas.
-- **Fabricante e papel:** acerto sobre os equipamentos coletados.
-- **Coletas repetidas:** eventos de coleta concluída atribuídos ao mesmo equipamento final.
+`lab/scripts/score.py` conta como **erro** qualquer uma destas situações:
 
-Antes dos cenários, `lab/scripts/dump_raw.py` executa em cada equipamento os comandos do perfil de
-fabricante do NetTopo e mede quantos registros cada parser extrai das saídas reais.
+- link que não deveria existir, link duplicado, link faltando ou porta errada em qualquer ponta;
+- equipamento duplicado, inesperado, coletado quando não deveria ou não coletado quando deveria;
+- fabricante ou papel errado;
+- adjacência OSPF/BGP esperada não detectada;
+- o mesmo equipamento coletado mais de uma vez na mesma descoberta;
+- memória que não reaproveitou o esperado, evento de histórico ausente ou inesperado;
+- intervalo entre requisições abaixo do perfil de carga ou mais sessões simultâneas que o permitido;
+- resultado diferente do cenário de referência (determinismo);
+- falha na API, na verificação, nas exportações, nos comandos da CLI ou segredo encontrado em disco.
+
+Com `--strict`, o job termina com erro se a soma for maior que zero. Um equipamento que nenhuma informação
+disponível permite alcançar não é erro: o gabarito exige que ele apareça como "não coletado" **com o motivo**.
+
+| Suíte | Quando roda | Cenários |
+|---|---|---|
+| Rápida | a cada push em `src/`, `lab/` ou no workflow | 01 semente única · 02 semente + varredura (cria a memória) · 03 segunda execução com memória · 04 só SSH · 05 só SNMP · 06 APIs · 14 falha + verificação · 15 restauração |
+| Completa | diariamente às 06:00 (Brasília), manualmente ou com `[lab completa]` no commit | a rápida + 07 DNS · 08 credenciais erradas primeiro · 09 escopo · 10 sequencial · 11 SNMPv3 · 12 carga conservadora · 13 determinismo · 16 API, cofre e UI · CLI |
+
+## Antes e depois
+
+<!-- viz:compare -->
+
+| Indicador | v0.1.0 | v0.2.0 | Observação |
+|---|---|---|---|
+| Coletados, semente única (todos os métodos) | 4 de 7 | 6 de 7 · 7 de 7 | sem DNS/memória/varredura · com qualquer um deles |
+| Coletados, inventário de IPs de gerência | 5 de 7 | 7 de 7 | fusão de hosts Linux eliminada (D1) |
+| Só SSH | 0 de 7 · 118,1 s | 7 de 7 · 16,3 s | banner, prompt e sondas (D4) |
+| Só SNMP v2c | 1 de 7 | 7 de 7 | com varredura; LLDP-MIB do SR Linux e do lldpd |
+| Precisão de links (melhor configuração) | 82% | 100% | 100% em todos os 15 cenários de descoberta |
+| Portas corretas | 50 a 89% | 100% | endpoints autoritativos (D2) |
+| Links de gerência desenhados | 8 de 11 cenários | 0 | LLDP em mgmt ignorado (D5) |
+| Nó extra do par BGP | 8 de 11 cenários | 0 | par junta-se ao nó do link físico (D12) |
+| Rotas RouterOS 7 lidas | 1 de 6 | 6 de 6 | registro terse por linha (D7) |
+| Determinismo | não | sim | 13 idêntico ao 02 |
+| Requisições por equipamento | — | 27 a 44 | eram 91 a 98 antes do complemento SNMP enxuto |
+| Revalidação da rede conhecida | — | 3,2 s | descoberta inicial 32,4 s; 0 recoletas |
+| Testes automatizados | 46 | 90 | inclui saídas reais do laboratório como fixtures |
+| mypy | 22 erros | 0 | |
+| bandit alto | 1 | 0 | hashes não criptográficos marcados |
+| Rodada do laboratório | 16 min 19 s | 6 min 54 s · 11 min 58 s | rápida a cada push · completa diária |
+
+<!-- /viz -->
 
 ## Resultados por cenário
 
 <!-- viz:scenarios -->
 
-| Cenário | Coletados | Links | Precisão | Portas | Tempo (s) |
+| Cenário | Erros | Coletados | Links | Memória | Tempo (s) |
 |---|---|---|---|---|---|
-| 01 Semente única, todos os métodos | 4/7 | 7/9 | 70% | 86% | 24,5 |
-| 02 Semente única + DNS | 4/7 | 6/9 | 60% | 67% | 23,9 |
-| 03 Inventário de IPs de gerência | 5/7 | 6/9 | 55% | 50% | 24,2 |
-| 04 Somente SNMP v2c | 1/7 | 3/9 | 100% | 67% | 0,8 |
-| 05 Somente SNMPv3 | 3/7 | 4/9 | 100% | 100% | 10,9 |
-| 06 Somente SSH | 0/7 | 0/9 | — | — | 118,1 |
-| 07 Somente APIs (REST/NETCONF) | 6/7 | 9/9 | 82% | 89% | 13,6 |
-| 08 Credenciais erradas primeiro | 4/7 | 7/9 | 70% | 86% | 44,0 |
-| 09 Profundidade 1 + exclusão | 2/7 | 5/9 | 71% | 80% | 23,7 |
-| 10 Inventário sequencial | 5/7 | 7/9 | 64% | 71% | 41,7 |
-| 11 Após falha injetada | 5/7 | 6/9 | 67% | 67% | 24,3 |
+| 01 Semente única, sem DNS nem memória | 0 | 6/6 | 9/9 | — | 29,7 |
+| 02 Semente única + varredura da gerência | 0 | 7/7 | 9/9 | — | 32,4 |
+| 03 Segunda execução, usando a memória | 0 | 7/7 | 9/9 | 7 confirmados, 0 recoletados | 3,2 |
+| 04 Somente SSH | 0 | 7/7 | 9/9 | — | 16,3 |
+| 05 Somente SNMP v2c + varredura | 0 | 7/7 | 9/9 | — | 21,5 |
+| 06 APIs (REST, JSON-RPC, NETCONF) | 0 | 7/7 | 9/9 | — | 16,6 |
+| 07 Semente única + DNS | 0 | 7/7 | 9/9 | — | 29,3 |
+| 08 Credenciais erradas primeiro | 0 | 7/7 | 9/9 | — | 19,1 |
+| 09 Profundidade 1 + exclusão | 0 | 2/2 | 5/5 | — | 14,8 |
+| 10 Inventário, 1 coleta por vez | 0 | 7/7 | 9/9 | — | 55,9 |
+| 11 Somente SNMPv3 | 0 | 3/3 | 4/4 | — | 8,1 |
+| 12 Carga conservadora (500 ms, 1 sessão) | 0 | 7/7 | 9/9 | — | 68,6 |
+| 13 Repetição sem memória (determinismo) | 0 | 7/7 | 9/9 | — | 32,5 |
+| 14 Verificação após falha injetada | 0 | 6/6 | 7/7 | 4 confirmados, 2 recoletados | 25,3 |
+| 15 Verificação após restaurar | 0 | 7/7 | 9/9 | 5 confirmados, 2 recoletados | 11,7 |
+| 16-api-ui API, cofre e interface web | 0 | — | — | — | 11,1 |
+| cli Comandos da CLI | 0 | — | — | — | — |
 
 <!-- /viz -->
 
 Leitura dos cenários:
 
-- **01 e 02.** `edge-mk2` só é anunciado com o IP da interface de trânsito `10.255.0.2` (MNDP/LLDP do
-  RouterOS). A ferramenta tenta esse IP, falha e não tenta o nome. Com DNS configurado o resultado é o
-  mesmo, porque o nome só é resolvido quando o vizinho não anuncia IP nenhum (D3).
-- **03.** Com todos os IPs de gerência como sementes, todos os equipamentos respondem, mas `dist-frr1`,
-  `srv1` e `srv2` viram um único registro (D1). Os links desses hosts passam a apontar para o registro
-  fundido, o que derruba a precisão para 55% e o acerto de portas para 50%.
-- **04.** O RouterOS não preenche o endereço de gerência na LLDP-MIB. Sem IP, a descoberta para no
-  primeiro salto (D9), mas é muito rápida: 0,8 s.
-- **05.** SNMPv3 authPriv (SHA/AES) funcionou nos três hosts Linux, os únicos com usuário v3 no
-  laboratório. Como no 07, os hosts Linux não se fundem: a série falsa só aparece na coleta por SSH (D1).
-- **06.** O autodetect do Netmiko não reconhece o RouterOS. Sem perfil, o coletor SSH desiste da semente
-  e nada é descoberto após 118 s de tentativas (D4).
-- **07.** Melhor resultado: REST no RouterOS, NETCONF/OpenConfig no SR Linux e SNMP nos hosts Linux, com
-  SNMP apenas para identificar o fabricante. Sem a coleta SSH dos hosts Linux, não há fusão.
-- **08.** Três credenciais erradas antes das corretas custaram 19,5 s e não mudaram o resultado. Depois do
-  primeiro acerto, a credencial que funcionou passa para o início da lista.
-- **09.** Profundidade 1 e exclusão da rede dos servidores funcionaram como configurado.
-- **10.** Sequencial (1 coleta por vez) levou 41,7 s contra 24,2 s com 16 em paralelo (1,7×).
-- **11.** `srv2` desligado aparece em falhas e o link `core-srl2:e1-3 ↔ dist-frr1:eth2` derrubado some
-  como link físico, mas volta como link L3 inferido, porque a sub-rede /30 continua configurada.
+- **01 (29,7 s).** Sem DNS, memória nem varredura, `edge-mk2` só é anunciado pelo IP de trânsito
+  `10.255.0.2`. A ferramenta tenta esse IP, depois memória, DNS e o MAC do chassis nas tabelas ARP coletadas,
+  e registra o motivo: "IP anunciado 10.255.0.2: sem resposta ... nenhum outro IP de gerência conhecido
+  (configure DNS, memória/inventário ou varredura)". Os 9 links aparecem, inclusive os do `edge-mk2`, vistos
+  pelos vizinhos.
+- **02 (32,4 s).** A varredura de `172.20.20.0/24` (254 endereços, portas e SNMP em paralelo por endereço)
+  encontra o `edge-mk2` e grava a memória. Também acha o gateway do Docker (`172.20.20.1`, SSH sem credencial
+  válida), listado em falhas e fora do desenho, como deve ser.
+- **03 (3,2 s).** Segunda execução: 7 checagens leves, 7 confirmações, nenhuma recoleta e nenhum evento.
+- **04 (16,3 s).** Só SSH, partindo do inventário: RouterOS identificado pelo banner `ROSSSH`, SR Linux e Linux
+  pelo prompt e por comandos de sonda após login genérico.
+- **05 (21,5 s).** Só SNMP v2c com varredura: o SR Linux responde com a LLDP-MIB e o `lldpd` exporta a dele via
+  AgentX. A adjacência OSPF não é cobrada aqui, porque o RouterOS não exporta a OSPF-MIB; a BGP sim.
+- **06 (16,6 s).** REST no RouterOS, JSON-RPC no SR Linux e SNMP nos Linux, sem complemento SNMP.
+- **07 (29,3 s).** Com DNS, o `edge-mk2` é alcançado pelo nome após o IP anunciado falhar.
+- **08 (19,1 s).** Três credenciais erradas antes das certas: mesmo resultado, com a credencial que funcionou
+  por fabricante tentada primeiro nos equipamentos seguintes.
+- **09 (14,8 s).** Profundidade 1 e exclusão da rede dos servidores, como configurado.
+- **10 (55,9 s).** Sequencial (1 coleta por vez) a partir do inventário.
+- **11 (8,1 s).** SNMPv3 authPriv: coleta os três Linux (únicos com usuário v3) e mostra os SR Linux como
+  vizinhos não coletados.
+- **12 (68,6 s).** Perfil conservador: menor intervalo medido de 500 ms e 1 sessão em todos os equipamentos.
+- **13 (32,5 s).** Repetição do 02 sem memória: coletados, links e portas idênticos.
+- **14 (25,3 s) e 15 (11,7 s).** Verificação após congelar o `srv2` (`docker pause`) e derrubar
+  `dist-frr1:eth2`: `srv2` inacessível, `core-srl2` e `dist-frr1` alterados, dois eventos `link_removido`.
+  Depois da restauração: `srv2` com evento `voltou` e os 9 links de volta.
+- **16 (11,1 s).** API com credenciais só no cofre (backend arquivo), descoberta por referência,
+  verificação pela API, inventário com 7 ativos, exportações HTTP 200 e nenhum dos segredos do laboratório
+  encontrado no diretório de dados.
 
-<!-- viz:shot relatorio-diagrama | Relatório HTML gerado no cenário 03. O registro "srv2" representa três hosts Linux fundidos; há duas linhas entre edge-mk1 e core-srl1 e entre edge-mk2 e core-srl2, e um link mgmt0 entre os switches. -->
+<!-- viz:shot relatorio-diagrama | Relatório HTML do cenário 02. Cada link mostra a porta de cada lado com o nome nativo; dist-frr1 aparece na camada de distribuição, abaixo do núcleo. -->
+
+## Correção dos defeitos
+
+<div class="defects" markdown="1">
+
+| ID | Defeito (v0.1.0) | Correção | Onde | Evidência na v0.2.0 |
+|---|---|---|---|---|
+| D1 | Hosts Linux fundidos pela "série" `Virtual Machine` | Facts Linux com marcadores `NT_*`; lista de séries genéricas; série ambígua deixa de identificar; conflito de hostname impede fusão | `vendors/parsers/linux.py`, `discovery/identity.py`, `utils.is_generic_serial` | 3 hosts Linux distintos em todos os cenários |
+| D2 | Links duplicados (porta descrita de formas diferentes) | Cada ponta usa o nome do próprio equipamento; porta anunciada resolvida por nome, descrição ou MAC; fusão por união de conjuntos | `topology/builder.py` (`resolve_port`, `links_from_halves`) | 0 links duplicados; portas 100% |
+| D3 | Sem alternativa quando o IP anunciado não responde | Alvo com candidatos: memória, anunciado, DNS, ARP; cache negativo por IP | `discovery/scope.py`, `discovery/engine.py` | `edge-mk2` coletado em 02, 03, 07; motivo explícito em 01 |
+| D4 | Só-SSH dependia do SNMP/autodetect | Banner sem autenticar, login genérico com prompt e sondas; regex de banner e prompt nos perfis | `discovery/fingerprint.py`, `collectors/ssh.py`, perfis YAML | 04: 7 de 7 |
+| D5 | LLDP da gerência virava link | Interfaces `mgmt*`, `fxp0`, `me0`, `ma*`, OOB ignoradas (regex configurável) | `topology/builder.py`, `config.ignore_interfaces` | 0 links mgmt |
+| D6 | L3 inferido com IPs iguais | Exige IPs distintos de host, ignora gerência, loopback e interface operacionalmente desligada | `topology/enrich.py` | sem sub-rede falsa; sem L3 no link derrubado (14) |
+| D7 | Rotas RouterOS 7 sem índice descartadas | Saída `terse`: um registro por linha | `vendors/parsers/mikrotik.py` | 6 de 6 rotas |
+| D8 | SR Linux por CLI sem parser | Parser de tabelas ASCII; LLDP em JSON (sufixo `as json` da CLI); driver JSON-RPC\| as json`); driver JSON-RPC | `vendors/parsers/generic.py`, `srlinux.py`, `collectors/rest.py` | LLDP com IP de gerência; 04 e 06 completos |
+| D9 | Vizinho sem IP não seguido | MAC do chassis procurado nas tabelas ARP coletadas; nome via DNS/memória | `discovery/engine.py` (`_late_candidates`) | teste de regressão; 05 completo |
+| D10 | OSPF/BGP do RouterOS ausentes | `/routing/ospf/neighbor` e `/routing/bgp/session` (REST e CLI); FRR por `vtysh ... json` | `collectors/rest.py`, `vendors/parsers/mikrotik.py`, `frr.py` | OSPF e BGP em todos os cenários aplicáveis |
+| D11 | `lldpctl` fora do `PATH` | `lldpcli -f keyvalue` com alternativas `/usr/sbin` e `sudo -n`; a variante aceita é lembrada por fabricante | perfil `brasil_linux.yaml`, `collectors/ssh.py` | LLDP dos Linux por SSH |
+| D12 | Par BGP virava nó separado | Par sem resolução junta-se ao nó do outro lado do link físico da sub-rede | `topology/enrich.py` (`routing_adjacencies`) | 0 nós extras |
+| D13 | Série/modelo ausentes | OpenConfig `components`, `/platform/chassis` (JSON-RPC), licença do CHR | `collectors/netconf.py`, `collectors/rest.py` | SR Linux 7220 IXR-D2L; série do CHR |
+| D14 | Erro de autenticação mal descrito | Erros agregados por método ("autenticação recusada para N credenciais") | `collectors/orchestrator.py`, `collectors/ssh.py` | motivo correto no `isp-pe` |
+
+</div>
+
+Além dos defeitos: Linux só vira roteador com software de roteamento em execução ou rotas aprendidas por
+OSPF/BGP; a ordem do grafo e os ids
+de link são determinísticos; um roteador interno ligado ao núcleo e a servidores vai para a camada de
+distribuição, o que evita que o link `edge-mk1`–`edge-mk2` seja desenhado por cima dele.
+
+## Memória persistente e revalidação
+
+O inventário (`inventory/store.py`) guarda, por equipamento: chave estável (hostname curto; na falta dele, o
+IP de gerência), IPs, perfil, **acesso que funcionou** (método, nome da credencial, credencial SNMP), assinatura
+da vizinhança (hash dos pares interface local → vizinho, independente do protocolo e do método de coleta),
+último dado completo, datas e status.
+Também guarda links, um histórico de eventos (`novo`, `alterado`, `inacessivel`, `voltou`, `link_novo`,
+`link_removido`) e os IPs que não responderam (cache negativo de 6 h).
+
+Fluxo de `discover_with_memory` (`inventory/revalidate.py`):
+
+1. Para cada equipamento conhecido, em paralelo e respeitando o rate limit: teste da porta do acesso salvo
+   (≤ 3 s), depois **checagem leve** (identidade + só a tabela de vizinhos).
+2. Mesma identidade e mesma assinatura → dados reaproveitados, `verificado_em` atualizado. Vizinhança
+   diferente ou dado com mais de 24 h → coleta completa, começando pela credencial que funcionou. Sem
+   resposta → nó "inacessível desde ..." com o motivo.
+3. Varredura (se configurada), descoberta normal a partir dos vizinhos (só o que é novo) e gravação.
+
+| Cenário | Conhecidos | Confirmados | Recoletados | Inacessíveis | Eventos | Tempo (s) |
+|---|---|---|---|---|---|---|
+| 02 primeira execução | 0 | 0 | 0 | 0 | 7 × `novo` | 32,4 |
+| 03 segunda execução | 7 | 7 | 0 | 0 | nenhum | 3,2 |
+| 14 após a falha | 7 | 4 | 2 | 1 (`srv2`) | `alterado` × 2, `inacessivel`, `link_removido` × 2 | 25,3 |
+| 15 após restaurar | 7 | 5 | 2 | 0 | `alterado` × 2, `voltou` | 11,7 |
+
+No cenário 14, o tempo é dominado pelo `srv2`: um contêiner congelado ainda completa o handshake TCP no
+kernel, então a sessão SSH espera o banner até o timeout. Um equipamento realmente desligado não responde TCP,
+e o teste de porta antes da checagem leve encerra a tentativa em até 3 s.
+
+## Rate limit
+
+`src/nettopo/ratelimit.py` cria um *throttle* por equipamento (IP, depois ajustado pelo perfil e hostname)
+com semáforo de sessões, intervalo mínimo entre requisições e contador de falhas de autenticação. Ele vale
+para cada PDU SNMP, requisição REST, RPC NETCONF, comando SSH, teste de portas e tentativa de login, tanto no
+código assíncrono quanto nas threads do Netmiko e do ncclient (via `ContextVar`).
+
+| Perfil | Intervalo | Sessões/equip. | SNMP max-rep. / walks | Atraso SSH | Falhas de login | Paralelismo |
+|---|---|---|---|---|---|---|
+| conservador | 500 ms | 1 | 10 / 1 | 1,0 s | 2 | 4 |
+| equilibrado (padrão) | 100 ms | 1 | 25 / 2 | 0,2 s | 3 | 16 |
+| rapido | 0 | 2 | 50 / 4 | 0 | 5 | 64 |
+
+`overrides` aplicam outro perfil ou valores por CIDR, perfil de fabricante ou regex de hostname. A
+telemetria (`requisicoes`, `espera_aplicada_s`, `menor_intervalo_ms`, `max_sessoes_simultaneas`,
+`falhas_autenticacao`) vai para cada equipamento e aparece no painel de detalhes do relatório.
+
+Na primeira rodada da v0.2.0, o perfil equilibrado deixou a coleta de cada equipamento em cerca de 10 s, porque
+o complemento SNMP percorria de novo tudo o que a API ou o SSH já tinham trazido (91 a 98 requisições). Agora o
+complemento pede só os grupos que faltam (`covered_groups`): 27 a 44 requisições e cerca de 3,5 s por
+equipamento, ou seja, menos carga e mais velocidade.
+
+## Cofre, API e segurança
+
+- **Cofre** (`vault.py`): backend `keyring` (Windows Credential Manager, Keychain, Secret Service) ou arquivo
+  `vault.enc` cifrado com Fernet e chave derivada por scrypt de `NETTOPO_VAULT_PASSWORD`. O índice
+  (`vault_index.json`) guarda só nome, tipo e usuário. Configurações referenciam `{ref: nome}` ou usam
+  `usar_cofre: true`; `nettopo cred import` move credenciais de um YAML para o cofre.
+- **API:** `GET/POST/DELETE /api/credentials` nunca devolvem segredos; `nettopo serve` recusa escutar fora
+  de `127.0.0.1` sem `NETTOPO_API_TOKEN`.
+- **Verificado no laboratório (16):** nenhum dos segredos do laboratório aparece em nenhum arquivo do
+  diretório de dados (banco, inventário, índice do cofre).
+- **Pendente:** verificação de certificado TLS e de chave de host SSH/NETCONF continua desligada por padrão; o
+  relatório HTML ainda carrega o Cytoscape.js de CDN.
+
+## Desempenho
+
+| Etapa do job | v0.1.0 | v0.2.0 rápida | v0.2.0 completa |
+|---|---|---|---|
+| Imagem MikroTik CHR | 2 min 55 s (build) | 13 s (cache) | 18 s (cache) |
+| Subir o laboratório (+ instalar o NetTopo em paralelo) | 1 min 37 s + 20 s | 82 s | 72 s |
+| Boot e configuração | 52 s | 58 s | 62 s |
+| Cenários | 9 min 08 s (11) | 202 s (8) | 463 s (17) |
+| Qualidade de código | 48 s | no `ci.yml` | 51 s |
+| **Total do job** | **16 min 19 s** | **6 min 54 s** | **11 min 58 s** |
+
+Medidas das rodadas 38425932003 (rápida) e 38427060651 (completa). O ganho vem do cache da imagem do CHR, da
+instalação em paralelo com a subida do laboratório, da qualidade
+de código fora da suíte rápida e de cenários mais rápidos (complemento SNMP enxuto e LLDP de 5 s, que encurta
+as esperas da falha injetada).
+
+| Medida (v0.2.0) | Resultado |
+|---|---|
+| Descoberta com varredura do /24 de gerência | 32,4 s |
+| Revalidação da rede conhecida (7 equipamentos) | 3,2 s |
+| Só SSH, 7 equipamentos | 16,3 s |
+| Sequencial (1 coleta por vez) | 55,9 s |
+| Perfil conservador (500 ms, 1 sessão, 4 em paralelo) | 68,6 s |
 
 ## Matriz fabricante × método
 
@@ -121,16 +303,14 @@ Leitura dos cenários:
 
 | Sistema | SNMP v2c | SNMPv3 | SSH/CLI | APIs |
 |---|---|---|---|---|
-| MikroTik CHR 7.16 | 1 de 2 coletados | não se aplica | falha | 1 de 2 coletados |
-| Nokia SR Linux 25.10 | falha | não se aplica | falha | funciona |
-| Linux / FRR | falha | funciona | falha | não se aplica |
+| MikroTik CHR 7.16 | funciona | não se aplica | funciona | funciona |
+| Nokia SR Linux 25.10 | funciona | não se aplica | funciona | funciona |
+| Linux / FRR | funciona | funciona | funciona | não se aplica |
 
 <!-- /viz -->
 
-A matriz considera só os cenários de método isolado (04 a 07), a partir da mesma semente `edge-mk1`,
-exceto o 05, que parte do inventário. "Falha" em SNMP v2c para SR Linux e Linux não significa que o SNMP
-desses sistemas não funcione. Eles nem chegaram a ser consultados, porque a descoberta parou no
-primeiro salto (D9). Nos cenários completos, o SNMP complementou os dados dos três sistemas.
+Cenários de método isolado: 05 (SNMP v2c), 11 (SNMPv3), 04 (SSH) e 06 (APIs). No laboratório, só os Linux
+têm usuário SNMPv3 e os Linux não têm API.
 
 ## Parsing com saídas reais
 
@@ -138,154 +318,57 @@ primeiro salto (D9). Nos cenários completos, o SNMP complementou os dados dos t
 
 | Equipamento | Identificação | Hostname | Interfaces | IPs | LLDP | MNDP/LLDP | ARP | Rotas |
 |---|---|---|---|---|---|---|---|---|
-| edge-mk1 | ok | ok | ok (5) | ok (4) | — | ok (3) | ok (3) | 1 de 6 |
-| core-srl1 | ok | — | — | falha | falha | — | ok (1) | — |
-| dist-frr1 | ok | ok | ok (4) | ok (4) | falha | — | ok (1) | ok (5) |
+| edge-mk1 | ok | ok | ok | ok | — | ok | ok | ok (6) |
+| core-srl1 | ok | — | — | ok | ok (JSON) | — | ok | — |
+| dist-frr1 | ok | ok | ok | ok | ok (`sudo -n lldpcli`) | — | ok | ok |
 
 <!-- /viz -->
 
-- **RouterOS 7:** os parsers próprios leem quase tudo. Rotas: 1 de 6, porque o `print terse` do RouterOS 7
-  não numera rotas dinâmicas e o agrupador de registros só inicia um registro novo numa linha com índice
-  (D7).
-- **SR Linux:** as saídas de `show system lldp neighbor` e `show interface brief` são tabelas com bordas
-  ASCII; nenhum template TextFSM existe para a plataforma e o parser genérico espera "chave: valor" (D8).
-  Nos cenários completos isso não aparece porque o SR Linux foi coletado por NETCONF.
-- **Linux:** `lldpctl` não está no `PATH` de usuários sem privilégio no Debian (fica em `/usr/sbin`), e a
-  saída é `command not found` (D11). O LLDP dos hosts Linux veio pela LLDP-MIB via SNMP.
-
-## Defeitos encontrados
-
-Severidade **alta**: distorce o inventário ou o desenho, ou impede um modo de uso. **Média**: dado
-incompleto ou errado com contorno. **Baixa**: cosmético ou de mensagem.
-
-<div class="defects" markdown="1">
-
-| ID | Sev. | Defeito | Onde | Evidência |
-|---|---|---|---|---|
-| D0 | <span class="sev alta">alta</span> | `.gitignore` com `output/` excluía `src/nettopo/output`; quem clonasse o repositório teria a ferramenta sem o pacote de saídas. **Corrigido** (`/output/`). | `.gitignore` | Run 36255328422: `ModuleNotFoundError: nettopo.output` |
-| D1 | <span class="sev alta">alta</span> | Hosts Linux fundidos: o parser usa o nome do produto DMI ("Virtual Machine") como número de série quando a série não pode ser lida, e a deduplicação confia na série. | `src/nettopo/vendors/parsers/linux.py:103`, `src/nettopo/discovery/identity.py:73` | 3 hosts em 1 registro em 01, 02, 03, 08 e 10; 2 em 1 no 11 |
-| D2 | <span class="sev alta">alta</span> | Links duplicados: o RouterOS expõe em `interface-name` a descrição da porta do vizinho (SR Linux: "to edge-mk1 ether4"), e a fusão de links não reconhece que é a mesma porta. | `src/nettopo/vendors/parsers/mikrotik.py:65`, `src/nettopo/collectors/rest.py` (driver MikroTik), `src/nettopo/topology/builder.py` (`merge_links`) | Link a mais RouterOS ↔ SR Linux em 8 dos 11 cenários (todos em que os dois foram coletados) |
-| D3 | <span class="sev alta">alta</span> | Sem alternativa quando o IP anunciado não responde; o nome só é resolvido quando nenhum IP é anunciado. | `src/nettopo/discovery/scope.py:65-67` | `edge-mk2` não coletado em 01 e 02 (DNS sem efeito) |
-| D4 | <span class="sev alta">alta</span> | Identificação de fabricante depende de SNMP ou do autodetect do Netmiko, que não reconhece o RouterOS; sem perfil, o coletor SSH desiste. | `src/nettopo/collectors/orchestrator.py:60-62`, `src/nettopo/collectors/ssh.py:106` | Cenário 06: 0/7 em 118 s |
-| D5 | <span class="sev media">média</span> | LLDP recebido em interfaces de gerência (mgmt0) vira link físico. | `src/nettopo/topology/builder.py:170` | Link `core-srl1:mgmt0 ↔ core-srl2:mgmt0` em 8 dos 11 cenários (todos em que os SR Linux foram coletados) |
-| D6 | <span class="sev media">média</span> | Inferência L3 aceita dois equipamentos com o **mesmo** IP numa /30 (gerência interna NAT do CHR, `172.31.255.30/30`) e grava a sub-rede errada no link. | `src/nettopo/topology/enrich.py:29-50` | Sub-rede `172.31.255.28/30` no link `edge-mk1 ↔ edge-mk2` nos cenários 03, 10 e 11 |
-| D7 | <span class="sev media">média</span> | Rotas do RouterOS 7 sem índice são descartadas. | `src/nettopo/vendors/parsers/mikrotik.py:12,24` | 1 de 6 rotas |
-| D8 | <span class="sev media">média</span> | SR Linux por CLI sem parser para tabelas. | `src/nettopo/vendors/profiles/datacenter_campus.yaml:144` | LLDP e interfaces: 0 registros |
-| D9 | <span class="sev media">média</span> | Vizinho sem IP de gerência (LLDP-MIB do RouterOS) não é seguido; o MAC do chassis poderia ser resolvido pela tabela ARP já coletada. | `src/nettopo/discovery/scope.py` | Cenário 04: 1/7 |
-| D10 | <span class="sev media">média</span> | Adjacência OSPF nunca detectada: o driver REST do RouterOS não consulta vizinhos OSPF/BGP e o RouterOS não os expõe por SNMP no laboratório. | `src/nettopo/collectors/rest.py` (`MikrotikRestDriver.paths`) | 0 de 11 cenários |
-| D11 | <span class="sev baixa">baixa</span> | Comando `lldpctl` fora do `PATH` de usuários comuns. | `src/nettopo/vendors/profiles/brasil_linux.yaml:70` | `command not found` |
-| D12 | <span class="sev baixa">baixa</span> | O vizinho BGP da operadora vira um nó separado ("AS64500 200.200.10.1") em vez de se juntar ao nó já visto por LLDP. | `src/nettopo/topology/enrich.py` (`routing_adjacencies`) | Nó inesperado em 8 dos 11 cenários |
-| D13 | <span class="sev baixa">baixa</span> | Inventário incompleto: série e modelo ausentes para SR Linux e série ausente para o CHR. | coletores NETCONF/REST | Campos vazios no inventário |
-| D14 | <span class="sev baixa">baixa</span> | Mensagem enganosa: falha de autenticação SSH é reportada como "perfil sem driver Netmiko". | `src/nettopo/collectors/orchestrator.py` | `isp-pe` em 7 dos 11 cenários |
-
-</div>
-
-Consequência de D1 que merece destaque: o equipamento que "sobrevive" à fusão depende da ordem de
-chegada das coletas (`dist-frr1` em 01, `srv2` em 02 e 03). O mesmo laboratório produz inventários
-diferentes a cada execução, e a comparação entre descobertas (`nettopo diff`) acusa equipamentos
-"adicionados" e "removidos" que não mudaram.
-
-## Desempenho
-
-| Medida | Resultado |
-|---|---|
-| Descoberta completa, 8 equipamentos, 16 coletas em paralelo | 24,2 a 24,5 s |
-| Mesma descoberta, 1 coleta por vez | 41,7 s (1,7×) |
-| Somente SNMP v2c (1 equipamento alcançado) | 0,8 s |
-| Somente APIs (6 equipamentos) | 13,6 s |
-| Custo de 3 credenciais erradas antes das certas | +19,5 s |
-| Custo de um alvo inacessível | porta a porta (22, 830, 443, 80) + tentativas SNMP por credencial |
-| Somente SSH (autodetect falhando) | 118,1 s |
-
-O tempo é dominado por alvos inacessíveis e autenticações que falham. Numa rede com centenas de
-equipamentos, D3 (IPs não roteáveis) e D4 (autodetect) multiplicam esse custo. Sugestões: timeouts
-separados para varredura de portas e SNMP, cache negativo por IP e limite de credenciais por tentativa.
-
-## API, interface web e linha de comando
-
-| Verificação | Resultado |
-|---|---|
-| `POST /api/discoveries` + WebSocket até o fim | concluída em 24,6 s; eventos recebidos: 1 início, 9 coletas iniciadas, 7 concluídas, 2 falhas, 1 fim |
-| Exportações pela API | HTML 121 KB, draw.io 39 KB, Excel 30 KB, Markdown (zip) 7 KB, JSON 100 KB; todas HTTP 200 |
-| Senhas no banco SQLite | nenhuma encontrada (busca pelas três senhas do laboratório) |
-| CLI `vendors`, `discover`, `report`, `diff` | todos com código de saída 0 |
-| Capturas da interface | 5 telas geradas pelo Chrome headless |
-
-<!-- viz:shot relatorio-equipamento | Painel de detalhes do core-srl1 no relatório HTML: identificação, conexões e interfaces coletadas por NETCONF. Modelo e série vazios (D13). -->
+As saídas brutas deste laboratório (RouterOS, SR Linux, `lldpcli`, facts Linux) estão versionadas em
+`tests/fixtures/real/` e alimentam os testes de regressão de D1, D7, D8 e D10.
 
 ## Qualidade de código
 
-| Métrica | Resultado |
-|---|---|
-| Testes (`pytest`) | 46 aprovados |
-| Cobertura | 71% de 3.875 instruções |
-| Lint (`ruff`) | sem ocorrências |
-| Tipagem (`mypy`) | 22 erros em 10 arquivos, principalmente valores opcionais (`None`) usados onde o tipo exige valor |
-| `bandit` | 1 alto, 9 médios, 5 baixos |
+| Métrica | v0.1.0 | v0.2.0 |
+|---|---|---|
+| Testes (`pytest`) | 46 aprovados | 90 aprovados |
+| Cobertura | 71% de 3.875 instruções | 74% de 5.624 instruções |
+| Lint (`ruff`) | sem ocorrências | sem ocorrências |
+| Tipagem (`mypy`) | 22 erros | 0 erros |
+| `bandit` | 1 alto, 9 médios, 5 baixos | 0 alto, 9 médios, 10 baixos |
 
-Triagem do `bandit`:
+Os médios restantes do `bandit` são os mesmos da primeira avaliação: comparações com `0.0.0.0` em rotas
+(B104, falso positivo) e `Markup` sobre o CSS/JS do próprio pacote (B704).
 
-- **Alto, B324 (MD5):** `hashlib.md5` em `collectors/simulated.py:27` gera MACs fictícios do laboratório
-  simulado. Não é uso criptográfico; basta `usedforsecurity=False`.
-- **Médio, B704 (`Markup`):** `output/html.py` marca como seguros o CSS/JS do próprio pacote. Os dados da
-  rede entram como JSON com `</` escapado. Risco baixo, mas os nomes e descrições vindos dos
-  equipamentos também chegam ao HTML da interface; vale um teste específico de XSS com hostname malicioso.
-- **Médio, B104:** comparações com `0.0.0.0` em rotas, não abertura de socket. Falso positivo.
-- **Baixo, B110/B406:** `except: pass` em pontos de limpeza e parser XML com `recover=True` para saídas de
-  equipamento.
+## Limitações
 
-Os testes unitários passaram o tempo todo, mas nenhum deles pegou D0, D1, D2 ou D7. Todos dependem de
-dados reais: o diretório local mascarava o `.gitignore`, e os fixtures eram escritos à mão. A
-recomendação é versionar as saídas brutas deste laboratório (`raw/`) como fixtures de regressão.
-
-## Segurança
-
-- **API sem autenticação por padrão:** o token (`NETTOPO_API_TOKEN`) é opcional. Como a API recebe
-  credenciais de rede, deveria ser obrigatório fora de `127.0.0.1`.
-- **TLS e chaves de host:** `verify_ssl=False` por padrão (`config.py:44`), NETCONF com
-  `hostkey_verify=False` (`netconf.py:242`) e SSH sem verificação de chave. Aceitável em laboratório, não
-  em produção: permite interceptação das credenciais.
-- **Segredos:** as credenciais ficam só em memória e não são gravadas (verificado no cenário 12). Falta
-  integração com cofre (Vault, keyring) para uso agendado.
-- **Dependência externa no relatório:** o HTML carrega o Cytoscape.js de CDN; em redes isoladas o
-  diagrama não abre (as abas de documentação continuam funcionando).
-
-## Limitações desta avaliação
-
-- Três famílias de sistema: não há Cisco, Juniper, Huawei, Arista ou Fortinet reais neste laboratório.
-- Escala pequena (8 equipamentos, 9 links); não mede comportamento com centenas de nós.
-- SR Linux em contêiner e CHR em VM, não hardware físico; o NAT de gerência do CHR é específico do
-  vrnetlab e causa D6.
-- Uma execução por cenário; como D1 mostrou, o resultado não é determinístico e merece repetição.
-- Na primeira rodada, o `isp-pe` compartilhava o usuário SNMPv3 com os demais hosts e foi coletado
-  indevidamente. Foi um erro de configuração do laboratório, corrigido antes da rodada final analisada aqui.
+- Três famílias de sistema (RouterOS, SR Linux, Linux). Os demais perfis não foram testados com equipamento real.
+- Escala pequena: 8 equipamentos e 9 links.
+- No laboratório, o SR Linux informa a série `Sim Serial No.` (imagem virtual). A ferramenta a trata como série
+  genérica e não a usa para identificar o equipamento.
+- A falha "equipamento fora do ar" é simulada com `docker pause`; um equipamento físico desligado se comporta
+  de forma diferente (sem TCP), caso tratado pelo teste de porta mas não exercitado aqui.
 
 ## Plano de melhorias
 
-| Prioridade | Ação | Resolve | Esforço (estimativa) |
-|---|---|---|---|
-| 1 | Série só de fontes confiáveis; lista de valores genéricos ("Virtual Machine", "To Be Filled", "Default string"); exigir duas chaves fortes para fundir | D1 | 1 dia |
-| 1 | Normalizar porta por `port-id` e não por descrição; fundir links pelo lado que coletou a própria interface; ignorar LLDP de `mgmt*`/OOB | D2, D5 | 2 dias |
-| 1 | Quando o IP anunciado falhar: resolver o hostname, procurar o MAC do chassis nas tabelas ARP coletadas e cruzar com o inventário | D3, D9 | 3 dias |
-| 1 | Identificar fabricante por banner/prompt SSH e testar drivers candidatos; mensagem de erro fiel | D4, D14 | 2 dias |
-| 2 | Parsers: registros RouterOS sem índice; SR Linux via `\| as json` ou JSON-RPC; `lldpcli` com caminho completo | D7, D8, D11 | 2 dias |
-| 2 | Ignorar IPs idênticos e interfaces de gerência na inferência L3; juntar vizinho BGP ao nó que tem aquele IP | D6, D12 | 1 dia |
-| 2 | Vizinhos OSPF/BGP por REST (`/routing/ospf/neighbor`, `/routing/bgp/session`) e série/modelo via OpenConfig `platform` | D10, D13 | 2 dias |
-| 2 | Fixtures de regressão com as saídas reais deste laboratório; laboratório rodando em cada pull request | qualidade | 2 dias |
-| 3 | Token obrigatório, verificação de TLS e de chaves de host, cofre de credenciais | segurança | 1 semana |
-| 3 | Laboratórios Huawei/Fortinet/VyOS (Redes Brasil) e Cisco (DevNet); teste de escala com 50-100 nós FRR | cobertura | 2 semanas |
-| 3 | Cytoscape embutido no HTML, layout para redes grandes, IPv6 e VRF | produto | 3-4 semanas |
+| Prioridade | Ação | Esforço (estimativa) |
+|---|---|---|
+| 1 | Laboratórios Huawei VRP, Fortinet e VyOS (Redes Brasil) e Cisco IOS-XE/NX-OS (DevNet) na suíte completa | 2 semanas |
+| 1 | Verificação de TLS e de chave de host ligada por padrão, com exceções explícitas | 3 dias |
+| 2 | Teste de escala com 50 a 100 nós FRR no Actions; medir revalidação e memória | 1 semana |
+| 2 | Cytoscape embutido no HTML (redes isoladas) e layout para redes grandes | 1 semana |
+| 3 | IPv6, VRF e integração com NetBox | 3-4 semanas |
 
 ## Reprodução
 
 ```bash
-# No GitHub: Actions → "Simulação em laboratório (Containerlab)" → Run workflow
-# Resultados: artefato lab-results ou branch lab-results (runs/<id>/)
+# No GitHub: Actions → "Simulação em laboratório (Containerlab)" → Run workflow (suíte completa)
+# ou um push com "[lab completa]" na mensagem do commit
 git clone -b lab-results https://github.com/tanatielly/network-discovery-automation resultados
-python lab/scripts/score.py resultados/runs/36256925269-1          # métricas a partir dos JSONs
-python docs/relatorios/build.py resultados/runs/36256925269-1 --pdf  # regenera estes relatórios
+python lab/scripts/score.py resultados/runs/38427060651-1 --strict        # erros em relação ao gabarito
+python docs/relatorios/build.py resultados/runs/38427060651-1 --pdf --antes resultados/runs/36256925269-1
 ```
 
-Arquivos do run: `metrics.json` (métricas por cenário), `raw/` (saídas brutas e `parse-matrix.json`),
-`scenarios/<id>/` (topologia, eventos, logs e relatórios), `lab-state/` (estado dos equipamentos),
-`quality/` (testes, cobertura, mypy, bandit) e `logs/` (cada etapa do workflow).
+Arquivos do run: `metrics.json` (erros e métricas por cenário), `summary.md`, `raw/` (saídas brutas e
+`parse-matrix.json`), `scenarios/<id>/` (topologia, eventos, `timing.json`, logs, relatórios), `memoria/`
+(inventário persistente dos cenários com memória), `lab-state/`, `quality/` e `logs/`.

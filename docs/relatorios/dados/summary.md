@@ -1,17 +1,23 @@
-# Simulação NetTopo — resultados
+# Simulação NetTopo — suíte completa
 
-| Cenário | Status | Tempo (s) | Nós coletados | Links | Interfaces corretas | Fabricante | Papel | Coletas repetidas |
+**Erros: 0** · cenários: 17 · tempo dos cenários: 462.8 s
+
+| Cenário | Erros | Tempo (s) | Coletados | Links | Precisão | Portas | Roteamento | Memória |
 |---|---|---|---|---|---|---|---|---|
-| 01-completo | ok | 24.5 | 4/7 | 7/9 | 86% | 100% | 100% | 3 |
-| 02-completo-dns | ok | 23.9 | 4/7 | 6/9 | 67% | 100% | 75% | 3 |
-| 03-inventario | ok | 24.2 | 5/7 | 6/9 | 50% | 100% | 80% | 3 |
-| 04-snmp-v2c | ok | 0.8 | 1/7 | 3/9 | 67% | 100% | 100% | 0 |
-| 05-snmp-v3 | ok | 10.9 | 3/7 | 4/9 | 100% | 100% | 67% | 0 |
-| 06-ssh | ok | 118.1 | 0/7 | 0/9 | 0% | 0% | 0% | 0 |
-| 07-apis | ok | 13.6 | 6/7 | 9/9 | 89% | 100% | 67% | 0 |
-| 08-credenciais-mistas | ok | 44.0 | 4/7 | 7/9 | 86% | 100% | 100% | 3 |
-| 09-escopo | ok | 23.7 | 2/7 | 5/9 | 80% | 100% | 100% | 0 |
-| 10-concorrencia-1 | ok | 41.7 | 5/7 | 7/9 | 71% | 100% | 100% | 3 |
-| 11-falha-injetada | ok | 24.3 | 5/7 | 6/9 | 67% | 100% | 100% | 2 |
-
-Detalhes por cenário em `metrics.json`.
+| 01-semente-unica | 0 | 29.7 | 6/6 | 9/9 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 02-varredura | 0 | 32.4 | 7/7 | 9/9 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 03-memoria | 0 | 3.2 | 7/7 | 9/9 | 100% | 100% | 2/2 | 7 conf./0 recol. |
+| 04-ssh | 0 | 16.3 | 7/7 | 9/9 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 05-snmp | 0 | 21.5 | 7/7 | 9/9 | 100% | 100% | 1/1 | 0 conf./0 recol. |
+| 06-apis | 0 | 16.6 | 7/7 | 9/9 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 07-dns | 0 | 29.3 | 7/7 | 9/9 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 08-credenciais-mistas | 0 | 19.1 | 7/7 | 9/9 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 09-escopo | 0 | 14.8 | 2/2 | 5/5 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 10-sequencial | 0 | 55.9 | 7/7 | 9/9 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 11-snmpv3 | 0 | 8.1 | 3/3 | 4/4 | 100% | 100% | 0/0 | 0 conf./0 recol. |
+| 12-carga-conservadora | 0 | 68.6 | 7/7 | 9/9 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 13-determinismo | 0 | 32.5 | 7/7 | 9/9 | 100% | 100% | 2/2 | 0 conf./0 recol. |
+| 14-falha-verificar | 0 | 25.3 | 6/6 | 7/7 | 100% | 100% | 2/2 | 4 conf./2 recol. |
+| 15-restaurado | 0 | 11.7 | 7/7 | 9/9 | 100% | 100% | 2/2 | 5 conf./2 recol. |
+| 16-api-ui | 0 | 11.1 | | | | | | |
+| cli | 0 |  | | | | | | |

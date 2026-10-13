@@ -1,179 +1,189 @@
 ---
 title: NetTopo em laboratório
-kicker: Relatório de gestão técnica
-lede: Primeira rodada de testes da ferramenta NetTopo contra sistemas de rede reais, executada inteiramente na nuvem do GitHub. O documento resume o que funcionou, o que impede o uso em produção hoje e o que fazer a seguir.
+kicker: Relatório de gestão técnica · 2ª avaliação
+lede: A versão 0.2.0 corrigiu os 14 defeitos da primeira avaliação, passou a lembrar da rede entre execuções e a limitar a carga nos equipamentos. No mesmo laboratório, agora com 17 cenários e critério automático de aceite, a ferramenta não cometeu nenhum erro.
 other_label: Relatório técnico completo
 toc: false
 tag:
-  Documento: NT-AVL-2026-01
-  Versão avaliada: NetTopo 0.1.0 · f2823ea
-  Execução: run 36256925269
-  Data: 26/09/2026
+  Documento: NT-AVL-2026-01 · rev. 2
+  Versão avaliada: NetTopo 0.2.0 · 03f0d2b
+  Execução: run 38427060651 (suíte completa)
+  Comparada com: v0.1.0 · run 36256925269
+  Data: 13/10/2026
   Ambiente: GitHub Actions + Containerlab
   Público: Gestão técnica de redes
 data:
-  high_defects: 4
-  run_minutes: "16 min"
+  kpis:
+    - ["0", "erros em 17 cenários", "qualquer erro em relação ao gabarito reprova a rodada"]
+    - ["7 de 7", "equipamentos coletados", "partindo de um único IP, com varredura, memória ou DNS"]
+    - ["9 de 9", "links, nenhum a mais", "portas corretas nas duas pontas em todos os cenários"]
+    - ["3,2 s", "para reconfirmar a rede inteira", "2ª execução, contra 32,4 s da descoberta inicial"]
+    - ["500 ms", "entre requisições no perfil conservador", "e 1 sessão por equipamento, medidos em todos"]
+    - ["6 min 54 s", "por rodada a cada mudança", "antes 16 min; suíte completa diária: 11 min 58 s"]
+  compare:
+    - ["Equipamentos coletados a partir de um IP", "4 de 7", "7 de 7", "com varredura, memória ou DNS; sem nenhum deles, 6 de 7 e o 7º aparece com o motivo"]
+    - ["Modo só SSH (sem SNMP)", "0 de 7 em 118 s", "7 de 7 em 16,3 s", "fabricante identificado pelo banner e pelo prompt"]
+    - ["Modo só SNMP", "1 de 7", "7 de 7", "com a varredura da rede de gerência"]
+    - ["Links desenhados que não existem", "2 de 11", "0", "em todos os cenários"]
+    - ["Equipamentos fundidos indevidamente", "3 hosts em 1", "nenhum", "série genérica de VM deixou de identificar o host"]
+    - ["Portas corretas nos links", "50 a 89%", "100%", "em todos os cenários"]
+    - ["Vizinhos OSPF/BGP", "OSPF em 0 de 11 cenários", "OSPF e BGP detectados", "em todos os cenários que alcançam as bordas"]
+    - ["Mesmo resultado ao repetir", "não", "sim", "cenário 13 idêntico ao 02"]
+    - ["Segunda descoberta da mesma rede", "recoleta tudo", "3,2 s", "7 de 7 confirmados ativos, sem recoleta"]
+    - ["Equipamento que caiu", "só uma linha em falhas", "inacessível + histórico", "links removidos marcados; volta a ativo ao restaurar"]
+    - ["Proteção contra sobrecarga", "nenhuma", "rate limit por equipamento", "três perfis e ajustes por rede, fabricante ou nome"]
+    - ["Senhas", "digitadas a cada execução", "cofre cifrado local", "nenhum segredo gravado em disco (verificado)"]
+    - ["Tempo de uma rodada no GitHub", "16 min a cada push", "6 min 54 s a cada push", "suíte completa diária às 06:00: 11 min 58 s"]
+    - ["Defeitos de alta severidade", "4 abertos", "0", "14 de 14 corrigidos; 11 com teste de regressão próprio, todos verificados no laboratório"]
 ---
 
 ## Resumo
 
-Montamos um laboratório virtual com 8 equipamentos de três famílias de sistemas (MikroTik RouterOS,
-Nokia SR Linux e Linux com FRR) e rodamos a ferramenta em 11 cenários de descoberta, além da API, da
-interface web e da linha de comando. Cada resultado foi comparado automaticamente com um gabarito do
-que a ferramenta deveria encontrar.
+A primeira avaliação (26/09) mostrou que a arquitetura funcionava, mas que o resultado não era confiável:
+servidores fundidos num só, links duplicados, equipamentos que ficavam de fora e o modo só-SSH inoperante.
+A recomendação foi um ciclo curto de correção com este mesmo laboratório como critério de aceite.
 
-A arquitetura se provou. A ferramenta conversou com os três sistemas por SNMP, SSH, NETCONF e API REST,
-montou o diagrama, gerou os cinco formatos de documentação e não gravou nenhuma senha no banco de dados. Na melhor
-configuração, coletou 6 dos 7 equipamentos e encontrou os 9 links reais.
+A versão 0.2.0 fechou os 14 defeitos e trouxe o que faltava para uso contínuo: a ferramenta **guarda o
+inventário** e, na execução seguinte, **confirma em segundos** que cada equipamento continua ativo e com os
+mesmos vizinhos, recoletando só o que mudou. Ela também **limita a carga** em cada equipamento, para não
+pesar em equipamentos antigos, e guarda as **senhas num cofre cifrado**.
 
-O resultado ainda não é confiável o bastante para virar documentação oficial. Quatro defeitos de alta
-severidade distorcem o inventário e o desenho: servidores diferentes fundidos num só, links duplicados,
-equipamentos que ficam de fora quando anunciam um IP que o servidor não alcança e o modo só-SSH, que não
-identifica nenhum equipamento.
+O laboratório passou a reprovar automaticamente qualquer divergência em relação ao gabarito. Na suíte
+completa (17 cenários: métodos isolados, credenciais erradas, escopo, SNMPv3, carga conservadora,
+repetição, falha injetada, API, interface web e linha de comando), o resultado foi **zero erros**.
 
 <!-- viz:kpis -->
 
 | Indicador | Valor |
 |---|---|
-| Equipamentos coletados na melhor configuração (APIs + SNMP para identificar) | 6 de 7 |
-| Equipamentos coletados na configuração padrão, partindo de um único IP | 4 de 7 |
-| Links reais encontrados na melhor configuração | 9 de 9 |
-| Links desenhados que não existem (melhor configuração) | 2 de 11 |
-| Defeitos de alta severidade em aberto | 4 |
-| Tempo de uma rodada completa na nuvem | 16 min |
+| Erros em relação ao gabarito, 17 cenários | 0 |
+| Equipamentos coletados, partindo de um único IP | 7 de 7 |
+| Links encontrados, sem nenhum a mais | 9 de 9 |
+| Reconfirmar a rede inteira na 2ª execução | 3,2 s (descoberta inicial: 32,4 s) |
+| Intervalo entre requisições no perfil conservador | 500 ms, 1 sessão por equipamento |
+| Rodada do laboratório a cada mudança | 6 min 54 s (antes 16 min) |
 
 <!-- /viz -->
 
 <div class="callout decision" markdown="1">
-**Recomendação:** não usar ainda como fonte oficial de documentação. Aprovar um ciclo curto de correção
-dos quatro defeitos de alta severidade (cerca de 2 semanas de uma pessoa, estimativa) e repetir este
-mesmo laboratório como critério de aceite. Com o aceite atingido, seguir para um piloto somente leitura
-numa rede real de escopo limitado.
+**Recomendação:** o critério de aceite definido na primeira avaliação foi atingido. Liberar um **piloto
+somente leitura** numa rede real de escopo limitado (um site ou um bloco de gerência), com o perfil de
+carga **conservador** nos equipamentos antigos e o laboratório diário mantido como proteção contra
+regressões. Em paralelo, ampliar o laboratório para os fabricantes mais comuns no Brasil (Huawei, Cisco,
+Fortinet), que ainda não foram testados com equipamentos reais.
 </div>
 
-## O que foi testado
+## Antes e depois
 
-- **Laboratório:** 8 equipamentos e 9 links. Dois roteadores MikroTik CHR 7.16 rodando como máquinas
-  virtuais reais, dois switches Nokia SR Linux 25.10, um roteador Linux com FRR, dois servidores Linux e
-  um roteador de operadora propositalmente sem credenciais, que deveria aparecer como "não coletado".
-  Há OSPF entre as bordas e BGP com a operadora.
-- **Cenários:** descoberta com todos os métodos, só SNMP (v2c e v3), só SSH, só APIs, credenciais erradas
-  testadas primeiro, escopo limitado, execução sequencial, falha injetada (servidor desligado e link
-  derrubado) e partida por um único IP ou por um inventário de IPs de gerência.
-- **Produto completo:** API REST com acompanhamento em tempo real, interface web (com capturas de tela) e
-  os quatro comandos da linha de comando.
-- **Custo e hardware:** nenhum. Tudo roda num servidor temporário do GitHub Actions (4 vCPU, 16 GB).
-  Uma rodada completa leva 16 minutos: monta o laboratório, executa os testes, publica os resultados no
-  repositório e destrói o ambiente.
+<!-- viz:compare -->
+
+| Indicador | v0.1.0 | v0.2.0 | Observação |
+|---|---|---|---|
+| Equipamentos coletados a partir de um IP | 4 de 7 | 7 de 7 | com varredura, memória ou DNS; sem nenhum deles, 6 de 7 e o 7º aparece com o motivo |
+| Modo só SSH (sem SNMP) | 0 de 7 em 118 s | 7 de 7 em 16,3 s | fabricante identificado pelo banner e pelo prompt |
+| Modo só SNMP | 1 de 7 | 7 de 7 | com a varredura da rede de gerência |
+| Links desenhados que não existem | 2 de 11 | 0 | em todos os cenários |
+| Equipamentos fundidos indevidamente | 3 hosts em 1 | nenhum | série genérica de VM deixou de identificar o host |
+| Portas corretas nos links | 50 a 89% | 100% | em todos os cenários |
+| Vizinhos OSPF/BGP | OSPF em 0 de 11 cenários | OSPF e BGP detectados | em todos os cenários que alcançam as bordas |
+| Mesmo resultado ao repetir | não | sim | cenário 13 idêntico ao 02 |
+| Segunda descoberta da mesma rede | recoleta tudo | 3,2 s | 7 de 7 confirmados ativos, sem recoleta |
+| Equipamento que caiu | só uma linha em falhas | inacessível + histórico | links removidos marcados; volta a ativo ao restaurar |
+| Proteção contra sobrecarga | nenhuma | rate limit por equipamento | três perfis e ajustes por rede, fabricante ou nome |
+| Senhas | digitadas a cada execução | cofre cifrado local | nenhum segredo gravado em disco (verificado) |
+| Tempo de uma rodada no GitHub | 16 min a cada push | 6 min 54 s a cada push | suíte completa diária às 06:00: 11 min 58 s |
+| Defeitos de alta severidade | 4 abertos | 0 | 14 de 14 corrigidos; 11 com teste de regressão próprio, todos verificados no laboratório |
+
+<!-- /viz -->
+
+## O que muda para quem usa
+
+- **Memória da rede.** A primeira descoberta grava o inventário. Nas seguintes, cada equipamento conhecido
+  passa por uma checagem leve (quem é e quem são seus vizinhos). Se nada mudou, os dados são reaproveitados e
+  marcados "confirmado agora"; se mudou, só ele é recoletado; se não responde, aparece como "inacessível
+  desde..." e o histórico registra o evento. O comando `nettopo verificar` faz só essa confirmação e pode ser
+  agendado.
+- **Carga controlada.** Três perfis (conservador, equilibrado, rápido) definem o intervalo mínimo entre
+  requisições, quantas sessões abrir por equipamento e quantas tentativas de login aceitar, para não bloquear
+  contas no servidor de autenticação. Dá para aplicar um perfil mais cuidadoso só a uma rede, a um fabricante
+  ou a nomes de equipamentos. A carga aplicada fica registrada em cada equipamento do relatório.
+- **Senhas fora dos arquivos.** As credenciais ficam no cofre do sistema operacional ou num arquivo cifrado,
+  são referenciadas pelo nome e nunca aparecem no banco, nos logs ou na API.
+- **Equipamentos que ninguém anuncia.** Uma varredura opcional da rede de gerência encontra equipamentos que
+  os vizinhos anunciam com um IP inalcançável. Fica desligada por padrão.
+- **Menos peso nos equipamentos.** O SNMP passou a complementar só o que a API ou o SSH não trouxeram: as
+  requisições por equipamento caíram de cerca de 95 para 27 a 44 no laboratório.
 
 ## Resultados por cenário
 
 <!-- viz:scenarios -->
 
-| Cenário | Equipamentos coletados | Links encontrados | Portas corretas | Tempo (s) |
+| Cenário | Erros | Coletados | Links | Tempo (s) |
 |---|---|---|---|---|
-| 01 Semente única, todos os métodos | 4/7 | 7/9 | 86% | 24,5 |
-| 02 Semente única + DNS | 4/7 | 6/9 | 67% | 23,9 |
-| 03 Inventário de IPs de gerência | 5/7 | 6/9 | 50% | 24,2 |
-| 04 Somente SNMP v2c | 1/7 | 3/9 | 67% | 0,8 |
-| 05 Somente SNMPv3 | 3/7 | 4/9 | 100% | 10,9 |
-| 06 Somente SSH | 0/7 | 0/9 | — | 118,1 |
-| 07 Somente APIs (REST/NETCONF) | 6/7 | 9/9 | 89% | 13,6 |
-| 08 Credenciais erradas primeiro | 4/7 | 7/9 | 86% | 44,0 |
-| 09 Profundidade 1 + exclusão | 2/7 | 5/9 | 80% | 23,7 |
-| 10 Inventário sequencial | 5/7 | 7/9 | 71% | 41,7 |
-| 11 Após falha injetada | 5/7 | 6/9 | 67% | 24,3 |
+| 01 Semente única, sem DNS nem memória | 0 | 6/6 | 9/9 | 29,7 |
+| 02 Semente única + varredura da gerência | 0 | 7/7 | 9/9 | 32,4 |
+| 03 Segunda execução, usando a memória | 0 | 7/7 | 9/9 | 3,2 |
+| 04 Somente SSH | 0 | 7/7 | 9/9 | 16,3 |
+| 05 Somente SNMP v2c + varredura | 0 | 7/7 | 9/9 | 21,5 |
+| 06 APIs (REST, JSON-RPC, NETCONF) | 0 | 7/7 | 9/9 | 16,6 |
+| 07 Semente única + DNS | 0 | 7/7 | 9/9 | 29,3 |
+| 08 Credenciais erradas primeiro | 0 | 7/7 | 9/9 | 19,1 |
+| 09 Profundidade 1 + exclusão | 0 | 2/2 | 5/5 | 14,8 |
+| 10 Inventário, 1 coleta por vez | 0 | 7/7 | 9/9 | 55,9 |
+| 11 Somente SNMPv3 | 0 | 3/3 | 4/4 | 8,1 |
+| 12 Carga conservadora (500 ms, 1 sessão) | 0 | 7/7 | 9/9 | 68,6 |
+| 13 Repetição sem memória (determinismo) | 0 | 7/7 | 9/9 | 32,5 |
+| 14 Verificação após falha injetada | 0 | 6/6 | 7/7 | 25,3 |
+| 15 Verificação após restaurar | 0 | 7/7 | 9/9 | 11,7 |
+| 16-api-ui API, cofre e interface web | 0 | — | — | 11,1 |
+| cli Comandos da CLI | 0 | — | — | — |
 
 <!-- /viz -->
 
-- **Melhor combinação:** APIs (REST no MikroTik, NETCONF no SR Linux) com SNMP só para identificar o
-  fabricante. Foi também a mais rápida entre as completas: 13,6 s.
-- **Configuração padrão a partir de um IP:** 4 de 7. O segundo MikroTik anuncia aos vizinhos um IP de
-  interface que o servidor de descoberta não alcança, e a ferramenta não tenta outra forma de chegar
-  nele. Resolver nomes por DNS não mudou o resultado.
-- **Partindo do inventário de IPs:** alcança todos os equipamentos, mas os três servidores Linux são
-  fundidos num só registro, por isso o resultado para em 5 de 7.
-- **Só SSH:** 0 de 7 em 118 s. Sem SNMP, a ferramenta não reconhece o fabricante e desiste.
-- **Credenciais erradas primeiro:** mesmo resultado do cenário padrão, com 19,5 s a mais. A ferramenta
-  aprende qual credencial funciona e passa a usá-la primeiro.
-- **Falha injetada:** o servidor desligado aparece na lista de falhas e os links perdidos somem do
-  desenho. A comparação entre as duas descobertas ficou poluída pela fusão dos servidores.
+- **01, sem DNS, memória nem varredura:** `edge-mk2` só é anunciado pelo IP do link de trânsito, que o servidor
+  de descoberta não alcança. Nenhum protocolo revela outro endereço, então o resultado correto é "não coletado"
+  com o motivo explícito, e é isso que aparece. Com DNS (07), varredura (02) ou memória (03), ele é coletado.
+- **03, segunda execução:** os 7 equipamentos foram confirmados ativos em 3,2 s, sem recoleta.
+- **14 e 15, falha e restauração:** com o `srv2` congelado e um link derrubado, a verificação marcou o `srv2`
+  como inacessível e os dois links como removidos. Depois da restauração, ele voltou a ativo e o desenho
+  voltou a ter os 9 links.
+- **12, carga conservadora:** a telemetria de cada equipamento mostrou intervalo mínimo de 500 ms e no máximo
+  uma sessão simultânea, como configurado.
 
-<!-- viz:shot ui-resultado | Interface web com a descoberta disparada pela API. Os defeitos aparecem no próprio desenho: um único "srv1" no lugar de três hosts Linux, linhas duplas entre edge-mk1 e core-srl1 e um link mgmt0 entre os dois switches que não existe na rede de dados. -->
+<!-- viz:shot relatorio-diagrama | Relatório HTML da descoberta com varredura (cenário 02): operadora, bordas MikroTik, núcleo SR Linux, roteador Linux na distribuição e servidores, com as portas de cada lado. -->
 
-<div class="grid-2" markdown="1">
-<div class="pro" markdown="1">
+<!-- viz:shot ui-inventario | Tela de inventário da interface web: status de cada equipamento, quando foi confirmado e qual acesso funcionou, além das mudanças recentes. -->
 
-### Pontos fortes
+## Riscos que permanecem
 
-- Funciona com três sistemas diferentes e quatro protocolos, escolhendo o melhor disponível em cada
-  equipamento.
-- Diagrama por camadas (borda, núcleo, acesso) legível e editável no draw.io.
-- Documentação completa em HTML, Excel, Markdown e JSON gerada em segundos.
-- Equipamentos sem acesso aparecem no desenho pelo que os vizinhos anunciam.
-- Nenhuma senha gravada no banco de dados (verificado).
-- Perfis de fabricante em arquivos de configuração: incluir um fabricante não exige programar.
-- Laboratório automatizado e reproduzível, sem custo, pronto para rodar a cada mudança.
-
-</div>
-<div class="con" markdown="1">
-
-### Pontos fracos
-
-- Servidores e VMs podem ser fundidos num único equipamento no inventário.
-- Links duplicados quando os dois lados descrevem a porta de formas diferentes.
-- Não alcança equipamentos que anunciam um IP não roteável para o servidor.
-- Modo só-SSH não funciona sem SNMP.
-- LLDP da rede de gerência cria links que não existem.
-- Leitura por linha de comando falha em parte das saídas do SR Linux e nas rotas do RouterOS 7.
-- Vizinhos OSPF não aparecem; o vizinho BGP da operadora vira um equipamento duplicado.
-
-</div>
-</div>
-
-## Riscos se usada hoje em produção
-
-| Risco | Como aparece na documentação | Causa |
+| Risco | Por que importa | Como tratar |
 |---|---|---|
-| Inventário menor que o real | Vários servidores ou VMs viram um só equipamento | Número de série lido errado em Linux e usado para identificar o equipamento |
-| Desenho com cabos que não existem | Links duplicados e ligações pela rede de gerência | Nomes de porta diferentes entre os lados; LLDP ligado na gerência |
-| Partes da rede ausentes | Equipamentos aparecem como "não coletados" mesmo com acesso liberado | Sem alternativa quando o IP anunciado pelo vizinho não responde |
-| Resultado varia entre execuções | Nome do equipamento fundido muda de uma rodada para outra | Consequência do primeiro risco |
-| Dependência de SNMP | Em redes só com SSH, nada é descoberto | Identificação do fabricante depende de SNMP |
+| Fabricantes ainda não testados com equipamento real | Cisco, Huawei, Juniper, Fortinet e outros têm perfis, mas só MikroTik, Nokia SR Linux e Linux passaram pelo laboratório | Laboratórios Huawei/Fortinet (Redes Brasil) e Cisco (DevNet) antes de ampliar o piloto |
+| Escala | O laboratório tem 8 equipamentos; não sabemos o tempo e a memória com centenas | Teste com 50 a 100 roteadores Linux/FRR no próprio GitHub |
+| Certificados e chaves de host | Verificação de TLS e de chave SSH segue desligada por padrão | Ligar por padrão no piloto, com lista de exceções |
+| Equipamento sem IP alcançável anunciado | Sem DNS, inventário ou varredura, ele fica como "não coletado" | Cadastrar DNS ou ligar a varredura na rede de gerência |
 
-## Plano de ação
+## Próximos passos
 
-| Quando | O quê | Resultado esperado | Esforço (estimativa) |
-|---|---|---|---|
-| Semanas 1-2 | Corrigir identificação de equipamentos (não usar modelo como número de série) | Fim das fusões indevidas | 1 dia |
-| Semanas 1-2 | Unificar nomes de porta e ignorar LLDP da rede de gerência | Fim dos links duplicados e falsos | 2 dias |
-| Semanas 1-2 | Tentar DNS, inventário e tabela ARP quando o IP anunciado não responde | Descoberta completa a partir de um IP | 3 dias |
-| Semanas 1-2 | Identificar o fabricante por SSH sem depender de SNMP | Modo só-SSH funcional | 2 dias |
-| Semanas 1-2 | Ajustar leitura de rotas RouterOS 7 e saídas do SR Linux | Dados completos por CLI | 2 dias |
-| Semana 3 | Repetir o laboratório e validar o critério de aceite | Liberação para piloto | 1 dia |
-| Mês 2 | Laboratórios Huawei, Fortinet, VyOS e Cisco; vizinhos OSPF/BGP por API | Cobertura dos fabricantes mais usados no Brasil | 2 semanas |
-| Mês 2 | Autenticação obrigatória na API e validação de certificados e chaves SSH | Uso seguro em rede corporativa | 1 semana |
-| Trimestre | Descoberta agendada com histórico, integração com NetBox, IPv6 e redes grandes | Documentação sempre atualizada | 4-6 semanas |
+| Quando | O quê | Resultado esperado |
+|---|---|---|
+| Próximas 2 semanas | Piloto somente leitura em um site, perfil conservador, `nettopo verificar` agendado diariamente | Inventário confirmado todo dia e histórico de mudanças |
+| Mês 1 | Laboratórios Huawei, Fortinet e Cisco | Cobertura dos fabricantes mais usados no Brasil |
+| Mês 1 | Verificação de TLS e chaves SSH ligada por padrão | Uso seguro em rede corporativa |
+| Mês 2 | Teste de escala com 50 a 100 nós | Tempo e memória conhecidos para redes grandes |
+| Trimestre | Integração com NetBox, IPv6 e VRF | Documentação como fonte oficial |
 
-## Critério de aceite para o piloto
+## Critério de aceite da primeira avaliação
 
-Na mesma simulação, que roda automaticamente a cada mudança:
-
-- 7 de 7 equipamentos coletáveis a partir de um único IP e a partir do inventário;
-- 9 de 9 links, nenhum link a mais e as duas portas corretas em todos;
-- nenhum equipamento fundido e o mesmo resultado em duas execuções seguidas;
-- modo só-SSH coletando MikroTik, SR Linux e Linux;
-- operadora sem credenciais aparecendo como "não coletado".
-
-## Próximos laboratórios
-
-- **Lab em Nuvem Redes Brasil** (assinatura paga, acesso pelo navegador): Huawei, Fortinet, VyOS e Nokia
-  SR OS, relevantes para provedores brasileiros e ausentes deste laboratório.
-- **Cisco DevNet Sandbox** (gratuito com conta Cisco): IOS-XE e NX-OS reais para validar SSH, RESTCONF,
-  NETCONF e NX-API.
-- **Teste de escala** no próprio GitHub: 50 a 100 roteadores Linux/FRR para medir tempo e memória.
+| Critério | Resultado |
+|---|---|
+| 7 de 7 equipamentos a partir de um IP e a partir do inventário | atingido (varredura, memória, DNS ou inventário) |
+| 9 de 9 links, nenhum a mais, portas corretas | atingido em todos os cenários |
+| Nenhum equipamento fundido e mesmo resultado em duas execuções | atingido (cenário 13) |
+| Modo só-SSH coletando MikroTik, SR Linux e Linux | atingido: 7 de 7 |
+| Operadora sem credenciais aparecendo como "não coletado" | atingido, com o motivo |
 
 Os resultados brutos, os logs e o laboratório estão no repositório
 [network-discovery-automation](https://github.com/tanatielly/network-discovery-automation), branch
-`lab-results`. O relatório técnico detalha cada defeito com arquivo e linha do código.
+`lab-results`. O relatório técnico detalha cada correção, a memória, o rate limit, o desempenho e a qualidade
+do código.

@@ -203,3 +203,10 @@ figcaption { margin-top: 8px; font-size: 13px; color: var(--muted); max-width: 9
 .compare .arrow { color: var(--accent); padding-left: 0; padding-right: 0; }
 td.note { font-size: 12.5px; line-height: 1.35; color: var(--muted); min-width: 22ch; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Tabela de cenários com erros (v0.2): nome em linha larga, barras curtas, tempo sempre visível */
+.scen2 td { min-width: 0; }
+.scen2 tbody th { min-width: 15em; white-space: normal; }
+.scen2 .bar { width: 56px; }
+.scen2 .bar-val { min-width: 2.6em; }
+.scen2 td.note { white-space: normal; min-width: 12ch; max-width: 22ch; }

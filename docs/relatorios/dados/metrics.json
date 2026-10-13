@@ -1,1454 +1,3128 @@
 {
-  "01-completo": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 4,
-    "node_recall": 0.571,
-    "nodes_seen_including_stubs": 6,
-    "stub_expected_ok": true,
-    "unexpected_nodes": [
-      "AS64500 200.200.10.1"
-    ],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 1.0,
-    "links_expected": 9,
-    "links_found": 7,
-    "link_recall": 0.778,
-    "link_precision": 0.7,
-    "interface_accuracy": 0.857,
-    "missing_links": [
-      "dist-frr1:eth3 <-> srv1:eth1",
-      "core-srl2:ethernet-1/4 <-> srv2:eth1"
-    ],
-    "false_links": [
-      "core-srl1:ethernet-1/1 <-> edge-mk1:ether4 (a mais)",
-      "core-srl1:mgmt0 <-> core-srl2:mgmt0 (a mais)",
-      "core-srl2:ethernet-1/4 <-> dist-frr1:eth1 (a mais)"
-    ],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
+  "suite": "completa",
+  "scenarios_duration_s": 462.8,
+  "total_errors": 0,
+  "scenarios": {
+    "01-semente-unica": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 6,
+      "nodes_collected": 6,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 6,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 6
       },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 6,
-    "repeat_collections": {
-      "dist-frr1": 3
+      "eventos": [],
+      "failed_targets": {
+        "10.255.0.2": "IP anunciado 10.255.0.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+        "172.20.20.2": "IP anunciado 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)"
+      },
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 37,
+            "espera_aplicada_s": 5.84,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 36,
+            "espera_aplicada_s": 5.75,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 40,
+            "espera_aplicada_s": 4.2,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.48,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": false,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "IP anunciado 10.255.0.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+          "carga": null,
+          "fingerprint": null
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "IP anunciado 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 36,
+            "espera_aplicada_s": 4.53,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 39,
+            "espera_aplicada_s": 4.51,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        }
+      },
+      "title": "Semente única, todos os métodos, sem DNS nem memória",
+      "status": "ok",
+      "duration_s": 29.7
     },
-    "failed_targets": {
-      "172.20.20.2": "ssh: perfil sem driver Netmiko",
-      "10.255.0.2": "sem resposta (portas fechadas / credenciais ausentes)"
+    "02-varredura": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 7,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 7
+      },
+      "eventos": [
+        {
+          "device": "core-srl1",
+          "kind": "novo"
+        },
+        {
+          "device": "core-srl2",
+          "kind": "novo"
+        },
+        {
+          "device": "dist-frr1",
+          "kind": "novo"
+        },
+        {
+          "device": "edge-mk1",
+          "kind": "novo"
+        },
+        {
+          "device": "edge-mk2",
+          "kind": "novo"
+        },
+        {
+          "device": "srv1",
+          "kind": "novo"
+        },
+        {
+          "device": "srv2",
+          "kind": "novo"
+        }
+      ],
+      "failed_targets": {
+        "10.255.0.1": "IP anunciado 10.255.0.1: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+        "172.20.20.1": "varredura 172.20.20.1: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado",
+        "172.20.20.2": "varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado"
+      },
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 37,
+            "espera_aplicada_s": 5.7,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 37,
+            "espera_aplicada_s": 5.68,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 40,
+            "espera_aplicada_s": 4.18,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.62,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.55,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 42,
+            "espera_aplicada_s": 4.48,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 43,
+            "espera_aplicada_s": 4.5,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        }
+      },
+      "title": "Semente única + varredura da rede de gerência (cria a memória)",
+      "status": "ok",
+      "duration_s": 32.4
     },
-    "per_node": {
-      "edge-mk1": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 4,
-        "errors": []
+    "03-memoria": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 0,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 7,
+        "reaproveitados": 7,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 0
       },
-      "core-srl1": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 63,
-        "neighbors": 4,
-        "errors": []
+      "eventos": [],
+      "failed_targets": {
+        "172.20.20.2": "IP anunciado 172.20.20.2: sem resposta na última tentativa (13/10 16:05, 1x); nova tentativa após 6 h ou com --completo: varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)"
       },
-      "core-srl2": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 64,
-        "neighbors": 5,
-        "errors": []
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.16,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.16,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 6,
+            "espera_aplicada_s": 0.1,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.18,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.18,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "IP anunciado 172.20.20.2: sem resposta na última tentativa (13/10 16:05, 1x); nova tentativa após 6 h ou com --completo: varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 6,
+            "espera_aplicada_s": 0.09,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 6,
+            "espera_aplicada_s": 0.09,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        }
       },
-      "dist-frr1": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "ssh",
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 5,
-        "neighbors": 5,
-        "errors": []
-      },
-      "isp-pe": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      },
-      "edge-mk2": {
-        "collected": false,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 2,
-        "neighbors": 0,
-        "errors": []
-      }
+      "title": "Segunda execução: semente única usando a memória",
+      "status": "ok",
+      "duration_s": 3.2
     },
-    "title": "Completo (REST > NETCONF > SSH + SNMP), semente única, sem DNS",
-    "status": "ok",
-    "duration_s": 24.5
-  },
-  "02-completo-dns": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 4,
-    "node_recall": 0.571,
-    "nodes_seen_including_stubs": 6,
-    "stub_expected_ok": true,
-    "unexpected_nodes": [
-      "AS64500 200.200.10.1"
-    ],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 0.75,
-    "links_expected": 9,
-    "links_found": 6,
-    "link_recall": 0.667,
-    "link_precision": 0.6,
-    "interface_accuracy": 0.667,
-    "missing_links": [
-      "core-srl1:ethernet-1/3 <-> dist-frr1:eth1",
-      "core-srl2:ethernet-1/3 <-> dist-frr1:eth2",
-      "dist-frr1:eth3 <-> srv1:eth1"
-    ],
-    "false_links": [
-      "core-srl1:ethernet-1/1 <-> edge-mk1:ether4 (a mais)",
-      "core-srl1:mgmt0 <-> core-srl2:mgmt0 (a mais)",
-      "core-srl1:ethernet-1/3 <-> srv2:eth1",
-      "core-srl2:ethernet-1/4 <-> srv2:eth1 (a mais)"
-    ],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
+    "04-ssh": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 7,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 7
       },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 6,
-    "repeat_collections": {
-      "srv2": 3
+      "eventos": [],
+      "failed_targets": {
+        "10.255.0.2": "IP anunciado 10.255.0.2: sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+        "172.20.20.2": "semente 172.20.20.2: ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado"
+      },
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "ssh"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 10,
+            "espera_aplicada_s": 0.18,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "ssh-sonda"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "ssh"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 10,
+            "espera_aplicada_s": 0.18,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "ssh-sonda"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "ssh"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 21,
+            "espera_aplicada_s": 0.18,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "ssh-sonda"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "ssh"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 13,
+            "espera_aplicada_s": 0.19,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "ssh-banner"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "ssh"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 13,
+            "espera_aplicada_s": 0.19,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "ssh-banner"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "semente 172.20.20.2: ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 21,
+            "espera_aplicada_s": 0.18,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "ssh-sonda"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 21,
+            "espera_aplicada_s": 0.18,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "ssh-sonda"
+        }
+      },
+      "title": "Somente SSH (identificação por banner/prompt, sem SNMP)",
+      "status": "ok",
+      "duration_s": 16.3
     },
-    "failed_targets": {
-      "172.20.20.2": "ssh: perfil sem driver Netmiko",
-      "10.255.0.2": "sem resposta (portas fechadas / credenciais ausentes)"
+    "05-snmp": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 1,
+      "routing_found": 1,
+      "collections": 7,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 7
+      },
+      "eventos": [],
+      "failed_targets": {
+        "10.255.0.1": "ARP 10.255.0.1: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta",
+        "172.20.20.1": "varredura 172.20.20.1: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)",
+        "172.20.20.2": "varredura 172.20.20.2: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)"
+      },
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 91,
+            "espera_aplicada_s": 17.04,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 91,
+            "espera_aplicada_s": 16.96,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 79,
+            "espera_aplicada_s": 14.63,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 81,
+            "espera_aplicada_s": 15.33,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 79,
+            "espera_aplicada_s": 14.89,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "switch",
+          "tier": "access",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "vizinho não anunciou IP de gerência",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 79,
+            "espera_aplicada_s": 14.59,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 79,
+            "espera_aplicada_s": 14.51,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        }
+      },
+      "title": "Somente SNMP v2c + varredura",
+      "status": "ok",
+      "duration_s": 21.5
     },
-    "per_node": {
-      "edge-mk1": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 4,
-        "errors": []
+    "06-apis": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 7,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 7
       },
-      "core-srl1": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 63,
-        "neighbors": 4,
-        "errors": []
+      "eventos": [],
+      "failed_targets": {
+        "10.10.1.1": "IP anunciado 10.10.1.1: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+        "172.20.20.1": "varredura 172.20.20.1: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)",
+        "172.20.20.2": "varredura 172.20.20.2: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)"
       },
-      "core-srl2": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 64,
-        "neighbors": 5,
-        "errors": []
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 9,
+            "espera_aplicada_s": 0.58,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 9,
+            "espera_aplicada_s": 0.57,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 79,
+            "espera_aplicada_s": 14.87,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 14,
+            "espera_aplicada_s": 1.2,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 14,
+            "espera_aplicada_s": 1.2,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "varredura 172.20.20.2: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 79,
+            "espera_aplicada_s": 14.82,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 79,
+            "espera_aplicada_s": 14.76,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        }
       },
-      "srv2": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": false,
-        "tier": "edge",
-        "via": [
-          "ssh",
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 5,
-        "neighbors": 5,
-        "errors": []
-      },
-      "isp-pe": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      },
-      "edge-mk2": {
-        "collected": false,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 2,
-        "neighbors": 0,
-        "errors": []
-      }
+      "title": "APIs (REST, JSON-RPC, NETCONF); SNMP só para identificar",
+      "status": "ok",
+      "duration_s": 16.6
     },
-    "title": "Completo com DNS (hostnames resolvem para a gerência)",
-    "status": "ok",
-    "duration_s": 23.9
-  },
-  "03-inventario": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 5,
-    "node_recall": 0.714,
-    "nodes_seen_including_stubs": 6,
-    "stub_expected_ok": true,
-    "unexpected_nodes": [
-      "AS64500 200.200.10.1"
-    ],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 0.8,
-    "links_expected": 9,
-    "links_found": 6,
-    "link_recall": 0.667,
-    "link_precision": 0.545,
-    "interface_accuracy": 0.5,
-    "missing_links": [
-      "core-srl1:ethernet-1/3 <-> dist-frr1:eth1",
-      "core-srl2:ethernet-1/3 <-> dist-frr1:eth2",
-      "dist-frr1:eth3 <-> srv1:eth1"
-    ],
-    "false_links": [
-      "core-srl1:ethernet-1/1 <-> edge-mk1:ether4 (a mais)",
-      "core-srl2:ethernet-1/1 <-> edge-mk2:ether4 (a mais)",
-      "core-srl1:mgmt0 <-> core-srl2:mgmt0 (a mais)",
-      "core-srl1:ethernet-1/3 <-> srv2:eth1",
-      "core-srl2:ethernet-1/4 <-> srv2:eth1 (a mais)"
-    ],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
+    "07-dns": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 7,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 7
       },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 7,
-    "repeat_collections": {
-      "srv2": 3
+      "eventos": [],
+      "failed_targets": {
+        "172.20.20.2": "IP anunciado 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)"
+      },
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 37,
+            "espera_aplicada_s": 5.85,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 36,
+            "espera_aplicada_s": 5.74,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 40,
+            "espera_aplicada_s": 4.22,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.58,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.73,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "IP anunciado 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 37,
+            "espera_aplicada_s": 4.62,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 39,
+            "espera_aplicada_s": 4.63,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        }
+      },
+      "title": "Semente única com DNS (hostnames resolvem para a gerência)",
+      "status": "ok",
+      "duration_s": 29.3
     },
-    "failed_targets": {
-      "172.20.20.2": "ssh: perfil sem driver Netmiko",
-      "10.255.0.2": "sem resposta (portas fechadas / credenciais ausentes)"
+    "08-credenciais-mistas": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 7,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 7
+      },
+      "eventos": [],
+      "failed_targets": {
+        "10.255.0.2": "IP anunciado 10.255.0.2: snmp: sem resposta para 3 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+        "172.20.20.2": "semente 172.20.20.2: snmp: sem resposta para 3 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: limite de falhas de autenticação do equipamento atingido; ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado"
+      },
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 39,
+            "espera_aplicada_s": 5.84,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 39,
+            "espera_aplicada_s": 5.8,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 84,
+            "espera_aplicada_s": 14.92,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 3
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 29,
+            "espera_aplicada_s": 3.72,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 29,
+            "espera_aplicada_s": 3.73,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "semente 172.20.20.2: snmp: sem resposta para 3 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: limite de falhas de autenticação do equipamento atingido; ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 83,
+            "espera_aplicada_s": 14.82,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 3
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 83,
+            "espera_aplicada_s": 14.83,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 3
+          },
+          "fingerprint": "snmp"
+        }
+      },
+      "title": "Credenciais erradas testadas primeiro",
+      "status": "ok",
+      "duration_s": 19.1
     },
-    "per_node": {
-      "edge-mk1": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 4,
-        "errors": []
+    "09-escopo": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 2,
+      "nodes_collected": 2,
+      "links_expected": 5,
+      "links_found": 5,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 2,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 2
       },
-      "edge-mk2": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 2,
-        "errors": []
+      "eventos": [],
+      "failed_targets": {
+        "10.255.0.2": "IP anunciado 10.255.0.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+        "172.20.20.2": "IP anunciado 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)"
       },
-      "core-srl1": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 63,
-        "neighbors": 4,
-        "errors": []
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 37,
+            "espera_aplicada_s": 5.89,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": false,
+          "vendor": "Nokia",
+          "role": "switch",
+          "tier": "access",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": null,
+          "fingerprint": null
+        },
+        "dist-frr1": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": null,
+          "fingerprint": null
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.58,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": false,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "IP anunciado 10.255.0.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+          "carga": null,
+          "fingerprint": null
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "IP anunciado 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+          "carga": null,
+          "fingerprint": null
+        }
       },
-      "core-srl2": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 64,
-        "neighbors": 5,
-        "errors": []
-      },
-      "srv2": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": false,
-        "tier": "edge",
-        "via": [
-          "ssh",
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 5,
-        "neighbors": 5,
-        "errors": []
-      },
-      "isp-pe": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      }
+      "title": "Profundidade 1 e exclusão da rede dos servidores",
+      "status": "ok",
+      "duration_s": 14.8
     },
-    "title": "Sementes = inventário de IPs de gerência",
-    "status": "ok",
-    "duration_s": 24.2
-  },
-  "04-snmp-v2c": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 1,
-    "node_recall": 0.143,
-    "nodes_seen_including_stubs": 4,
-    "stub_expected_ok": true,
-    "unexpected_nodes": [
-      "AS64500 200.200.10.1"
-    ],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 1.0,
-    "links_expected": 9,
-    "links_found": 3,
-    "link_recall": 0.333,
-    "link_precision": 1.0,
-    "interface_accuracy": 0.667,
-    "missing_links": [
-      "edge-mk2:ether4 <-> core-srl2:ethernet-1/1",
-      "core-srl1:ethernet-1/2 <-> core-srl2:ethernet-1/2",
-      "core-srl1:ethernet-1/3 <-> dist-frr1:eth1",
-      "core-srl2:ethernet-1/3 <-> dist-frr1:eth2",
-      "dist-frr1:eth3 <-> srv1:eth1",
-      "core-srl2:ethernet-1/4 <-> srv2:eth1"
-    ],
-    "false_links": [],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
+    "10-sequencial": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 7,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 7
       },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 1,
-    "repeat_collections": {},
-    "failed_targets": {},
-    "per_node": {
-      "edge-mk1": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 4,
-        "errors": []
+      "eventos": [],
+      "failed_targets": {
+        "172.20.20.2": "semente 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado"
       },
-      "isp-pe": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "switch",
-        "role_ok": false,
-        "tier": "access",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 37,
+            "espera_aplicada_s": 5.86,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 36,
+            "espera_aplicada_s": 5.73,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 40,
+            "espera_aplicada_s": 4.21,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.72,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.72,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "semente 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 38,
+            "espera_aplicada_s": 4.72,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 38,
+            "espera_aplicada_s": 4.72,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        }
       },
-      "edge-mk2": {
-        "collected": false,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      },
-      "core-srl1": {
-        "collected": false,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "switch",
-        "role_ok": true,
-        "tier": "access",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      }
+      "title": "Inventário com 1 coleta por vez",
+      "status": "ok",
+      "duration_s": 55.9
     },
-    "title": "Somente SNMP v2c",
-    "status": "ok",
-    "duration_s": 0.8
-  },
-  "05-snmp-v3": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 3,
-    "node_recall": 0.429,
-    "nodes_seen_including_stubs": 5,
-    "stub_expected_ok": false,
-    "unexpected_nodes": [],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 0.667,
-    "links_expected": 9,
-    "links_found": 4,
-    "link_recall": 0.444,
-    "link_precision": 1.0,
-    "interface_accuracy": 1.0,
-    "missing_links": [
-      "isp-pe:eth1 <-> edge-mk1:ether2",
-      "edge-mk1:ether3 <-> edge-mk2:ether3",
-      "edge-mk1:ether4 <-> core-srl1:ethernet-1/1",
-      "edge-mk2:ether4 <-> core-srl2:ethernet-1/1",
-      "core-srl1:ethernet-1/2 <-> core-srl2:ethernet-1/2"
-    ],
-    "false_links": [],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
+    "11-snmpv3": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 3,
+      "nodes_collected": 3,
+      "links_expected": 4,
+      "links_found": 4,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 0,
+      "routing_found": 0,
+      "collections": 3,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 3
       },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 3,
-    "repeat_collections": {},
-    "failed_targets": {
-      "172.20.20.2": "nenhum método funcionou",
-      "172.20.20.21": "nenhum método funcionou",
-      "172.20.20.22": "nenhum método funcionou",
-      "172.20.20.11": "nenhum método funcionou",
-      "172.20.20.12": "nenhum método funcionou"
+      "eventos": [],
+      "failed_targets": {
+        "172.20.20.11": "semente 172.20.20.11: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)",
+        "172.20.20.12": "semente 172.20.20.12: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)",
+        "172.20.20.2": "semente 172.20.20.2: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)",
+        "172.20.20.21": "semente 172.20.20.21: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)",
+        "172.20.20.22": "semente 172.20.20.22: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)"
+      },
+      "per_node": {
+        "core-srl1": {
+          "collected": false,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "access",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "semente 172.20.20.21: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)",
+          "carga": null,
+          "fingerprint": null
+        },
+        "core-srl2": {
+          "collected": false,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "access",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "semente 172.20.20.22: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)",
+          "carga": null,
+          "fingerprint": null
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 80,
+            "espera_aplicada_s": 14.76,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 80,
+            "espera_aplicada_s": 14.72,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 80,
+            "espera_aplicada_s": 14.71,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        }
+      },
+      "title": "Somente SNMPv3 (authPriv SHA/AES) a partir do inventário",
+      "status": "ok",
+      "duration_s": 8.1
     },
-    "per_node": {
-      "dist-frr1": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 5,
-        "neighbors": 3,
-        "errors": []
+    "12-carga-conservadora": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 7,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 7
       },
-      "srv2": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "server",
-        "role_ok": true,
-        "tier": "endpoint",
-        "via": [
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 3,
-        "neighbors": 1,
-        "errors": []
+      "eventos": [],
+      "failed_targets": {
+        "172.20.20.2": "semente 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: limite de falhas de autenticação do equipamento atingido; ssh: autenticação recusada para 2 credencial(is); ssh: fabricante não identificado"
       },
-      "srv1": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": false,
-        "tier": "edge",
-        "via": [
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 3,
-        "neighbors": 1,
-        "errors": []
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "conservador",
+            "requisicoes": 45,
+            "espera_aplicada_s": 21.22,
+            "menor_intervalo_ms": 500,
+            "intervalo_configurado_ms": 500,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "conservador",
+            "requisicoes": 44,
+            "espera_aplicada_s": 21.19,
+            "menor_intervalo_ms": 500,
+            "intervalo_configurado_ms": 500,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "conservador",
+            "requisicoes": 86,
+            "espera_aplicada_s": 41.31,
+            "menor_intervalo_ms": 500,
+            "intervalo_configurado_ms": 500,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "conservador",
+            "requisicoes": 27,
+            "espera_aplicada_s": 12.48,
+            "menor_intervalo_ms": 500,
+            "intervalo_configurado_ms": 500,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "conservador",
+            "requisicoes": 27,
+            "espera_aplicada_s": 12.47,
+            "menor_intervalo_ms": 500,
+            "intervalo_configurado_ms": 500,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "semente 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: limite de falhas de autenticação do equipamento atingido; ssh: autenticação recusada para 2 credencial(is); ssh: fabricante não identificado",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "conservador",
+            "requisicoes": 85,
+            "espera_aplicada_s": 40.82,
+            "menor_intervalo_ms": 500,
+            "intervalo_configurado_ms": 500,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "conservador",
+            "requisicoes": 85,
+            "espera_aplicada_s": 40.83,
+            "menor_intervalo_ms": 500,
+            "intervalo_configurado_ms": 500,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        }
       },
-      "core-srl2": {
-        "collected": false,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "access",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 2,
-        "neighbors": 0,
-        "errors": []
-      },
-      "core-srl1": {
-        "collected": false,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "access",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      }
+      "title": "Perfil de carga conservador (500 ms entre requisições, 1 sessão)",
+      "status": "ok",
+      "duration_s": 68.6
     },
-    "title": "Somente SNMPv3 (authPriv SHA/AES) a partir do inventário",
-    "status": "ok",
-    "duration_s": 10.9
-  },
-  "06-ssh": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 0,
-    "node_recall": 0.0,
-    "nodes_seen_including_stubs": 0,
-    "stub_expected_ok": false,
-    "unexpected_nodes": [],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 0.0,
-    "role_accuracy": 0.0,
-    "links_expected": 9,
-    "links_found": 0,
-    "link_recall": 0.0,
-    "link_precision": 0.0,
-    "interface_accuracy": 0.0,
-    "missing_links": [
-      "isp-pe:eth1 <-> edge-mk1:ether2",
-      "edge-mk1:ether3 <-> edge-mk2:ether3",
-      "edge-mk1:ether4 <-> core-srl1:ethernet-1/1",
-      "edge-mk2:ether4 <-> core-srl2:ethernet-1/1",
-      "core-srl1:ethernet-1/2 <-> core-srl2:ethernet-1/2",
-      "core-srl1:ethernet-1/3 <-> dist-frr1:eth1",
-      "core-srl2:ethernet-1/3 <-> dist-frr1:eth2",
-      "dist-frr1:eth3 <-> srv1:eth1",
-      "core-srl2:ethernet-1/4 <-> srv2:eth1"
-    ],
-    "false_links": [],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
+    "13-determinismo": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 7,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 0,
+        "reaproveitados": 0,
+        "recoletados": 0,
+        "inacessiveis": 0,
+        "novos_coletados": 7
       },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 0,
-    "repeat_collections": {},
-    "failed_targets": {
-      "172.20.20.11": "ssh: perfil sem driver Netmiko"
+      "eventos": [],
+      "failed_targets": {
+        "10.255.0.2": "IP anunciado 10.255.0.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)",
+        "172.20.20.1": "varredura 172.20.20.1: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado",
+        "172.20.20.2": "varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado"
+      },
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 37,
+            "espera_aplicada_s": 5.64,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 37,
+            "espera_aplicada_s": 5.65,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 1
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 40,
+            "espera_aplicada_s": 4.19,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.62,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 27,
+            "espera_aplicada_s": 3.6,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": "varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado",
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 44,
+            "espera_aplicada_s": 4.69,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 44,
+            "espera_aplicada_s": 4.68,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 2
+          },
+          "fingerprint": "snmp"
+        }
+      },
+      "title": "Repetição do cenário 02 sem memória (mesmo resultado?)",
+      "status": "ok",
+      "duration_s": 32.5
     },
-    "per_node": {},
-    "title": "Somente SSH/CLI",
-    "status": "ok",
-    "duration_s": 118.1
-  },
-  "07-apis": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 6,
-    "node_recall": 0.857,
-    "nodes_seen_including_stubs": 8,
-    "stub_expected_ok": true,
-    "unexpected_nodes": [],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 0.667,
-    "links_expected": 9,
-    "links_found": 9,
-    "link_recall": 1.0,
-    "link_precision": 0.818,
-    "interface_accuracy": 0.889,
-    "missing_links": [],
-    "false_links": [
-      "core-srl1:ethernet-1/1 <-> edge-mk1:ether4 (a mais)",
-      "core-srl1:mgmt0 <-> core-srl2:mgmt0 (a mais)"
-    ],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
+    "14-falha-verificar": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 6,
+      "nodes_collected": 6,
+      "links_expected": 7,
+      "links_found": 7,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 0,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 7,
+        "reaproveitados": 4,
+        "recoletados": 2,
+        "inacessiveis": 1,
+        "novos_coletados": 0
       },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 6,
-    "repeat_collections": {},
-    "failed_targets": {
-      "172.20.20.2": "nenhum método funcionou",
-      "10.255.0.2": "sem resposta (portas fechadas / credenciais ausentes)"
+      "eventos": [
+        {
+          "device": "core-srl2",
+          "kind": "alterado",
+          "detail": [
+            "vizinhança mudou"
+          ]
+        },
+        {
+          "device": "dist-frr1",
+          "kind": "alterado",
+          "detail": [
+            "vizinhança mudou"
+          ]
+        },
+        {
+          "device": "srv2",
+          "kind": "inacessivel"
+        },
+        {
+          "kind": "link_removido",
+          "detail": "physical|core-srl2:ethernet-1/3|dist-frr1:eth2"
+        },
+        {
+          "kind": "link_removido",
+          "detail": "physical|core-srl2:ethernet-1/4|srv2:eth1"
+        }
+      ],
+      "failed_targets": {},
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.17,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": "alterado",
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 39,
+            "espera_aplicada_s": 5.88,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": "alterado",
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 42,
+            "espera_aplicada_s": 4.31,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.19,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.19,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 6,
+            "espera_aplicada_s": 0.1,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "inventário"
+          ],
+          "profile": "linux",
+          "status": "inacessivel",
+          "reutilizado": false,
+          "motivo": "conhecido, mas sem resposta (última vez visto: 2026-10-13T16:05:51.149057+00:00): 172.20.20.42: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: NetmikoTimeoutException; ssh: fabricante não identificado",
+          "carga": null,
+          "fingerprint": null
+        }
+      },
+      "title": "Verificação após falha: srv2 congelado e link derrubado",
+      "status": "ok",
+      "duration_s": 25.3
     },
-    "per_node": {
-      "edge-mk1": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 3,
-        "errors": []
+    "15-restaurado": {
+      "errors": [],
+      "error_count": 0,
+      "nodes_expected_collected": 7,
+      "nodes_collected": 7,
+      "links_expected": 9,
+      "links_found": 9,
+      "link_precision": 1.0,
+      "interface_accuracy": 1.0,
+      "vendor_accuracy": 1.0,
+      "role_accuracy": 1.0,
+      "routing_expected": 2,
+      "routing_found": 2,
+      "collections": 0,
+      "repeat_collections": {},
+      "memoria": {
+        "conhecidos": 7,
+        "reaproveitados": 5,
+        "recoletados": 2,
+        "inacessiveis": 0,
+        "novos_coletados": 0
       },
-      "core-srl1": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 59,
-        "neighbors": 4,
-        "errors": []
+      "eventos": [
+        {
+          "device": "core-srl2",
+          "kind": "alterado",
+          "detail": [
+            "vizinhança mudou"
+          ]
+        },
+        {
+          "device": "dist-frr1",
+          "kind": "alterado",
+          "detail": [
+            "vizinhança mudou"
+          ]
+        },
+        {
+          "device": "srv2",
+          "kind": "voltou"
+        }
+      ],
+      "failed_targets": {},
+      "per_node": {
+        "core-srl1": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.16,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "core-srl2": {
+          "collected": true,
+          "vendor": "Nokia",
+          "role": "l3switch",
+          "tier": "core",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "nokia_srl",
+          "status": "alterado",
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 39,
+            "espera_aplicada_s": 5.87,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "dist-frr1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "distribution",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": "alterado",
+          "reutilizado": false,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 42,
+            "espera_aplicada_s": 4.3,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk1": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.19,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "edge-mk2": {
+          "collected": true,
+          "vendor": "MikroTik",
+          "role": "router",
+          "tier": "edge",
+          "via": [
+            "rest",
+            "snmp"
+          ],
+          "profile": "mikrotik_routeros",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 3,
+            "espera_aplicada_s": 0.18,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "isp-pe": {
+          "collected": false,
+          "vendor": "Linux",
+          "role": "router",
+          "tier": "external",
+          "via": [
+            "visto via lldp"
+          ],
+          "profile": "linux",
+          "status": null,
+          "reutilizado": false,
+          "motivo": null,
+          "carga": null,
+          "fingerprint": null
+        },
+        "srv1": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 6,
+            "espera_aplicada_s": 0.09,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        },
+        "srv2": {
+          "collected": true,
+          "vendor": "Linux",
+          "role": "server",
+          "tier": "endpoint",
+          "via": [
+            "ssh",
+            "snmp"
+          ],
+          "profile": "linux",
+          "status": "ativo",
+          "reutilizado": true,
+          "motivo": null,
+          "carga": {
+            "perfil": "equilibrado",
+            "requisicoes": 6,
+            "espera_aplicada_s": 0.09,
+            "menor_intervalo_ms": 100,
+            "intervalo_configurado_ms": 100,
+            "max_sessoes_simultaneas": 1,
+            "falhas_autenticacao": 0
+          },
+          "fingerprint": "snmp"
+        }
       },
-      "dist-frr1": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 5,
-        "neighbors": 3,
-        "errors": []
-      },
-      "srv1": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": false,
-        "tier": "edge",
-        "via": [
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 3,
-        "neighbors": 1,
-        "errors": []
-      },
-      "core-srl2": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 59,
-        "neighbors": 5,
-        "errors": []
-      },
-      "srv2": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": false,
-        "tier": "edge",
-        "via": [
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 3,
-        "neighbors": 1,
-        "errors": []
-      },
-      "isp-pe": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      },
-      "edge-mk2": {
-        "collected": false,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 2,
-        "neighbors": 0,
-        "errors": []
-      }
+      "title": "Verificação após restaurar srv2 e o link",
+      "status": "ok",
+      "duration_s": 11.7
     },
-    "title": "APIs (REST/NETCONF); SNMP só para identificar o fabricante",
-    "status": "ok",
-    "duration_s": 13.6
-  },
-  "08-credenciais-mistas": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 4,
-    "node_recall": 0.571,
-    "nodes_seen_including_stubs": 6,
-    "stub_expected_ok": true,
-    "unexpected_nodes": [
-      "AS64500 200.200.10.1"
-    ],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 1.0,
-    "links_expected": 9,
-    "links_found": 7,
-    "link_recall": 0.778,
-    "link_precision": 0.7,
-    "interface_accuracy": 0.857,
-    "missing_links": [
-      "dist-frr1:eth3 <-> srv1:eth1",
-      "core-srl2:ethernet-1/4 <-> srv2:eth1"
-    ],
-    "false_links": [
-      "core-srl1:ethernet-1/1 <-> edge-mk1:ether4 (a mais)",
-      "core-srl1:mgmt0 <-> core-srl2:mgmt0 (a mais)",
-      "core-srl2:ethernet-1/4 <-> dist-frr1:eth1 (a mais)"
-    ],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
-      },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 6,
-    "repeat_collections": {
-      "dist-frr1": 3
+    "16-api-ui": {
+      "errors": [],
+      "error_count": 0,
+      "duration_s": 11.1,
+      "title": "API REST + WebSocket + cofre + UI web",
+      "status": "finished"
     },
-    "failed_targets": {
-      "172.20.20.2": "ssh: perfil sem driver Netmiko",
-      "10.255.0.2": "sem resposta (portas fechadas / credenciais ausentes)"
-    },
-    "per_node": {
-      "edge-mk1": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 4,
-        "errors": []
-      },
-      "core-srl1": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 63,
-        "neighbors": 4,
-        "errors": []
-      },
-      "core-srl2": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 64,
-        "neighbors": 5,
-        "errors": []
-      },
-      "dist-frr1": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "ssh",
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 5,
-        "neighbors": 5,
-        "errors": []
-      },
-      "isp-pe": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      },
-      "edge-mk2": {
-        "collected": false,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 2,
-        "neighbors": 0,
-        "errors": []
-      }
-    },
-    "title": "Credenciais erradas testadas primeiro",
-    "status": "ok",
-    "duration_s": 44.0
-  },
-  "09-escopo": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 2,
-    "node_recall": 0.286,
-    "nodes_seen_including_stubs": 6,
-    "stub_expected_ok": true,
-    "unexpected_nodes": [
-      "AS64500 200.200.10.1"
-    ],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 1.0,
-    "links_expected": 9,
-    "links_found": 5,
-    "link_recall": 0.556,
-    "link_precision": 0.714,
-    "interface_accuracy": 0.8,
-    "missing_links": [
-      "edge-mk2:ether4 <-> core-srl2:ethernet-1/1",
-      "core-srl2:ethernet-1/3 <-> dist-frr1:eth2",
-      "dist-frr1:eth3 <-> srv1:eth1",
-      "core-srl2:ethernet-1/4 <-> srv2:eth1"
-    ],
-    "false_links": [
-      "core-srl1:ethernet-1/1 <-> edge-mk1:ether4 (a mais)",
-      "core-srl1:mgmt0 <-> core-srl2:mgmt0 (a mais)"
-    ],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
-      },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 2,
-    "repeat_collections": {},
-    "failed_targets": {
-      "172.20.20.2": "ssh: perfil sem driver Netmiko",
-      "10.255.0.2": "sem resposta (portas fechadas / credenciais ausentes)"
-    },
-    "per_node": {
-      "edge-mk1": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 4,
-        "errors": []
-      },
-      "core-srl1": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 63,
-        "neighbors": 4,
-        "errors": []
-      },
-      "isp-pe": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      },
-      "edge-mk2": {
-        "collected": false,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      },
-      "core-srl2": {
-        "collected": false,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "access",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 2,
-        "neighbors": 0,
-        "errors": []
-      },
-      "dist-frr1": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      }
-    },
-    "title": "Profundidade 1 e exclusão da rede dos servidores",
-    "status": "ok",
-    "duration_s": 23.7
-  },
-  "10-concorrencia-1": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 5,
-    "node_recall": 0.714,
-    "nodes_seen_including_stubs": 6,
-    "stub_expected_ok": true,
-    "unexpected_nodes": [
-      "AS64500 200.200.10.1"
-    ],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 1.0,
-    "links_expected": 9,
-    "links_found": 7,
-    "link_recall": 0.778,
-    "link_precision": 0.636,
-    "interface_accuracy": 0.714,
-    "missing_links": [
-      "dist-frr1:eth3 <-> srv1:eth1",
-      "core-srl2:ethernet-1/4 <-> srv2:eth1"
-    ],
-    "false_links": [
-      "core-srl1:ethernet-1/1 <-> edge-mk1:ether4 (a mais)",
-      "core-srl2:ethernet-1/1 <-> edge-mk2:ether4 (a mais)",
-      "core-srl1:mgmt0 <-> core-srl2:mgmt0 (a mais)",
-      "core-srl2:ethernet-1/4 <-> dist-frr1:eth1 (a mais)"
-    ],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
-      },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 7,
-    "repeat_collections": {
-      "dist-frr1": 3
-    },
-    "failed_targets": {
-      "172.20.20.2": "ssh: perfil sem driver Netmiko"
-    },
-    "per_node": {
-      "edge-mk1": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 4,
-        "errors": []
-      },
-      "edge-mk2": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 2,
-        "errors": []
-      },
-      "core-srl1": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 63,
-        "neighbors": 4,
-        "errors": []
-      },
-      "core-srl2": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 64,
-        "neighbors": 5,
-        "errors": []
-      },
-      "dist-frr1": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "ssh",
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 5,
-        "neighbors": 5,
-        "errors": []
-      },
-      "isp-pe": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      }
-    },
-    "title": "Inventário com concorrência 1 (sequencial)",
-    "status": "ok",
-    "duration_s": 41.7
-  },
-  "11-falha-injetada": {
-    "nodes_expected_collected": 7,
-    "nodes_collected": 5,
-    "node_recall": 0.714,
-    "nodes_seen_including_stubs": 6,
-    "stub_expected_ok": true,
-    "unexpected_nodes": [
-      "AS64500 200.200.10.1"
-    ],
-    "duplicate_nodes": [],
-    "vendor_accuracy": 1.0,
-    "role_accuracy": 1.0,
-    "links_expected": 9,
-    "links_found": 6,
-    "link_recall": 0.667,
-    "link_precision": 0.667,
-    "interface_accuracy": 0.667,
-    "missing_links": [
-      "core-srl2:ethernet-1/3 <-> dist-frr1:eth2",
-      "dist-frr1:eth3 <-> srv1:eth1",
-      "core-srl2:ethernet-1/4 <-> srv2:eth1"
-    ],
-    "false_links": [
-      "core-srl1:ethernet-1/1 <-> edge-mk1:ether4 (a mais)",
-      "core-srl2:ethernet-1/1 <-> edge-mk2:ether4 (a mais)",
-      "core-srl2:mgmt0 <-> core-srl1:mgmt0 (a mais)"
-    ],
-    "routing_adjacencies": [
-      {
-        "adjacency": "edge-mk1 <-> edge-mk2 (ospf)",
-        "found": false
-      },
-      {
-        "adjacency": "edge-mk1 <-> isp-pe (bgp)",
-        "found": false
-      }
-    ],
-    "collections": 6,
-    "repeat_collections": {
-      "dist-frr1": 2
-    },
-    "failed_targets": {
-      "172.20.20.2": "ssh: perfil sem driver Netmiko",
-      "172.20.20.42": "sem resposta (portas fechadas / credenciais ausentes)",
-      "10.255.0.2": "sem resposta (portas fechadas / credenciais ausentes)"
-    },
-    "per_node": {
-      "edge-mk1": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 4,
-        "errors": []
-      },
-      "edge-mk2": {
-        "collected": true,
-        "vendor": "MikroTik",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "rest",
-          "snmp"
-        ],
-        "profile": "mikrotik_routeros",
-        "interfaces": 5,
-        "neighbors": 2,
-        "errors": []
-      },
-      "core-srl2": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 64,
-        "neighbors": 3,
-        "errors": []
-      },
-      "core-srl1": {
-        "collected": true,
-        "vendor": "Nokia",
-        "vendor_ok": true,
-        "role": "l3switch",
-        "role_ok": true,
-        "tier": "core",
-        "via": [
-          "netconf",
-          "snmp"
-        ],
-        "profile": "nokia_srl",
-        "interfaces": 63,
-        "neighbors": 4,
-        "errors": []
-      },
-      "dist-frr1": {
-        "collected": true,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "edge",
-        "via": [
-          "ssh",
-          "snmp"
-        ],
-        "profile": "linux",
-        "interfaces": 5,
-        "neighbors": 3,
-        "errors": []
-      },
-      "isp-pe": {
-        "collected": false,
-        "vendor": "Linux",
-        "vendor_ok": true,
-        "role": "router",
-        "role_ok": true,
-        "tier": "external",
-        "via": [
-          "visto via lldp"
-        ],
-        "profile": "linux",
-        "interfaces": 1,
-        "neighbors": 0,
-        "errors": []
-      }
-    },
-    "title": "Após falha: srv2 desligado e link core-srl2/dist-frr1 derrubado",
-    "status": "ok",
-    "duration_s": 24.3
+    "cli": {
+      "errors": [],
+      "error_count": 0,
+      "title": "Comandos da CLI",
+      "status": "ok"
+    }
   }
 }

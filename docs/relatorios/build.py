@@ -190,6 +190,12 @@ def viz_scenarios(d: dict[str, Any]) -> str:
             f"{html.escape(d['run'])}.</figcaption></figure>")
 
 
+EXTRA_CHECKS = {
+    "16-api-ui": "descoberta e verificação pela API, cofre, 5 exportações, nenhum segredo em disco",
+    "cli": "vendors, discover, verificar, inventario, report e diff com código 0",
+}
+
+
 def viz_scenarios_v2(d: dict[str, Any]) -> str:
     rows = []
     for sid, m in d["metrics"].items():
@@ -208,10 +214,14 @@ def viz_scenarios_v2(d: dict[str, Any]) -> str:
                      f"<td>{bar(m['links_found'] / max(1, m['links_expected']), links)}</td>"
                      f"<td class='note'>{html.escape(mem_txt)}</td>")
         else:
-            cells = "<td colspan='3' class='note'>verificações da API/UI e da CLI</td>"
-        rows.append(f"<tr><th scope='row'><span class='sid'>{html.escape(sid[:2])}</span>{html.escape(label)}</th>"
-                    f"<td>{err_cell}</td>{cells}<td class='num'>{m.get('duration_s') or '—'}</td></tr>")
-    return ("<figure class='viz'><div class='table-wrap'><table class='scen'><thead><tr><th scope='col'>Cenário</th>"
+            what = EXTRA_CHECKS.get(sid, "verificações binárias")
+            cells = f"<td colspan='3' class='note'>{html.escape(what)}</td>"
+        dur = m.get("duration_s")
+        dur_txt = f"{dur:.1f}".replace(".", ",") if isinstance(dur, (int, float)) else "—"
+        num = sid[:2] if sid[:2].isdigit() else ""
+        rows.append(f"<tr><th scope='row'><span class='sid'>{html.escape(num)}</span>{html.escape(label)}</th>"
+                    f"<td>{err_cell}</td>{cells}<td class='num'>{dur_txt}</td></tr>")
+    return ("<figure class='viz'><div class='table-wrap'><table class='scen scen2'><thead><tr><th scope='col'>Cenário</th>"
             "<th scope='col'>Erros</th><th scope='col'>Coletados (esperados)</th><th scope='col'>Links</th>"
             "<th scope='col'>Memória</th><th scope='col' class='num'>Tempo (s)</th></tr></thead><tbody>"
             + "".join(rows) + "</tbody></table></div><figcaption>Cada cenário é comparado com a expectativa do "
