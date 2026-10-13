@@ -1,0 +1,26 @@
+Descoberta a partir de 172.20.20.11
+  OK edge-mk1                     172.20.20.11     MikroTik CHR QEMU Standard PC
+(i440FX + PIIX, 1996) via rest,snmp · 5 vizinhos
+Resumo da descoberta                                                            
+┌─────────────────────────────┬────────────────────────────────────────────────┐
+│ Equipamentos coletados      │ 1                                              │
+│ Vistos por vizinhos (stubs) │ 3                                              │
+│ Links físicos               │ 3                                              │
+│ Links L3                    │ 0                                              │
+│ Adjacências de roteamento   │ 0                                              │
+│ Interfaces                  │ 5                                              │
+│ Alvos com falha             │ 0                                              │
+│ Duração (s)                 │ 2.8                                            │
+│ Fabricantes                 │ MikroTik (2), Linux (1), Nokia (1)             │
+│ Memória                     │ 0 conhecidos · 0 confirmados sem recoleta · 0  │
+│                             │ recoletados · 0 inacessíveis · 1 novos         │
+└─────────────────────────────┴────────────────────────────────────────────────┘
+Mudanças desde a última execução:
+  • novo: edge-mk1
+Arquivos gerados:
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/out/lab-nettopo-containerlab.json
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/out/lab-nettopo-containerlab.html
