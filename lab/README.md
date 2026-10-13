@@ -1,12 +1,12 @@
-# Laboratório NetTopo (Containerlab no GitHub Actions)
+# Laboratório do Mapa de Rede (Containerlab no GitHub Actions)
 
-Laboratório virtual para testar o NetTopo contra sistemas de rede reais **sem usar hardware local**:
+Laboratório virtual para testar o Mapa de Rede contra sistemas de rede reais **sem usar hardware local**:
 tudo roda num runner do GitHub Actions (`ubuntu-24.04`, 4 vCPU, 16 GB, KVM habilitado).
 
 ## Topologia
 
 ```
-                 isp-pe (Linux/FRR, BGP AS64500 — sem credenciais do NetTopo)
+                 isp-pe (Linux/FRR, BGP AS64500 — sem credenciais do Mapa de Rede)
                     | eth1 — ether2
    edge-mk1 (MikroTik CHR 7.16.2) —— ether3/ether3 (OSPF) —— edge-mk2 (MikroTik CHR 7.16.2)
         | ether4                                                   | ether4

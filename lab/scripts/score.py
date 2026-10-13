@@ -52,7 +52,7 @@ def _links(spec: Any, truth: dict[str, Any]) -> list[list[str]]:
 
 
 def map_devices(topo: Topology, truth: dict[str, Any]) -> dict[str, str]:
-    """id do NetTopo -> nome no gabarito (por hostname; senão pelo IP de gerência)."""
+    """id do Mapa de Rede -> nome no gabarito (por hostname; senão pelo IP de gerência)."""
     by_ip = {v["mgmt_ip"]: k for k, v in truth["nodes"].items()}
     out: dict[str, str] = {}
     for d in topo.devices.values():
@@ -263,7 +263,7 @@ def main() -> None:
     metrics: dict[str, Any] = {}
     if not scenarios.is_dir():
         results.mkdir(parents=True, exist_ok=True)
-        msg = "# Simulação NetTopo\n\nNenhum cenário executado (falha antes da simulação; veja os logs do job).\n"
+        msg = "# Simulação do Mapa de Rede\n\nNenhum cenário executado (falha antes da simulação; veja os logs do job).\n"
         (results / "summary.md").write_text(msg, encoding="utf-8")
         print("nenhum cenário encontrado")
         sys.exit(1 if strict else 0)
@@ -292,7 +292,7 @@ def main() -> None:
     (results / "metrics.json").write_text(json.dumps(report, indent=2, ensure_ascii=False, default=str),
                                           encoding="utf-8")
 
-    lines = [f"# Simulação NetTopo — suíte {suite.get('suite', '?')}", "",
+    lines = [f"# Simulação do Mapa de Rede — suíte {suite.get('suite', '?')}", "",
              f"**Erros: {total}** · cenários: {len(metrics)} · tempo dos cenários: {suite.get('duration_s')} s", "",
              "| Cenário | Erros | Tempo (s) | Coletados | Links | Precisão | Portas | Roteamento | Memória |",
              "|---|---|---|---|---|---|---|---|---|"]

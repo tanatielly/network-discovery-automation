@@ -114,7 +114,7 @@ def write_markdown(topo: Topology, out_dir: Path) -> Path:
                                                         d.label.lower()))
     name = {d.id: d.label for d in devs}
     md = [f"# {m.name or 'Topologia de rede'}", "",
-          f"Documentação gerada automaticamente pelo **NetTopo {m.tool_version}** em "
+          f"Documentação gerada automaticamente pelo **Mapa de Rede {m.tool_version}** em "
           f"{(m.finished_at or m.started_at).strftime('%d/%m/%Y %H:%M')} a partir de `{', '.join(m.seeds)}`.", "",
           "## Resumo", ""]
     md.append(_table(["Indicador", "Valor"], [

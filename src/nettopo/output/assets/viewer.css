@@ -1,4 +1,4 @@
-/* NetTopo - estilos do visualizador (relatório HTML e UI web) */
+/* Mapa de Rede - estilos do visualizador (relatório HTML e UI web) */
 :root {
   --bg: #ffffff; --bg2: #f6f8fa; --bg3: #eef1f4; --fg: #1f2328; --muted: #656d76; --border: #d0d7de;
   --accent: #0969da; --accent-fg: #ffffff; --edge: #8c959f; --ok: #1a7f37; --warn: #9a6700; --err: #cf222e;

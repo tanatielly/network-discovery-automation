@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NetTopo</title>
+<title>Mapa de Rede</title>
 <link rel="stylesheet" href="/assets/viewer.css">
 <link rel="stylesheet" href="/static/ui.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
@@ -12,7 +12,7 @@
 </head>
 <body>
 <header class="ui-top">
-  <div class="ui-brand"><span class="ui-logo" aria-hidden="true"></span>NetTopo</div>
+  <div class="ui-brand"><span class="ui-logo" aria-hidden="true"></span>Mapa de Rede</div>
   <nav class="ui-actions">
     <button class="nt-btn primary" id="btn-new" type="button">Nova descoberta</button>
     <button class="nt-btn" id="btn-inventory" type="button">Inventário</button>
@@ -31,7 +31,7 @@
   <form class="ui-form" id="discovery-form" autocomplete="off">
     <h1>Nova descoberta</h1>
     <p class="nt-muted">Informe um ponto de partida (ex.: roteador de borda ou core) e as credenciais de leitura.
-      O NetTopo percorre a rede pelos vizinhos LLDP/CDP/MNDP e adjacências OSPF/BGP.</p>
+      O Mapa de Rede percorre a rede pelos vizinhos LLDP/CDP/MNDP e adjacências OSPF/BGP.</p>
     <div class="ui-grid">
       <label>Nome da rede<input class="nt-input" name="name" placeholder="Rede Corporativa"></label>
       <label>Sementes (IP/hostname, uma por linha)<textarea class="nt-input" name="seeds" rows="2" required placeholder="10.0.0.1"></textarea></label>

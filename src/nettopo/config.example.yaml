@@ -1,4 +1,4 @@
-# NetTopo - configuração de descoberta
+# Mapa de Rede - configuração de descoberta
 # Segredos podem vir de variáveis de ambiente: ${NOME_DA_VARIAVEL} ou ${NOME:-padrao}
 
 name: Rede Corporativa

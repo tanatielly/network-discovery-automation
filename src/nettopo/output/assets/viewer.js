@@ -109,7 +109,7 @@
       var title = el("div", null, "<h1>" + esc(meta.name || "Topologia de rede") + "</h1>" +
         '<div class="nt-sub">Descoberta a partir de <span class="nt-mono">' + esc((meta.seeds || []).join(", ")) +
         "</span> · " + esc(fmtDate(meta.finished_at || meta.started_at)) +
-        (stats.duration_s !== undefined ? " · " + esc(stats.duration_s) + " s" : "") + " · NetTopo " + esc(meta.tool_version || "") + "</div>");
+        (stats.duration_s !== undefined ? " · " + esc(stats.duration_s) + " s" : "") + " · Mapa de Rede " + esc(meta.tool_version || "") + "</div>");
       var st = el("div", { class: "nt-stats" });
       [["collected", "coletados"], ["stubs", "vistos por vizinhos"], ["physical_links", "links físicos"],
        ["l3_links", "links L3"], ["interfaces", "interfaces"]].forEach(function (p) {

@@ -56,7 +56,7 @@ def write_excel(topo: Topology, path: Path) -> Path:
         ("Vistos apenas por vizinhos", s.get("stubs", 0)), ("Links físicos", s.get("physical_links", 0)),
         ("Links L3", s.get("l3_links", 0)), ("Adjacências lógicas", s.get("logical_links", 0)),
         ("Interfaces", s.get("interfaces", 0)), ("Alvos com falha", s.get("failed_targets", 0)),
-        ("Versão NetTopo", m.tool_version),
+        ("Versão do Mapa de Rede", m.tool_version),
     ]
     for i, (k, v) in enumerate(info, start=3):
         ws.cell(row=i, column=1, value=k).font = Font(bold=True)

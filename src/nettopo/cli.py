@@ -16,7 +16,7 @@ from nettopo import __version__
 from nettopo.output import FORMATS, export_all
 
 app = typer.Typer(add_completion=False, no_args_is_help=True,
-                  help="NetTopo - descoberta automática de topologia de rede multi-vendor.")
+                  help="Mapa de Rede - descoberta automática de topologia de rede multi-vendor.")
 console = Console()
 
 DEFAULT_FORMATS = "html,drawio,xlsx,md,json"
@@ -357,7 +357,7 @@ def init(path: Path = typer.Argument(Path("config.yaml"))) -> None:
 @app.command()
 def version() -> None:
     """Mostra a versão."""
-    console.print(f"NetTopo {__version__}")
+    console.print(f"Mapa de Rede {__version__} (comando nettopo)")
 
 
 if __name__ == "__main__":

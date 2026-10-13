@@ -36,7 +36,7 @@ view all included .1
 master agentx
 agentXSocket /var/agentx/master
 agentXPerms 0777 0777
-sysLocation Containerlab NetTopo Lab
+sysLocation Laboratório Containerlab
 sysContact lab@nettopo.local
 EOF
 echo "createUser ${SNMPV3_USER} SHA \"${SNMPV3_AUTH}\" AES \"${SNMPV3_PRIV}\"" >> /var/lib/snmp/snmpd.conf

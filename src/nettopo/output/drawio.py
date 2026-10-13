@@ -75,7 +75,7 @@ def _page(topo: Topology, name: str, page_id: str, links: list[Link], node_ids: 
     title = escape(topo.meta.name or "Topologia de rede")
     when = (topo.meta.finished_at or datetime.now()).strftime("%d/%m/%Y %H:%M")
     title_html = (f"<b>{title}</b> — {escape(name)}<br><font style='font-size:10px' color='#666666'>"
-                  f"Gerado por NetTopo em {when} · {len(node_ids)} equipamentos · {len(links)} links</font>")
+                  f"Gerado pelo Mapa de Rede em {when} · {len(node_ids)} equipamentos · {len(links)} links</font>")
     cells.append(
         f'<mxCell id="{page_id}-title" value={quoteattr(title_html)} '
         'style="text;html=1;align=left;verticalAlign=top;fontSize=16;" vertex="1" parent="1">'
@@ -167,7 +167,7 @@ def render_drawio(topo: Topology) -> str:
         l3_nodes = {lk.source for lk in l3} | {lk.target for lk in l3}
         l3_nodes |= {d.id for d in topo.devices.values() if d.role in ("router", "firewall", "l3switch")}
         pages.append(_page(topo, "L3 / Roteamento", "l3", l3, l3_nodes))
-    return f'<mxfile host="NetTopo" type="device">{"".join(pages)}</mxfile>'
+    return f'<mxfile host="Mapa de Rede" type="device">{"".join(pages)}</mxfile>'
 
 
 def write_drawio(topo: Topology, path: Path) -> Path:

@@ -1,6 +1,6 @@
-# Laboratório NetTopo (Containerlab) — roda no GitHub Actions, sem hardware local.
+# Laboratório do Mapa de Rede (Containerlab) — roda no GitHub Actions, sem hardware local.
 #
-#                 isp-pe (FRR, BGP AS64500, SEM credenciais do NetTopo)
+#                 isp-pe (FRR, BGP AS64500, SEM credenciais do Mapa de Rede)
 #                    | eth1 -- ether2
 #   edge-mk1 (MikroTik CHR) ---- ether3/ether3 (OSPF) ---- edge-mk2 (MikroTik CHR)
 #        | ether4                                                | ether4

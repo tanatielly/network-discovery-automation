@@ -307,7 +307,7 @@ def viz_parse(d: dict[str, Any]) -> str:
     return ("<figure class='viz'><div class='table-wrap'><table class='matrix parse'><thead><tr>"
             "<th scope='col'>Equipamento</th>" + head + "</tr></thead><tbody>" + "".join(body)
             + "</tbody></table></div><figcaption>Saídas reais dos comandos do perfil de cada fabricante, "
-            "interpretadas pelos parsers do NetTopo (registros extraídos · parser usado). Fonte: "
+            "interpretadas pelos parsers do Mapa de Rede (registros extraídos · parser usado). Fonte: "
             "<code>raw/parse-matrix.json</code>.</figcaption></figure>")
 
 

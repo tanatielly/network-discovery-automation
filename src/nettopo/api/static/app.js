@@ -1,4 +1,4 @@
-/* NetTopo - interface web */
+/* Mapa de Rede - interface web */
 (function () {
   "use strict";
   var esc = window.NetTopoViewer.esc;

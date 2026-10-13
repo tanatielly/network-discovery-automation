@@ -117,8 +117,8 @@ jobs:
       - name: Construir imagem Linux (FRR + lldpd + SNMP + SSH)
         run: docker build -t nettopo/linux-net:lab lab/images/linux-net 2>&1 | tee "$LOGS/04-build-linux.log"
 
-      # O NetTopo é instalado enquanto o laboratório sobe (as VMs levam ~1 min para iniciar).
-      - name: Subir o laboratório e instalar o NetTopo
+      # O Mapa de Rede é instalado enquanto o laboratório sobe (as VMs levam ~1 min para iniciar).
+      - name: Subir o laboratório e instalar o Mapa de Rede
         run: |
           EXTRA=""
           if [ "$SUITE" = "completa" ]; then EXTRA="pytest-cov mypy bandit types-PyYAML"; fi

@@ -1,7 +1,7 @@
-# NetTopo
+# Mapa de Rede
 
 Descoberta automática de topologia de rede **multi-vendor**. A partir de um ponto de
-partida (ex.: um roteador), o NetTopo percorre a rede pelos vizinhos LLDP/CDP/MNDP e
+partida (ex.: um roteador), o Mapa de Rede percorre a rede pelos vizinhos LLDP/CDP/MNDP e
 pelas adjacências OSPF/BGP, coleta os dados de cada equipamento e gera:
 
 - **Diagrama interativo em HTML** (arquivo único): camadas hierárquicas, busca,
@@ -13,8 +13,8 @@ pelas adjacências OSPF/BGP, coleta os dados de cada equipamento e gera:
 - **Markdown** com visão geral, diagrama Mermaid e uma página por equipamento;
 - **JSON** (snapshot) para regenerar relatórios e comparar descobertas.
 
-Inclui uma **API REST + interface web** para disparar descobertas, acompanhar o
-progresso em tempo real e baixar os resultados.
+Funciona pela linha de comando (`nettopo`) e por uma **API REST + interface web**, que dispara
+descobertas, acompanha o progresso em tempo real e baixa os resultados.
 
 Desde a 0.2 a ferramenta **lembra da rede**: cada descoberta grava um inventário local e, na
 próxima execução, confirma rapidamente que cada equipamento continua ativo e com os mesmos
@@ -93,7 +93,7 @@ semente ─► fingerprint ─► coleta ─► normalização ─► fila BFS (
 ## Memória persistente e revalidação
 
 Toda descoberta grava o inventário no diretório de dados (equipamentos, links, acesso que
-funcionou e histórico). Na execução seguinte, antes de seguir vizinhos, o NetTopo faz uma
+funcionou e histórico). Na execução seguinte, antes de seguir vizinhos, o Mapa de Rede faz uma
 **checagem leve** de cada equipamento conhecido usando o acesso salvo (identidade + lista de
 vizinhos LLDP/CDP):
 
@@ -174,7 +174,7 @@ driver Netmiko e comandos — sem alterar código.
   privilégio de *show*;
 - Para APIs: eAPI/NX-API/RESTCONF/REST habilitados conforme o fabricante.
 
-O NetTopo **não altera configuração** — apenas executa comandos de leitura.
+O Mapa de Rede **não altera configuração** — apenas executa comandos de leitura.
 
 ## API
 

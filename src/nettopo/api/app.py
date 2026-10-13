@@ -121,7 +121,7 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
         store.mark_interrupted()
         yield
 
-    app = FastAPI(title="NetTopo API", version=__version__, lifespan=lifespan,
+    app = FastAPI(title="Mapa de Rede API", version=__version__, lifespan=lifespan,
                   description="Descoberta automática de topologia de rede multi-vendor.")
     app.state.store = store
     app.state.jobs = manager

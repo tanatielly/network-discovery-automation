@@ -1,4 +1,4 @@
-# Gabarito do laboratório: o que o NetTopo DEVE encontrar em cada cenário.
+# Gabarito do laboratório: o que o Mapa de Rede DEVE encontrar em cada cenário.
 # Interfaces com o nome nativo de cada sistema (MikroTik etherN, SR Linux ethernet-1/N, Linux ethN).
 nodes:
   edge-mk1:  {mgmt_ip: 172.20.20.11, vendor: MikroTik, collectable: true, roles: [router, l3switch]}

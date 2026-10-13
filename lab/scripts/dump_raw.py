@@ -1,4 +1,4 @@
-"""Executa, em cada equipamento, os comandos do perfil de fabricante do NetTopo e mede o parsing.
+"""Executa, em cada equipamento, os comandos do perfil de fabricante do Mapa de Rede e mede o parsing.
 
 Para cada (equipamento, tipo de dado) registra a saída bruta e qual parser a interpretou
 (custom / textfsm / generic / none) e quantos registros viraram dados. Isso mostra exatamente

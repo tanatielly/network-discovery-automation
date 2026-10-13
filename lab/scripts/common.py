@@ -61,7 +61,7 @@ def all_creds(*keys: str) -> list[dict[str, Any]]:
 
 def base_settings(**overrides: Any) -> dict[str, Any]:
     data: dict[str, Any] = {
-        "name": "Lab NetTopo - Containerlab",
+        "name": "Laboratório Containerlab",
         "seeds": [NODES["edge-mk1"]],
         "scope": {"include": ["172.20.20.0/24", "10.0.0.0/8", "192.168.0.0/16"]},
         "max_depth": 6,
