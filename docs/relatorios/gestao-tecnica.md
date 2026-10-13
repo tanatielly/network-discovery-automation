@@ -6,7 +6,7 @@ other_label: Relatório técnico completo
 toc: false
 tag:
   Documento: NT-AVL-2026-01 · rev. 2
-  Versão avaliada: NetTopo 0.2.0 · 03f0d2b
+  Versão avaliada: NetTopo 0.2.0 · 01b1808
   Execução: run 38427060651 (suíte completa)
   Comparada com: v0.1.0 · run 36256925269
   Data: 13/10/2026

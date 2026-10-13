@@ -6,7 +6,7 @@ other_label: Relatório de gestão técnica
 toc: true
 tag:
   Documento: NT-AVL-2026-02 · rev. 2
-  Versão avaliada: NetTopo 0.2.0 · 03f0d2b
+  Versão avaliada: NetTopo 0.2.0 · 01b1808
   Execução: run 38427060651 (suíte completa)
   Comparada com: v0.1.0 · run 36256925269
   Data: 13/10/2026
@@ -52,7 +52,7 @@ D0, corrigido durante a própria avaliação). Esta revisão avalia a versão 0.
 | MikroTik | RouterOS 7.16.2 CHR em VM QEMU/KVM (vrnetlab v0.21.0), imagem em cache do Actions |
 | Nokia | SR Linux 25.10.5, JSON-RPC, NETCONF + OpenConfig, LLDP com `hello-timer 5` |
 | Linux | Debian 12, FRR, lldpd (anúncio a cada 5 s) com AgentX, net-snmp, OpenSSH; usuário de monitoração com `sudo -n` restrito a `lldpcli` e `vtysh` |
-| NetTopo | 0.2.0, Python 3.12, commit `03f0d2b` |
+| NetTopo | 0.2.0, Python 3.12, commit `01b1808` |
 
 ```
                  isp-pe (Linux/FRR, BGP AS64500, sem credenciais do NetTopo)
