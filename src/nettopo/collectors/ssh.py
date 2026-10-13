@@ -61,6 +61,10 @@ def parse_cli_outputs(device: Device, profile: VendorProfile, outputs: dict[str,
         log.debug("%s %s '%s' -> %d registros (%s)", device.mgmt_ip, kind, command, count, source)
 
 
+# Comandos inofensivos usados para reconhecer o sistema quando banner e prompt não bastam
+PROBE_COMMANDS = ["show version", "uname -a", "display version", "/system resource print", "get system status",
+                  "show system info"]
+
 _ERROR_MARKERS = re.compile(
     r"(% ?Invalid|% ?Unknown|Unrecognized command|syntax error|Error:|% ?Incomplete|invalid input|"
     r"Command not found|not supported|bad command)", re.I)
@@ -76,6 +80,66 @@ class SSHCollector:
     # ------------------------------------------------------------------ autodetecção
     async def autodetect(self, target: str, credentials: list[Credential]) -> tuple[str, Credential] | None:
         return await asyncio.to_thread(self._autodetect_sync, target, credentials)
+
+    async def identify(self, target: str, credentials: list[Credential],
+                       candidates: list[VendorProfile] | None = None
+                       ) -> tuple[VendorProfile | None, Credential | None, list[str], str | None]:
+        """Identifica o fabricante por SSH sem SNMP: login genérico, prompt e comandos de sonda.
+
+        Retorna ``(perfil, credencial que autenticou, erros, método)``.
+        """
+        return await asyncio.to_thread(self._identify_sync, target, credentials, candidates)
+
+    def _identify_sync(self, target: str, credentials: list[Credential], candidates: list[VendorProfile] | None
+                       ) -> tuple[VendorProfile | None, Credential | None, list[str], str | None]:
+        from netmiko import ConnectHandler
+
+        errors: list[str] = []
+        auth_failures = 0
+        for cred in credentials:
+            try:
+                conn = ConnectHandler(device_type="generic", host=target, username=cred.username,
+                                      password=cred.secret("password"), port=cred.port or 22,
+                                      timeout=self.settings.timeout, conn_timeout=self.settings.timeout,
+                                      auth_timeout=self.settings.timeout, banner_timeout=self.settings.timeout,
+                                      fast_cli=False)
+            except Exception as exc:
+                if _is_unreachable(exc):
+                    errors.append(f"ssh: {type(exc).__name__}")
+                    return None, None, errors, None
+                auth_failures += 1
+                continue
+            try:
+                prompt = ""
+                try:
+                    prompt = conn.find_prompt()
+                except Exception:
+                    pass
+                found = self.registry.match_prompt(prompt, candidates)
+                if len(found) == 1:
+                    return found[0], cred, errors, "ssh-prompt"
+                pool = found or candidates
+                for cmd in PROBE_COMMANDS:
+                    try:
+                        out = conn.send_command_timing(cmd, read_timeout=10, last_read=1.0)
+                    except Exception:
+                        continue
+                    if not isinstance(out, str) or _ERROR_MARKERS.search(out[:300]):
+                        continue
+                    profile = self.registry.match_snmp(None, out)
+                    if profile and (not pool or profile in pool):
+                        return profile, cred, errors, "ssh-sonda"
+                errors.append(f"ssh: login ok ({cred.display}), mas o fabricante não foi reconhecido "
+                              f"(prompt '{prompt.strip()[-40:]}')")
+                return None, cred, errors, None
+            finally:
+                try:
+                    conn.disconnect()
+                except Exception:
+                    pass
+        if auth_failures:
+            errors.append(f"ssh: autenticação recusada para {auth_failures} credencial(is)")
+        return None, None, errors, None
 
     def _autodetect_sync(self, target: str, credentials: list[Credential]) -> tuple[str, Credential] | None:
         try:
@@ -102,8 +166,11 @@ class SSHCollector:
     async def collect(self, target: str, profile: VendorProfile | None,
                       credentials: list[Credential]) -> MethodResult:
         res = MethodResult(method=self.name)
-        if not profile or not profile.netmiko:
-            res.errors.append("ssh: perfil sem driver Netmiko")
+        if not profile:
+            res.errors.append("ssh: fabricante não identificado")
+            return res
+        if not profile.netmiko:
+            res.errors.append(f"ssh: perfil {profile.id} não tem driver SSH")
             return res
         if not credentials:
             res.errors.append("ssh: nenhuma credencial")

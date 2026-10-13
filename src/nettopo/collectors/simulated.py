@@ -146,7 +146,7 @@ class SimulatedCollector:
 
 
 def demo_settings(collector: SimulatedCollector, **overrides: Any) -> Settings:
-    data: dict[str, Any] = {"name": collector.name, "seeds": collector.seeds(), "concurrency": 8,
+    data: dict[str, Any] = {"name": collector.name, "seeds": collector.seeds(), "concurrency": 8, "dns_resolve": False,
                             "scope": Scope(include=["10.0.0.0/8", "172.16.0.0/12"])}
     data.update({k: v for k, v in overrides.items() if v is not None})
     return Settings.model_validate(data)

@@ -7,6 +7,8 @@ profiles:
     netmiko: huawei
     sys_object_id: ["1.3.6.1.4.1.2011."]
     sys_descr: ["Huawei Versatile Routing Platform", "VRP \\(R\\) software", "HUAWEI"]
+    ssh_banner: ["HUAWEI"]
+    prompt_regex: ['^<[^>\s]+>\s*$']
     version_regex: 'Version\s+([\d.]+\s*\([\w\s]+\))'
     netconf: huawei
     commands:

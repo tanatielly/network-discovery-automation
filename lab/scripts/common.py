@@ -43,6 +43,8 @@ CREDS: dict[str, dict[str, Any]] = {
                         "password": "NokiaSrl1!", "port": 830},
     "rest_mikrotik": {"type": "rest", "name": "rest-mikrotik", "username": "admin", "password": "admin",
                       "https": False, "port": 80},
+    "rest_srlinux": {"type": "rest", "name": "rest-srlinux", "username": "admin", "password": "NokiaSrl1!",
+                     "https": False, "port": 80},
 }
 WRONG_CREDS: list[dict[str, Any]] = [
     {"type": "ssh", "name": "ssh-errada", "username": "operador", "password": "senha-errada"},

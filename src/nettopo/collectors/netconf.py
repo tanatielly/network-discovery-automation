@@ -16,6 +16,7 @@ log = logging.getLogger(__name__)
 
 OC_LLDP = '<lldp xmlns="http://openconfig.net/yang/lldp"/>'
 OC_INTERFACES = '<interfaces xmlns="http://openconfig.net/yang/interfaces"/>'
+OC_PLATFORM = '<components xmlns="http://openconfig.net/yang/platform"/>'
 OC_SYSTEM = '<system xmlns="http://openconfig.net/yang/system"><state/><config/></system>'
 
 
@@ -76,6 +77,21 @@ def parse_openconfig_system(xml: Any) -> dict[str, str | None]:
         host = _text(sys, ("state", "hostname"), ("config", "hostname"))
         if host:
             return {"hostname": host, "version": _text(sys, ("state", "software-version"))}
+    return {}
+
+
+def parse_openconfig_platform(xml: Any) -> dict[str, str | None]:
+    """Componente CHASSIS do openconfig-platform: série, modelo (part-no/descrição) e fabricante."""
+    root = _root(xml)
+    for comp in _all(root, "component"):
+        st = _path(comp, "state")
+        if st is None:
+            continue
+        ctype = _text(st, "type") or ""
+        if ctype.split(":")[-1].upper() != "CHASSIS":
+            continue
+        return {"serial": _text(st, "serial-no"), "model": _text(st, "description", "part-no"),
+                "vendor": _text(st, "mfg-name")}
     return {}
 
 
@@ -271,6 +287,11 @@ class NetconfCollector:
             info = parse_openconfig_system(xml)
             dev.hostname = info.get("hostname")
             dev.os_version = info.get("version")
+        xml = self._get(m, OC_PLATFORM)
+        if xml:
+            plat = parse_openconfig_platform(xml)
+            dev.serial = dev.serial or plat.get("serial")
+            dev.model = dev.model or plat.get("model")
         xml = self._get(m, OC_INTERFACES)
         if xml:
             parse_openconfig_interfaces(xml, dev)

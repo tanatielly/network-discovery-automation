@@ -95,7 +95,11 @@ COLUMNS: dict[str, str] = {
     "dot1qTpFdbPort": "1.3.6.1.2.1.17.7.1.2.2.1.2",
     "dot1dBasePortIfIndex": "1.3.6.1.2.1.17.1.4.1.2",
     "dot1dTpFdbPort": "1.3.6.1.2.1.17.4.3.1.2",
+    # HOST-RESOURCES-MIB: processos (detecta software de roteamento em hosts Linux)
+    "hrSWRunName": "1.3.6.1.2.1.25.4.2.1.2",
 }
+
+ROUTING_DAEMONS = {"zebra", "bgpd", "ospfd", "ospf6d", "isisd", "ripd", "bird", "bird6", "quagga"}
 
 GROUPS: dict[str, list[str]] = {
     "interfaces": ["ifDescr", "ifType", "ifMtu", "ifSpeed", "ifPhysAddress", "ifAdminStatus", "ifOperStatus",
@@ -114,6 +118,7 @@ GROUPS: dict[str, list[str]] = {
     "routing_neighbors": ["ospfNbrRtrId", "ospfNbrState", "bgpPeerState", "bgpPeerRemoteAs"],
     "vlans": ["dot1qVlanStaticName", "vtpVlanName"],
     "mac_table": ["dot1qTpFdbPort", "dot1dBasePortIfIndex", "dot1dTpFdbPort"],
+    "processes": ["hrSWRunName"],
 }
 
 ROUTE_PROTO = {1: "other", 2: "connected", 3: "static", 4: "icmp", 5: "egp", 8: "rip", 9: "isis",
@@ -364,6 +369,10 @@ def build_device(target: str, system: dict[str, Any], walks: dict[str, Walk],
                 protocol=ROUTE_PROTO.get(_int(w("ipRouteProto").get(idx)) or 0),
             ))
 
+    daemons = sorted({n for v in w("hrSWRunName").values() if (n := (to_text(v) or "").strip()) in ROUTING_DAEMONS})
+    if daemons:
+        dev.extra["routing_daemons"] = daemons
+
     # Vizinhos de roteamento
     for idx, rid in w("ospfNbrRtrId").items():
         addr = _ip_from_index(idx)
@@ -558,20 +567,29 @@ class SnmpCollector:
             close_engine(self._engine)
             self._engine = None
 
-    async def probe(self, target: str, credentials: list[Credential]) -> tuple[Credential, dict[str, Any]] | None:
-        """Testa as credenciais SNMP e retorna a primeira que responde + grupo system."""
+    async def probe(self, target: str, credentials: list[Credential],
+                    errors: list[str] | None = None) -> tuple[Credential, dict[str, Any]] | None:
+        """Testa as credenciais SNMP e retorna a primeira que responde + grupo system.
+
+        Usa timeout curto e sem retentativa: é só a identificação; a coleta usa os valores normais.
+        """
+        failures = 0
         for cred in credentials:
-            sess = SnmpSession(target, cred, timeout=min(self.settings.timeout, 5),
-                               retries=self.settings.snmp_retries, engine=self.engine())
+            sess = SnmpSession(target, cred, timeout=self.settings.snmp_probe_timeout, retries=0,
+                               engine=self.engine())
             try:
                 await sess.open()
                 system = await sess.get(SYS)
                 if system.get("descr") is not None or system.get("name") is not None:
                     return cred, system
             except Exception as exc:
+                failures += 1
                 log.debug("SNMP %s via %s falhou: %s", target, cred.display, exc)
             finally:
                 sess.close()
+        if errors is not None and failures:
+            errors.append(f"snmp: sem resposta para {failures} credencial(is) "
+                          "(community/usuário incorreto, ACL ou agente desligado)")
         return None
 
     async def collect(self, target: str, profile: VendorProfile | None, credentials: list[Credential],
@@ -600,6 +618,8 @@ class SnmpCollector:
             groups.append("vlans")
         if opts.mac_table:
             groups.append("mac_table")
+        if profile is None or profile.category == "server":
+            groups.append("processes")
         columns = [c for g in groups for c in GROUPS[g]]
         sess = SnmpSession(target, cred, timeout=self.settings.timeout, retries=self.settings.snmp_retries,
                            engine=self.engine())

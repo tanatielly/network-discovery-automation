@@ -11,7 +11,7 @@ from nettopo.collectors.rest import RestCollector
 from nettopo.collectors.snmp import SnmpCollector, to_text
 from nettopo.collectors.ssh import SSHCollector
 from nettopo.config import Credential, Settings
-from nettopo.discovery.fingerprint import PORTS, Fingerprint, scan_ports
+from nettopo.discovery.fingerprint import PORTS, Fingerprint, read_ssh_banner, scan_ports
 from nettopo.discovery.identity import merge_device
 from nettopo.models import Device
 from nettopo.vendors.registry import VendorRegistry, default_registry
@@ -49,7 +49,7 @@ class Orchestrator:
         fp.open_ports = await scan_ports(target, [PORTS["ssh"], PORTS["netconf"], PORTS["https"], PORTS["http"]],
                                          timeout=min(3, self.settings.timeout))
         if self._creds["snmp"] and "snmp" in self.settings.methods:
-            probed = await self.snmp.probe(target, list(self._creds["snmp"]))
+            probed = await self.snmp.probe(target, list(self._creds["snmp"]), errors=fp.errors)
             if probed:
                 fp.snmp_cred, fp.system = probed
                 self._promote("snmp", fp.snmp_cred)
@@ -57,14 +57,27 @@ class Orchestrator:
                                                       to_text(fp.system.get("descr")))
                 if fp.profile:
                     fp.method = "snmp"
-        if fp.profile is None and PORTS["ssh"] in fp.open_ports and self._creds["ssh"] \
-                and "ssh" in self.settings.methods:
-            detected = await self.ssh.autodetect(target, list(self._creds["ssh"]))
-            if detected:
-                device_type, fp.ssh_cred = detected
-                fp.profile = self.registry.by_netmiko(device_type)
-                if fp.profile:
-                    fp.method = "ssh-autodetect"
+        if fp.profile is None and PORTS["ssh"] in fp.open_ports and "ssh" in self.settings.methods:
+            fp.ssh_banner = await read_ssh_banner(target, PORTS["ssh"], timeout=min(3, self.settings.timeout))
+            by_banner = self.registry.match_banner(fp.ssh_banner)
+            if len(by_banner) == 1:
+                fp.profile, fp.method = by_banner[0], "ssh-banner"
+            elif self._creds["ssh"]:
+                profile, cred, errors, method = await self.ssh.identify(target, list(self._creds["ssh"]),
+                                                                        by_banner or None)
+                fp.errors.extend(errors)
+                if cred is not None:
+                    fp.ssh_cred = cred
+                    self._promote("ssh", cred)
+                if profile is not None:
+                    fp.profile, fp.method = profile, method
+                elif cred is not None:  # autenticou mas não reconheceu: último recurso, autodetect do Netmiko
+                    detected = await self.ssh.autodetect(target, [cred])
+                    if detected:
+                        fp.profile = self.registry.by_netmiko(detected[0])
+                        fp.method = "ssh-autodetect" if fp.profile else None
+        if fp.profile is None and not fp.open_ports and fp.system is None:
+            fp.errors.append("sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta")
         return fp
 
     async def collect(self, target: str) -> Device:
@@ -115,8 +128,13 @@ class Orchestrator:
         elif snmp_res and snmp_res.device:
             device = snmp_res.device
         if device is None:
-            reason = "; ".join(errors) or ("sem resposta (portas fechadas / credenciais ausentes)"
-                                           if not fp.open_ports and not fp.snmp_cred else "nenhum método funcionou")
+            msgs: list[str] = []
+            for e in fp.errors + errors:
+                if e not in msgs:
+                    msgs.append(e)
+            if not msgs:
+                msgs.append("nenhum método funcionou (sem credencial do tipo certo para este equipamento)")
+            reason = "; ".join(msgs)
             return Device(mgmt_ip=target, reachable=False, errors=[reason],
                           profile=profile.id if profile else None, vendor=profile.vendor if profile else None)
         device.mgmt_ip = target

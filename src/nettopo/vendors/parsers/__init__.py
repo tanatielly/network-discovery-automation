@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 
-from nettopo.vendors.parsers import generic, linux, mikrotik
+from nettopo.vendors.parsers import frr, generic, linux, mikrotik
 
 log = logging.getLogger(__name__)
 
@@ -18,6 +18,7 @@ CUSTOM_PARSERS: dict[str, Parser] = {
     "lldp_blocks": generic.parse_lldp_blocks,
     "arp_generic": generic.parse_arp_generic,
     "ip_brief_generic": generic.parse_ip_brief_generic,
+    "ascii_table": generic.parse_ascii_table,
     "mikrotik_identity": mikrotik.mikrotik_identity,
     "mikrotik_facts": mikrotik.mikrotik_facts,
     "mikrotik_neighbors": mikrotik.mikrotik_neighbors,
@@ -26,21 +27,39 @@ CUSTOM_PARSERS: dict[str, Parser] = {
     "mikrotik_arp": mikrotik.mikrotik_arp,
     "mikrotik_routes": mikrotik.mikrotik_routes,
     "mikrotik_vlans": mikrotik.mikrotik_vlans,
+    "mikrotik_ospf": mikrotik.mikrotik_ospf,
+    "mikrotik_bgp": mikrotik.mikrotik_bgp,
     "lldpctl_keyvalue": linux.lldpctl_keyvalue,
     "linux_links": linux.linux_links,
     "linux_addrs": linux.linux_addrs,
     "linux_neigh": linux.linux_neigh,
     "linux_routes": linux.linux_routes,
     "linux_facts": linux.linux_facts,
+    "frr_bgp_json": frr.frr_bgp_json,
+    "frr_ospf_json": frr.frr_ospf_json,
 }
 
 # Fallback genérico por tipo de dado
+def _table_first(kind: str, fallback: Parser | None) -> Parser:
+    """Tabela ASCII com bordas, se houver; senão o parser genérico do tipo."""
+
+    def parse(text: str) -> list[Row]:
+        if generic.looks_like_ascii_table(text):
+            rows = generic.parse_ascii_table(text, kind)
+            if rows:
+                return rows
+        return fallback(text) if fallback else []
+
+    return parse
+
+
 GENERIC_BY_KIND: dict[str, Parser] = {
-    "lldp": generic.parse_lldp_blocks,
-    "cdp": generic.parse_lldp_blocks,
-    "other_l2": generic.parse_lldp_blocks,
-    "arp": generic.parse_arp_generic,
-    "ip_interfaces": generic.parse_ip_brief_generic,
+    "lldp": _table_first("lldp", generic.parse_lldp_blocks),
+    "cdp": _table_first("cdp", generic.parse_lldp_blocks),
+    "other_l2": _table_first("other_l2", generic.parse_lldp_blocks),
+    "arp": _table_first("arp", generic.parse_arp_generic),
+    "ip_interfaces": _table_first("ip_interfaces", generic.parse_ip_brief_generic),
+    "interfaces": _table_first("interfaces", None),
     "facts": generic.parse_kv_colon,
     "hostname": generic.parse_hostname_generic,
 }

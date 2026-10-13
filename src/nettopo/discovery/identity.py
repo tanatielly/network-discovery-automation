@@ -5,9 +5,14 @@ from __future__ import annotations
 from typing import Any
 
 from nettopo.models import Device
-from nettopo.utils import ifname_key, is_default_hostname, normalize_mac, short_hostname, slugify
-
-_JUNK_SERIALS = {"", "none", "n/a", "na", "unknown", "0", "123456789", "default", "not available"}
+from nettopo.utils import (
+    ifname_key,
+    is_default_hostname,
+    is_generic_serial,
+    normalize_mac,
+    short_hostname,
+    slugify,
+)
 
 
 def _fill(dst: Any, src: Any, fields: list[str]) -> None:
@@ -70,40 +75,75 @@ def merge_device(dst: Device, src: Device) -> Device:
     return dst
 
 
-def device_keys(device: Device) -> list[str]:
-    """Chaves fortes de identidade (serial, MAC do chassis, hostname não-padrão)."""
-    keys = []
-    if device.serial and device.serial.strip().lower() not in _JUNK_SERIALS:
-        keys.append(f"serial:{device.serial.strip().upper()}")
-    mac = normalize_mac(device.chassis_id)
-    if mac and mac not in ("00:00:00:00:00:00", "ff:ff:ff:ff:ff:ff"):
-        keys.append(f"mac:{mac}")
+def _serial(device: Device) -> str | None:
+    if is_generic_serial(device.serial):
+        return None
+    return str(device.serial).strip().upper()
+
+
+def _host(device: Device) -> str | None:
     host = short_hostname(device.hostname)
-    if host and not is_default_hostname(host):
+    return host if host and not is_default_hostname(host) else None
+
+
+def _mac(device: Device) -> str | None:
+    mac = normalize_mac(device.chassis_id)
+    return mac if mac and mac not in ("00:00:00:00:00:00", "ff:ff:ff:ff:ff:ff") else None
+
+
+def device_keys(device: Device) -> list[str]:
+    """Chaves fortes de identidade (série confiável, MAC do chassis, hostname não-padrão)."""
+    keys = []
+    if (serial := _serial(device)) is not None:
+        keys.append(f"serial:{serial}")
+    if (mac := _mac(device)) is not None:
+        keys.append(f"mac:{mac}")
+    if (host := _host(device)) is not None:
         keys.append(f"host:{host}")
     return keys
 
 
-def _conflict(a: Device, b: Device) -> bool:
-    """Dois equipamentos com seriais diferentes nunca são o mesmo."""
-    sa, sb = (a.serial or "").strip().upper(), (b.serial or "").strip().upper()
-    return bool(sa and sb and sa.lower() not in _JUNK_SERIALS and sb.lower() not in _JUNK_SERIALS and sa != sb)
+def identity_conflict(a: Device, b: Device) -> str | None:
+    """Motivo pelo qual ``a`` e ``b`` NÃO podem ser o mesmo equipamento (ou ``None``)."""
+    ha, hb = _host(a), _host(b)
+    if ha and hb and ha != hb:
+        return f"hostnames diferentes ({ha} x {hb})"
+    sa, sb = _serial(a), _serial(b)
+    if sa and sb and sa != sb:
+        return f"séries diferentes ({sa} x {sb})"
+    return None
 
 
 class IdentityIndex:
+    """Índice de equipamentos já coletados.
+
+    Regras: uma chave só funde dois registros se não houver conflito (hostname ou série diferentes).
+    Uma série encontrada em dois equipamentos distintos é marcada como ambígua e deixa de identificar,
+    o que protege contra placeholders de fabricante não listados (ex.: imagens de VM/simulador).
+    """
+
     def __init__(self) -> None:
         self.devices: dict[str, Device] = {}
         self._by_key: dict[str, str] = {}
         self._by_ip: dict[str, str] = {}
+        self.ambiguous_serials: set[str] = set()
+
+    def _usable(self, key: str) -> bool:
+        return not (key.startswith("serial:") and key[7:] in self.ambiguous_serials)
 
     def match(self, device: Device) -> Device | None:
         for k in device_keys(device):
             did = self._by_key.get(k)
-            if did and not _conflict(self.devices[did], device):
-                return self.devices[did]
+            if not did or not self._usable(k):
+                continue
+            existing = self.devices[did]
+            if identity_conflict(existing, device) is None:
+                return existing
+            if k.startswith("serial:"):  # mesma série em equipamentos diferentes
+                self.ambiguous_serials.add(k[7:])
         if device.mgmt_ip and device.mgmt_ip in self._by_ip:
             existing = self.devices[self._by_ip[device.mgmt_ip]]
-            if not _conflict(existing, device):
+            if identity_conflict(existing, device) is None:
                 return existing
         return None
 
@@ -140,6 +180,8 @@ class IdentityIndex:
 
     def reindex(self, device: Device) -> None:
         for k in device_keys(device):
-            self._by_key.setdefault(k, device.id)
+            owner = self._by_key.setdefault(k, device.id)
+            if owner != device.id and k.startswith("serial:"):
+                self.ambiguous_serials.add(k[7:])
         for ip in device.ip_addresses():
             self._by_ip.setdefault(ip, device.id)

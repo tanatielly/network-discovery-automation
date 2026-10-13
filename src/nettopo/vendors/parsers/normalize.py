@@ -62,7 +62,8 @@ MODEL = ("hardware", "model", "platform", "chassis", "hardware_model", "product_
          "board-name", "model_name", "chassis_type", "product", "system_type", "device_model")
 UPTIME = ("uptime", "up_time", "system_uptime", "uptime_string")
 MAC = ("mac_address", "mac", "hw_address", "hwaddr", "macaddress", "address", "bia", "mac-address",
-       "hardware_address", "physical_address", "base_mac")
+       "hardware_address", "physical_address", "base_mac", "system_hw_mac_address", "chassis_mac",
+       "hw_mac_address", "system_mac_address")
 
 IF_NAME = ("interface", "name", "intf", "port", "interface_name", "port_name", "ifname")
 LLDP_LOCAL = ("local_interface", "local_port", "local_intf", "localport", "local_port_id", "port",
@@ -126,6 +127,9 @@ def _facts(device: Device, rows: list[Row]) -> int:
     device.uptime = device.uptime or pick(row, *UPTIME)
     mac = normalize_mac(pick(row, *MAC))
     device.chassis_id = device.chassis_id or mac
+    daemons = row.get("routing_daemons")
+    if daemons:
+        device.extra["routing_daemons"] = sorted(set(device.extra.get("routing_daemons", [])) | set(daemons))
     return 1
 
 

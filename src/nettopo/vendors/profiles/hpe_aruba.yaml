@@ -47,6 +47,8 @@ profiles:
     netmiko: hp_comware
     sys_object_id: ["1.3.6.1.4.1.25506."]
     sys_descr: ["Comware", "H3C", "HPE FlexFabric", "HP A\\d{4}"]
+    ssh_banner: ["Comware"]
+    prompt_regex: ['^<[^>\s]+>\s*$']
     netconf: default
     commands:
       facts: display version

@@ -49,6 +49,10 @@ def base_role(d: Device, registry: VendorRegistry | None = None) -> str:
         return "ap"
     if "telephone" in caps or re.search(_RX["phone"], text):
         return "phone"
+    if category == "server" and not d.stub:
+        # Hosts Linux costumam anunciar "router" no LLDP só porque ip_forward está ligado (Docker, VPN,
+        # Kubernetes). Roteador só com software de roteamento rodando ou rotas dinâmicas.
+        return "router" if (d.extra.get("routing_daemons") or has_routes) else "server"
     # Decide switch x roteador: modelo/hostname > descrição > categoria do perfil > capacidades LLDP
     kind = None
     for src in (" ".join(x for x in (d.model, d.hostname) if x).lower(), (d.sys_description or "").lower()):

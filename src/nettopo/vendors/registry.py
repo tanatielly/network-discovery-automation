@@ -28,6 +28,8 @@ class VendorProfile(BaseModel):
     textfsm: str | None = None  # plataforma do ntc-templates (padrão = netmiko)
     sys_object_id: list[str] = Field(default_factory=list)
     sys_descr: list[str] = Field(default_factory=list)  # regex
+    ssh_banner: list[str] = Field(default_factory=list)  # regex sobre a versão do servidor SSH (sem login)
+    prompt_regex: list[str] = Field(default_factory=list)  # regex sobre o prompt após login
     version_regex: str | None = None
     rest: str | None = None  # driver REST: eapi | nxapi | restconf_iosxe | mikrotik | fortios
     netconf: str | None = None  # device handler do ncclient: default | junos | huawei | nexus | iosxr
@@ -108,6 +110,18 @@ class VendorRegistry:
             if scored:
                 return max(scored, key=lambda s: (s[0], s[1]))[2]
         return None
+
+    def match_banner(self, banner: str | None) -> list[VendorProfile]:
+        """Perfis compatíveis com a versão do servidor SSH (ex.: ``SSH-2.0-ROSSSH`` -> RouterOS)."""
+        if not banner:
+            return []
+        return [p for p in self._ordered if p.netmiko and any(re.search(rx, banner) for rx in p.ssh_banner)]
+
+    def match_prompt(self, prompt: str | None, candidates: list[VendorProfile] | None = None) -> list[VendorProfile]:
+        pool = candidates or [p for p in self._ordered if p.netmiko]
+        if not prompt:
+            return []
+        return [p for p in pool if any(re.search(rx, prompt, re.M) for rx in p.prompt_regex)]
 
     def extract_version(self, profile: VendorProfile | None, text: str | None) -> str | None:
         if not text:

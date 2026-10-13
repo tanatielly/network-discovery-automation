@@ -7,6 +7,8 @@ profiles:
     netmiko: mikrotik_routeros
     sys_object_id: ["1.3.6.1.4.1.14988."]
     sys_descr: ["RouterOS", "MikroTik"]
+    ssh_banner: ["ROSSSH"]
+    prompt_regex: ['\[[^\]]+@[^\]]+\]\s*>\s*$']
     version_regex: 'RouterOS\s+([\d.]+)'
     rest: mikrotik
     commands:
@@ -18,6 +20,8 @@ profiles:
       arp: /ip arp print terse without-paging
       routes: /ip route print terse without-paging
       vlans: /interface vlan print terse without-paging
+      ospf: /routing ospf neighbor print detail without-paging
+      bgp: /routing bgp session print detail without-paging
     parsers:
       facts: mikrotik_facts
       hostname: mikrotik_identity
@@ -27,6 +31,8 @@ profiles:
       arp: mikrotik_arp
       routes: mikrotik_routes
       vlans: mikrotik_vlans
+      ospf: mikrotik_ospf
+      bgp: mikrotik_bgp
 
   - id: ubiquiti_edgeswitch
     vendor: Ubiquiti

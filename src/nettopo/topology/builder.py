@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 
 from nettopo.config import Settings
@@ -101,9 +102,107 @@ def create_stub(n: Neighbor, devices: dict[str, Device], resolver: NeighborResol
     return sid
 
 
-def _link_key(a: str, ai: str | None, b: str, bi: str | None) -> tuple:
-    ea, eb = (a, ifname_key(ai)), (b, ifname_key(bi))
-    return (ea, eb) if ea <= eb else (eb, ea)
+# --------------------------------------------------------------------------- portas e links
+
+def resolve_port(device: Device, announced: str | None) -> str | None:
+    """Converte a porta anunciada por um vizinho no nome real da interface do ``device``.
+
+    Vizinhos anunciam o port-id de formas diferentes: nome (``ether4``), descrição configurada
+    (``to edge-mk1 ether4``) ou MAC. Só devolve nome se o equipamento foi coletado e a interface existe.
+    """
+    if not announced or device.stub:
+        return None
+    key = ifname_key(announced)
+    for itf in device.interfaces:
+        if ifname_key(itf.name) == key:
+            return itf.name
+    text = announced.strip().lower()
+    for itf in device.interfaces:
+        if itf.description and itf.description.strip().lower() == text:
+            return itf.name
+    mac = normalize_mac(announced)
+    if mac:
+        hits = [itf.name for itf in device.interfaces if normalize_mac(itf.mac) == mac]
+        if len(hits) == 1:
+            return hits[0]
+    return None
+
+
+DEFAULT_MGMT_INTERFACES = r"^(mgmt|management|fxp0|me0|em0$|ma\d|bmc|ipmi|oob)"
+
+
+def is_mgmt_interface(name: str | None, pattern: str | None = None) -> bool:
+    """Interface de gerência fora de banda: LLDP recebido nela não descreve a rede de dados."""
+    if not name:
+        return False
+    return bool(re.search(pattern or DEFAULT_MGMT_INTERFACES, name.strip(), re.IGNORECASE))
+
+
+class _Half:
+    """Uma observação de vizinhança vista de um lado (o lado local é autoritativo)."""
+
+    __slots__ = ("a", "a_if", "b", "b_if", "b_verified", "protocol")
+
+    def __init__(self, a: str, a_if: str | None, b: str, b_if: str | None, b_verified: bool, protocol: str):
+        self.a, self.a_if, self.b, self.b_if = a, a_if, b, b_if
+        self.b_verified, self.protocol = b_verified, protocol
+
+
+class _UnionFind:
+    def __init__(self) -> None:
+        self.parent: dict[tuple, tuple] = {}
+
+    def find(self, x: tuple) -> tuple:
+        self.parent.setdefault(x, x)
+        while self.parent[x] != x:
+            self.parent[x] = self.parent[self.parent[x]]
+            x = self.parent[x]
+        return x
+
+    def union(self, x: tuple, y: tuple) -> None:
+        rx, ry = self.find(x), self.find(y)
+        if rx != ry:
+            self.parent[max(rx, ry)] = min(rx, ry)
+
+
+def links_from_halves(halves: list[_Half]) -> list[Link]:
+    """Une as observações dos dois lados de cada cabo em um único link.
+
+    Cada ponta é um nó ``(equipamento, interface)`` e cada observação liga as duas pontas. Uma porta
+    anunciada que não foi verificada no equipamento remoto ganha uma chave própria da observação, então
+    só se junta a outro link pelo lado verificado. Assim um cabo visto pelos dois lados vira exatamente
+    um link, mesmo quando um deles anuncia a porta pela descrição ou pelo MAC.
+    """
+    uf = _UnionFind()
+    ends: list[tuple] = []
+    for i, h in enumerate(halves):
+        ea = (h.a, ifname_key(h.a_if) or f"?{i}")
+        eb = (h.b, ifname_key(h.b_if) if h.b_verified and h.b_if else f"?{i}")
+        uf.union(ea, eb)
+        ends.append(ea)
+    groups: dict[tuple, list[int]] = defaultdict(list)
+    for i, ea in enumerate(ends):
+        groups[uf.find(ea)].append(i)
+
+    links: list[Link] = []
+    for idxs in groups.values():
+        obs = [halves[i] for i in idxs]
+        members = sorted({h.a for h in obs} | {h.b for h in obs})
+        if len(members) != 2:  # segmento compartilhado (hub, mídia comum): um link por observação
+            for h in obs:
+                links.append(Link(source=h.a, source_interface=h.a_if, target=h.b,
+                                  target_interface=h.b_if, protocols=[h.protocol], kind="physical"))
+            continue
+        x, y = members
+        names: dict[str, str | None] = {x: None, y: None}
+        for h in sorted(obs, key=lambda o: (o.a, o.a_if or "")):  # nome dado pelo próprio equipamento
+            names[h.a] = names[h.a] or h.a_if
+        for h in obs:
+            if names[h.b] is None and h.b_if:
+                names[h.b] = h.b_if
+        links.append(Link(source=x, source_interface=names[x], target=y, target_interface=names[y],
+                          protocols=sorted({h.protocol for h in obs}), kind="physical"))
+    return links
 
 
 def _orient(ref: Link, lk: Link) -> tuple[str | None, str | None]:
@@ -132,13 +231,15 @@ def _absorb(m: Link, lk: Link) -> None:
 
 
 def merge_links(links: list[Link]) -> list[Link]:
+    """Funde links equivalentes (mesmo par e mesmas portas) e numera de forma determinística."""
     by_pair: dict[frozenset, list[Link]] = defaultdict(list)
     for lk in links:
         by_pair[frozenset((lk.source, lk.target))].append(lk)
     out: list[Link] = []
-    for group in by_pair.values():
-        # links com interfaces completas primeiro, para servirem de referência
-        group.sort(key=lambda x: -(bool(x.source_interface) + bool(x.target_interface)))
+    for pair in sorted(by_pair, key=lambda p: sorted(p)):
+        group = by_pair[pair]
+        group.sort(key=lambda x: (-(bool(x.source_interface) + bool(x.target_interface)), x.kind,
+                                  x.source, x.source_interface or "", x.target_interface or ""))
         merged: list[Link] = []
         for lk in group:
             for m in merged:
@@ -148,6 +249,14 @@ def merge_links(links: list[Link]) -> list[Link]:
             else:
                 merged.append(lk)
         out.extend(merged)
+    for lk in out:  # orientação canônica: menor id na origem
+        if lk.source > lk.target:
+            lk.source, lk.target = lk.target, lk.source
+            lk.source_interface, lk.target_interface = lk.target_interface, lk.source_interface
+        lk.protocols = sorted(set(lk.protocols))
+    kind_order = {"physical": 0, "l3": 1, "logical": 2}
+    out.sort(key=lambda lk: (kind_order.get(lk.kind, 9), lk.source, ifname_key(lk.source_interface),
+                             lk.target, ifname_key(lk.target_interface)))
     for i, lk in enumerate(out, start=1):
         lk.id = f"L{i}"
     return out
@@ -160,14 +269,19 @@ def build_topology(devices: dict[str, Device], settings: Settings | None = None,
 
     settings = settings or Settings()
     registry = registry or default_registry()
-    devices = dict(devices)
+    meta = meta or DiscoveryMeta()
+    devices = {k: devices[k] for k in sorted(devices)}
     resolver = NeighborResolver(devices)
-    raw: dict[tuple, Link] = {}
+    halves: list[_Half] = []
+    ignored = 0
 
-    # Capacidades anunciadas pelos vizinhos ajudam a classificar o papel dos nós
-    for dev in list(devices.values()):
+    for dev in [devices[k] for k in sorted(devices)]:
         for n in dev.neighbors:
             if n.protocol not in L2_PROTOCOLS:
+                continue
+            local_if = canonical_ifname(n.local_interface)
+            if is_mgmt_interface(local_if, settings.ignore_interfaces):
+                ignored += 1
                 continue
             rid = resolver.resolve(n)
             if rid is None:
@@ -178,27 +292,31 @@ def build_topology(devices: dict[str, Device], settings: Settings | None = None,
                 rid = create_stub(n, devices, resolver, registry)
             if rid == dev.id:
                 continue
-            caps = devices[rid].extra.setdefault("capabilities", [])
+            remote = devices[rid]
+            if remote.stub:
+                if n.remote_mgmt_ip and n.remote_mgmt_ip in meta.failed_targets:
+                    remote.extra.setdefault("motivo", meta.failed_targets[n.remote_mgmt_ip])
+                elif n.remote_mgmt_ip and not settings.scope.allows_ip(n.remote_mgmt_ip):
+                    remote.extra.setdefault("motivo", f"IP anunciado {n.remote_mgmt_ip} fora do escopo")
+                elif not n.remote_mgmt_ip:
+                    remote.extra.setdefault("motivo", "vizinho não anunciou IP de gerência")
+            caps = remote.extra.setdefault("capabilities", [])
             for c in n.remote_capabilities:
                 if c not in caps:
                     caps.append(c)
-            local_if = canonical_ifname(n.local_interface)
-            remote_if = canonical_ifname(n.remote_interface)
-            if remote_if and devices[rid].stub:
-                devices[rid].upsert_interface(remote_if)
-            key = _link_key(dev.id, local_if, rid, remote_if)
-            if key in raw:
-                if n.protocol not in raw[key].protocols:
-                    raw[key].protocols.append(n.protocol)
-                continue
-            raw[key] = Link(source=dev.id, source_interface=local_if, target=rid, target_interface=remote_if,
-                            protocols=[n.protocol], kind="physical")
+            announced = canonical_ifname(n.remote_interface)
+            resolved = resolve_port(remote, n.remote_interface)
+            if remote.stub and announced:
+                remote.upsert_interface(announced)
+            halves.append(_Half(dev.id, local_if, rid, resolved or announced, bool(resolved) or remote.stub,
+                                n.protocol))
 
-    topo = Topology(meta=meta or DiscoveryMeta(), devices=devices, links=merge_links(list(raw.values())))
+    topo = Topology(meta=meta, devices=devices, links=merge_links(links_from_halves(halves)))
     enrich(topo, settings, resolver, registry)
     classify(topo, registry)
     topo.links = merge_links(topo.links)
     _stats(topo)
+    topo.meta.stats["ignored_mgmt_neighbors"] = ignored
     return topo
 
 

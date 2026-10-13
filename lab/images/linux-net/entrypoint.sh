@@ -17,6 +17,8 @@ log() { echo "[entrypoint] $*"; }
 # ---------------------------------------------------------------- SSH
 id "$SSH_USER" >/dev/null 2>&1 || useradd -m -s /bin/bash "$SSH_USER"
 echo "$SSH_USER:$SSH_PASS" | chpasswd
+# Usuário de monitoração pode ler o lldpd e o FRR (como um usuário de NMS bem configurado)
+for g in _lldpd frrvty; do getent group "$g" >/dev/null && usermod -aG "$g" "$SSH_USER"; done
 mkdir -p /run/sshd
 ssh-keygen -A >/dev/null 2>&1
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
@@ -40,6 +42,9 @@ echo "createUser ${SNMPV3_USER} SHA \"${SNMPV3_AUTH}\" AES \"${SNMPV3_PRIV}\"" >
 sleep 1
 
 # ---------------------------------------------------------------- Roteamento
+if [ "$NODE_ROLE" != "router" ]; then
+    sysctl -w net.ipv4.ip_forward=0 >/dev/null 2>&1 || log "aviso: ip_forward não alterado"
+fi
 if [ "$NODE_ROLE" = "router" ]; then
     sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1 || log "aviso: ip_forward não alterado"
     cat > /etc/frr/daemons <<EOF

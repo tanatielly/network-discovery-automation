@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import asyncio
 import socket
+from dataclasses import dataclass
+from typing import Protocol
 
 from nettopo.config import Settings
 from nettopo.models import L2_PROTOCOLS, ROUTING_PROTOCOLS, Device
@@ -40,11 +42,41 @@ async def resolve_hostname(name: str, timeout: float = 3.0) -> str | None:
     return None
 
 
-async def next_targets(device: Device, settings: Settings) -> list[tuple[str, str | None]]:
-    """Retorna ``[(ip, hostname_anunciado)]`` a partir dos vizinhos do equipamento."""
+@dataclass
+class Target:
+    """Um equipamento a coletar e os IPs candidatos para alcançá-lo, em ordem de preferência."""
+
+    candidates: list[tuple[str, str]]  # (ip, origem): memoria | anunciado | dns | arp | semente | varredura
+    hostname: str | None = None
+    chassis: str | None = None
+    macs: tuple[str, ...] = ()  # MACs anunciados (chassis/porta) para busca tardia nas tabelas ARP
+    depth: int = 0
+    parent: str | None = None
+
+    @property
+    def label(self) -> str:
+        return self.hostname or (self.candidates[0][0] if self.candidates else "?")
+
+
+class TargetHints(Protocol):
+    """Fontes extras de IP de gerência (memória persistente, varredura, tabelas ARP coletadas)."""
+
+    def ips_for_host(self, hostname: str | None) -> list[str]: ...
+
+    def ips_for_mac(self, mac: str | None) -> list[str]: ...
+
+
+async def next_targets(device: Device, settings: Settings, hints: TargetHints | None = None) -> list[Target]:
+    """Alvos a partir dos vizinhos do equipamento, cada um com IPs candidatos.
+
+    Candidatos imediatos: IP de gerência já conhecido (memória/varredura) e IP anunciado. DNS do hostname
+    e IP pelo MAC nas tabelas ARP são resolvidos pelo engine só se esses falharem (evita consultas DNS
+    desnecessárias). Equipamentos que anunciam um IP de interface de trânsito, não roteável para o
+    servidor, continuam alcançáveis pelos candidatos tardios.
+    """
     protos = followed_protocols(settings)
-    out: list[tuple[str, str | None]] = []
-    seen: set[str] = set()
+    out: list[Target] = []
+    seen_ips: set[str] = set()
     seen_hosts: set[str] = set()
     # Vizinhos L2 primeiro (trazem IP de gerência e hostname); depois os de roteamento,
     # que são ignorados se o router-id apontar para um vizinho já enfileirado.
@@ -60,21 +92,37 @@ async def next_targets(device: Device, settings: Settings) -> list[tuple[str, st
         if host and host in seen_hosts:
             continue
         router_id = parse_ipv4(n.remote_chassis_id) if n.protocol in ROUTING_PROTOCOLS else None
-        if router_id and router_id in seen:
+        if router_id and router_id in seen_ips:
             continue
-        ip = n.remote_mgmt_ip
-        if not ip and n.remote_hostname and settings.dns_resolve:
-            ip = await resolve_hostname(n.remote_hostname)
-        if ip and is_usable_ip(ip) and ip not in seen and settings.scope.allows_ip(ip):
-            seen.add(ip)
-            if host:
-                seen_hosts.add(host)
-            if router_id:
-                seen.add(router_id)
-            out.append((ip, n.remote_hostname))
+
+        candidates: list[tuple[str, str]] = []
+
+        def add(ip: str | None, origin: str, candidates: list[tuple[str, str]] = candidates) -> None:
+            if ip and is_usable_ip(ip) and settings.scope.allows_ip(ip) and ip not in {c[0] for c in candidates}:
+                candidates.append((ip, origin))
+
+        if hints is not None and host:
+            for ip in hints.ips_for_host(host):
+                add(ip, "memoria")
+        advertised = parse_ipv4(n.remote_mgmt_ip)
+        if advertised and is_usable_ip(advertised) and not settings.scope.allows_ip(advertised) and not candidates:
+            continue  # anuncia IP fora do escopo: não seguir
+        add(advertised, "anunciado")
+        macs = tuple(m for m in (n.remote_chassis_id, n.remote_interface) if m)
+        if not candidates and not host:
+            continue
+        if any(ip in seen_ips for ip, _ in candidates):
+            continue
+        seen_ips.update(ip for ip, _ in candidates)
+        if host:
+            seen_hosts.add(host)
+        if router_id:
+            seen_ips.add(router_id)
+        out.append(Target(candidates=candidates, hostname=n.remote_hostname, chassis=n.remote_chassis_id,
+                          macs=macs))
     if settings.follow.arp:
         for a in device.arp:
-            if a.ip not in seen and is_usable_ip(a.ip) and settings.scope.allows_ip(a.ip):
-                seen.add(a.ip)
-                out.append((a.ip, None))
+            if a.ip not in seen_ips and is_usable_ip(a.ip) and settings.scope.allows_ip(a.ip):
+                seen_ips.add(a.ip)
+                out.append(Target(candidates=[(a.ip, "arp")]))
     return out

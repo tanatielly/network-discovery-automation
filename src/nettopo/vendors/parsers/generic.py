@@ -154,6 +154,70 @@ def parse_ip_brief_generic(text: str) -> list[Row]:
     return rows
 
 
+# --------------------------------------------------------------------------- tabelas ASCII
+
+# Cabeçalho normalizado -> campo esperado pelo normalize.py, por tipo de dado.
+# ``None`` descarta a coluna (ex.: "Neighbor" do SR Linux é o MAC, não o nome).
+_TABLE_ALIASES: dict[str, dict[str, str | None]] = {
+    "lldp": {"name": "local_interface", "interface": "local_interface", "local_port": "local_interface",
+             "neighbor": None, "neighbor_system_name": "neighbor_name", "system_name": "neighbor_name",
+             "neighbor_port": "neighbor_interface", "neighbor_port_id": "neighbor_interface",
+             "port_id": "neighbor_interface", "neighbor_chassis_id": "chassis_id",
+             "neighbor_port_description": "port_description", "management_address": "mgmt_address"},
+    "interfaces": {"port": "interface", "name": "interface", "oper_state": "link_status",
+                   "admin_state": "admin_state", "speed": "speed", "description": "description"},
+    "arp": {"neighbor": "ip_address", "ip_address": "ip_address", "link_layer_address": "mac_address",
+            "mac_address": "mac_address", "interface": "interface"},
+}
+_TABLE_ALIASES["ip_interfaces"] = _TABLE_ALIASES["interfaces"]
+_TABLE_ALIASES["cdp"] = _TABLE_ALIASES["other_l2"] = _TABLE_ALIASES["lldp"]
+
+_TABLE_BORDER = re.compile(r"^\s*\+[-=+]+\+\s*$")
+
+
+def _cells(line: str) -> list[str]:
+    return [c.strip() for c in line.strip().strip("|").split("|")]
+
+
+def parse_ascii_table(text: str, kind: str | None = None) -> list[Row]:
+    """Tabelas com bordas ``+----+`` e ``| a | b |`` (SR Linux, Junos "| display table", etc.).
+
+    Linhas cuja primeira célula está vazia continuam a linha anterior (células quebradas).
+    """
+    lines = (text or "").splitlines()
+    rows: list[Row] = []
+    header: list[str] | None = None
+    aliases = _TABLE_ALIASES.get(kind or "", {})
+    for line in lines:
+        if _TABLE_BORDER.match(line) or not line.strip().startswith("|"):
+            continue
+        cells = _cells(line)
+        if header is None:
+            header = [re.sub(r"[^a-z0-9]+", "_", c.lower()).strip("_") for c in cells]
+            continue
+        if not any(cells):
+            continue
+        if not cells[0] and rows:  # continuação de célula quebrada
+            prev = rows[-1]
+            for name, value in zip(header, cells, strict=False):
+                key = aliases.get(name, name)
+                if key and value:
+                    prev[key] = f"{prev.get(key, '')} {value}".strip()
+            continue
+        row: Row = {}
+        for name, value in zip(header, cells, strict=False):
+            key = aliases.get(name, name)
+            if key and value:
+                row[key] = value
+        if row:
+            rows.append(row)
+    return rows
+
+
+def looks_like_ascii_table(text: str) -> bool:
+    return any(_TABLE_BORDER.match(ln) for ln in (text or "").splitlines()[:6])
+
+
 def parse_kv_colon(text: str) -> list[Row]:
     """Saídas "Chave: valor" (FortiOS ``get system status``, PAN-OS ``show system info``...)."""
     row: Row = {}

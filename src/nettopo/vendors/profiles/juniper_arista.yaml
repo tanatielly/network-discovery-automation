@@ -7,6 +7,7 @@ profiles:
     netmiko: juniper_junos
     sys_object_id: ["1.3.6.1.4.1.2636."]
     sys_descr: ["Juniper Networks", "JUNOS"]
+    prompt_regex: ['^\S+@\S+>\s*$']
     version_regex: 'JUNOS\s+(?:Base OS boot\s+)?\[?([\w.\-]+)'
     netconf: junos
     commands:

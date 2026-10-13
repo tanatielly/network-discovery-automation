@@ -231,6 +231,25 @@ def is_default_hostname(name: str | None) -> bool:
     return (short_hostname(name) or "") in _DEFAULT_HOSTNAMES
 
 
+_GENERIC_SERIALS = {
+    "", "none", "n/a", "na", "unknown", "0", "1", "123456789", "0123456789", "1234567890", "default", "serial",
+    "not available", "not specified", "not applicable", "to be filled by o.e.m.", "to be filled by oem",
+    "default string", "system serial number", "chassis serial number", "base board serial number",
+    "virtual machine", "sim serial no.", "sim serial no", "invalid", "empty", "xxxxxxxxxx", "oem", "-",
+}
+
+
+def is_generic_serial(value: str | None) -> bool:
+    """Série que não identifica um equipamento (placeholder de fabricante, VM, simulador...)."""
+    if value is None:
+        return True
+    s = re.sub(r"\s+", " ", str(value)).strip().lower()
+    if s in _GENERIC_SERIALS:
+        return True
+    compact = re.sub(r"[^0-9a-z]", "", s)
+    return len(compact) < 4 or len(set(compact)) == 1  # "0000000", "xxxx", "ffff"
+
+
 def slugify(value: str) -> str:
     s = re.sub(r"[^A-Za-z0-9_.-]+", "-", value.strip())
     s = re.sub(r"-{2,}", "-", s).strip("-").lower()

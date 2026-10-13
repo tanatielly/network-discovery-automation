@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import re
 
+from nettopo.utils import is_generic_serial
+
 Row = dict[str, object]
 
 
@@ -89,8 +91,29 @@ def linux_routes(text: str) -> list[Row]:
 
 
 def linux_facts(text: str) -> list[Row]:
-    row: Row = {}
+    """Fatos do host. Formato atual: linhas ``NT_CHAVE=valor`` (comando do perfil ``linux``).
+
+    Formato legado (``cat /etc/os-release; uname -r; ...``) continua aceito, mas sem inferir número de
+    série pela posição da linha: o nome do produto DMI ("Virtual Machine") não identifica o host.
+    """
     lines = (text or "").splitlines()
+    marked = dict(m.groups() for ln in lines if (m := re.match(r"^NT_([A-Z_]+)=(.*)$", ln.strip())))
+    if marked:
+        serial = marked.get("SERIAL", "").strip()
+        product = marked.get("PRODUCT", "").strip()
+        row: Row = {
+            "model": marked.get("OS") or None,
+            "version": marked.get("KERNEL") or None,
+            "serial": None if is_generic_serial(serial) else serial,
+            "hardware": product or None,
+        }
+        daemons = [d for d in marked.get("ROUTING", "").split(",") if d.strip()]
+        if daemons:
+            row["routing_daemons"] = daemons
+        if marked.get("MACHINE_ID"):
+            row["machine_id"] = marked["MACHINE_ID"].strip()
+        return [{k: v for k, v in row.items() if v}]
+    row = {}
     for line in lines:
         m = re.match(r'^PRETTY_NAME="?([^"]+)"?', line)
         if m:
@@ -98,9 +121,4 @@ def linux_facts(text: str) -> list[Row]:
     kernel = next((ln.strip() for ln in lines if re.match(r"^\d+\.\d+\.\d+", ln.strip())), None)
     if kernel:
         row["version"] = kernel
-    tail = [ln.strip() for ln in lines if ln.strip() and "=" not in ln and ln.strip() != kernel]
-    if tail:
-        row["serial"] = tail[0]
-        if len(tail) > 1:
-            row["hardware"] = tail[1]
     return [row] if row else []

@@ -26,27 +26,43 @@ def _iface_of(dev: Device, ip: str) -> str | None:
     return None
 
 
-def infer_l3_links(topo: Topology) -> None:
-    """Sub-redes /30 e /31 compartilhadas por exatamente dois equipamentos viram links L3."""
-    nets: dict[str, list[tuple[str, str]]] = defaultdict(list)
-    for d in topo.devices.values():
+def _skip_interface(name: str, settings: Settings | None) -> bool:
+    from nettopo.topology.builder import is_mgmt_interface
+
+    low = name.lower()
+    return low.startswith(("lo", "loopback", "vlanif", "null", "tunnel")) or is_mgmt_interface(
+        name, settings.ignore_interfaces if settings else None)
+
+
+def infer_l3_links(topo: Topology, settings: Settings | None = None) -> None:
+    """Sub-redes /30 e /31 com exatamente dois equipamentos e dois IPs distintos viram links L3.
+
+    Ignora interfaces de gerência/loopback e endereços repetidos (ex.: rede interna NAT de VMs, VRRP),
+    que não indicam um enlace ponto a ponto.
+    """
+    nets: dict[str, list[tuple[str, str, str]]] = defaultdict(list)
+    for d in sorted(topo.devices.values(), key=lambda x: x.id):
         if d.stub:
             continue
         for itf in d.interfaces:
+            if _skip_interface(itf.name, settings):
+                continue
             for cidr in itf.ipv4:
                 net = network_of(cidr)
-                if net is not None and net.prefixlen in (30, 31):
-                    nets[str(net)].append((d.id, itf.name))
-    for subnet, members in nets.items():
-        ids = {m[0] for m in members}
-        if len(ids) != 2:
+                if net is None or net.prefixlen not in (30, 31):
+                    continue
+                ip = ipaddress.IPv4Address(cidr.split("/")[0])
+                if net.prefixlen == 30 and ip in (net.network_address, net.broadcast_address):
+                    continue
+                nets[str(net)].append((d.id, itf.name, str(ip)))
+    for subnet, members in sorted(nets.items()):
+        if len({m[0] for m in members}) != 2 or len({m[2] for m in members}) != 2 or len(members) != 2:
             continue
-        (a, ai), (b, bi) = members[0], next(m for m in members if m[0] != members[0][0])
-        existing = _pair_links(topo, a, b)
+        (a, ai, _), (b, bi, _) = members
         matched = False
-        for lk in existing:
+        for lk in _pair_links(topo, a, b):
             ends = {(lk.source, ifname_key(lk.source_interface)), (lk.target, ifname_key(lk.target_interface))}
-            if (a, ifname_key(ai)) in ends or (b, ifname_key(bi)) in ends or lk.kind == "physical":
+            if (a, ifname_key(ai)) in ends or (b, ifname_key(bi)) in ends:
                 lk.subnet = lk.subnet or subnet
                 matched = True
                 break
@@ -55,14 +71,57 @@ def infer_l3_links(topo: Topology) -> None:
                                    protocols=["subnet"], kind="l3", subnet=subnet))
 
 
+def _local_interface_for(dev: Device, ip: str | None) -> str | None:
+    if not ip:
+        return None
+    try:
+        addr = ipaddress.IPv4Address(ip)
+    except ValueError:
+        return None
+    for itf in dev.interfaces:
+        for cidr in itf.ipv4:
+            net = network_of(cidr)
+            if net is not None and net.prefixlen < 32 and addr in net:
+                return itf.name
+    return None
+
+
+def _peer_on_link(topo: Topology, dev_id: str, local_if: str | None) -> str | None:
+    """Equipamento do outro lado do link físico que sai por ``local_if``."""
+    if not local_if:
+        return None
+    key = ifname_key(local_if)
+    for lk in topo.links:
+        if lk.kind != "physical":
+            continue
+        if lk.source == dev_id and ifname_key(lk.source_interface) == key:
+            return lk.target
+        if lk.target == dev_id and ifname_key(lk.target_interface) == key:
+            return lk.source
+    return None
+
+
 def routing_adjacencies(topo: Topology, resolver: NeighborResolver, registry: VendorRegistry) -> None:
     from nettopo.topology.builder import create_stub
 
-    for dev in list(topo.devices.values()):
+    for dev in sorted(list(topo.devices.values()), key=lambda x: x.id):
         for n in dev.neighbors:
             if n.protocol not in ROUTING_PROTOCOLS:
                 continue
+            local_if = n.local_interface or _local_interface_for(dev, n.remote_mgmt_ip)
             rid = resolver.resolve(n)
+            if rid is None:
+                # O par está do outro lado de um link físico já conhecido? (ex.: PE da operadora visto
+                # por LLDP com o IP de gerência e por BGP com o IP do enlace)
+                rid = _peer_on_link(topo, dev.id, local_if)
+                if rid is not None and n.remote_mgmt_ip:
+                    peer = topo.devices[rid]
+                    aliases = peer.extra.setdefault("aliases", [])
+                    if n.remote_mgmt_ip not in aliases:
+                        aliases.append(n.remote_mgmt_ip)
+                    if n.remote_asn and not peer.extra.get("asn"):
+                        peer.extra["asn"] = n.remote_asn
+                    resolver.index(peer)
             if rid is None:
                 label = n.remote_mgmt_ip or n.remote_chassis_id
                 if not label:
@@ -81,14 +140,6 @@ def routing_adjacencies(topo: Topology, resolver: NeighborResolver, registry: Ve
                     if n.protocol not in lk.protocols:
                         lk.protocols.append(n.protocol)
                 continue
-            local_if = n.local_interface
-            if not local_if and n.remote_mgmt_ip:
-                # interface local = a que está na mesma sub-rede do vizinho
-                for itf in dev.interfaces:
-                    for cidr in itf.ipv4:
-                        net = network_of(cidr)
-                        if net is not None and ipaddress.IPv4Address(n.remote_mgmt_ip) in net:
-                            local_if = itf.name
             remote = topo.devices[rid]
             topo.links.append(Link(source=dev.id, source_interface=local_if, target=rid,
                                    target_interface=_iface_of(remote, n.remote_mgmt_ip or ""),
@@ -117,6 +168,6 @@ def annotate_links(topo: Topology) -> None:
 
 def enrich(topo: Topology, settings: Settings, resolver: NeighborResolver, registry: VendorRegistry) -> None:
     if settings.infer_l3_links:
-        infer_l3_links(topo)
+        infer_l3_links(topo, settings)
     routing_adjacencies(topo, resolver, registry)
     annotate_links(topo)

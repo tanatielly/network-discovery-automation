@@ -119,12 +119,15 @@ class Settings(BaseModel):
     concurrency: int = 16
     timeout: int = 15
     snmp_retries: int = 1
+    snmp_probe_timeout: float = 2.0  # identificação inicial: curto e sem retentativa
     methods: list[Literal["rest", "netconf", "ssh", "snmp"]] = Field(
         default_factory=lambda: ["rest", "netconf", "ssh", "snmp"]
     )
     snmp_complement: bool = True  # usa SNMP para completar dados mesmo com SSH/API ok
     dns_resolve: bool = True
     infer_l3_links: bool = True
+    # Regex de interfaces de gerência fora de banda: LLDP nelas não vira link (None = padrão)
+    ignore_interfaces: str | None = None
     credentials: list[Credential] = Field(default_factory=list)
     follow: FollowOptions = Field(default_factory=FollowOptions)
     collect: CollectOptions = Field(default_factory=CollectOptions)

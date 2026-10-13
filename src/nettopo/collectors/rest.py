@@ -287,7 +287,8 @@ class MikrotikRestDriver:
     paths = {
         "identity": "system/identity", "resource": "system/resource", "routerboard": "system/routerboard",
         "interfaces": "interface", "addresses": "ip/address", "neighbors": "ip/neighbor", "arp": "ip/arp",
-        "routes": "ip/route", "vlans": "interface/vlan",
+        "routes": "ip/route", "vlans": "interface/vlan", "ospf": "routing/ospf/neighbor",
+        "bgp": "routing/bgp/session", "license": "system/license",
     }
 
     async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential) -> Raw:
@@ -305,9 +306,11 @@ class MikrotikRestDriver:
         dev.hostname = (raw.get("identity") or {}).get("name") or dev.hostname
         res = raw.get("resource") or {}
         rb = raw.get("routerboard") or {}
+        lic = raw.get("license") or {}
         dev.model = rb.get("model") or res.get("board-name")
         dev.os_version = res.get("version")
-        dev.serial = rb.get("serial-number")
+        # RouterBOARD: serial da placa; CHR (VM): system-id da licença identifica a instância
+        dev.serial = rb.get("serial-number") or lic.get("system-id") or lic.get("software-id")
         dev.uptime = res.get("uptime")
         for i in _as_list(raw.get("interfaces")):
             itf = dev.upsert_interface(i.get("name", ""))
@@ -343,6 +346,17 @@ class MikrotikRestDriver:
                                     interface=None if parse_ipv4(gw) else gw or None,
                                     protocol="connected" if proto == "connect" else proto,
                                     vrf=r.get("routing-table")))
+        for o in _as_list(raw.get("ospf")):
+            if parse_ipv4(o.get("address")):
+                dev.neighbors.append(Neighbor(protocol="ospf", remote_mgmt_ip=parse_ipv4(o.get("address")),
+                                              remote_chassis_id=o.get("router-id"), state=o.get("state"),
+                                              local_interface=o.get("interface")))
+        for b in _as_list(raw.get("bgp")):
+            peer = parse_ipv4(str(b.get("remote.address") or "").split("/")[0])
+            if peer:
+                est = str(b.get("established", "")).lower() == "true"
+                dev.neighbors.append(Neighbor(protocol="bgp", remote_mgmt_ip=peer, remote_asn=to_int(b.get("remote.as")),
+                                              state="Established" if est else "Idle"))
         for v in _as_list(raw.get("vlans")):
             vid = to_int(v.get("vlan-id"))
             if vid:
@@ -406,12 +420,122 @@ class FortiosDriver:
                                     interface=r.get("interface"), protocol=r.get("type")))
 
 
+# =========================================================================== Nokia SR Linux JSON-RPC
+
+def _unwrap_list(value: Any, key: str) -> list[dict[str, Any]]:
+    """O JSON-RPC devolve listas ora direto, ora sob ``{"modulo:chave": [...]}``."""
+    if isinstance(value, list):
+        return [v for v in value if isinstance(v, dict)]
+    if isinstance(value, dict):
+        for k, v in value.items():
+            if k.split(":")[-1] == key and isinstance(v, list):
+                return [x for x in v if isinstance(x, dict)]
+        return [value] if key not in value else _unwrap_list(value[key], key)
+    return []
+
+
+def _strip_ns(d: Any) -> Any:
+    """Remove prefixos de módulo YANG das chaves (``srl_nokia-platform:chassis`` -> ``chassis``)."""
+    if isinstance(d, dict):
+        return {str(k).split(":")[-1]: _strip_ns(v) for k, v in d.items()}
+    if isinstance(d, list):
+        return [_strip_ns(x) for x in d]
+    return d
+
+
+class SrlJsonRpcDriver:
+    """SR Linux: ``POST /jsonrpc`` com ``method: get`` no datastore ``state``."""
+
+    paths = {
+        "hostname": "/system/name/host-name",
+        "information": "/system/information",
+        "chassis": "/platform/chassis",
+        "interfaces": "/interface[name=*]",
+        "lldp": "/system/lldp/interface[name=*]",
+        "bgp": "/network-instance[name=*]/protocols/bgp/neighbor[peer-address=*]",
+    }
+
+    async def fetch(self, client: httpx.AsyncClient, base: str, cred: Credential) -> Raw:
+        raw: Raw = {}
+        auth = (cred.username or "", cred.secret("password") or "")
+        for key, path in self.paths.items():
+            body = {"jsonrpc": "2.0", "id": 1, "method": "get",
+                    "params": {"commands": [{"path": path, "datastore": "state"}]}}
+            r = await client.post(f"{base}/jsonrpc", json=body, auth=auth)
+            if r.status_code in (401, 403):
+                raise PermissionError("SR Linux JSON-RPC: autenticação negada")
+            if r.status_code >= 400:
+                continue
+            data = r.json()
+            if "error" in data:
+                continue
+            result = data.get("result") or [None]
+            raw[key] = _strip_ns(result[0])
+        return raw
+
+    @staticmethod
+    def parse(raw: Raw, dev: Device) -> None:
+        host = raw.get("hostname")
+        dev.hostname = (host if isinstance(host, str) else None) or dev.hostname
+        info = raw.get("information") or {}
+        if isinstance(info, dict):
+            dev.os_version = info.get("version") or dev.os_version
+            dev.sys_description = info.get("description") or dev.sys_description
+        ch = raw.get("chassis") or {}
+        if isinstance(ch, dict):
+            dev.model = ch.get("type") or dev.model
+            dev.serial = ch.get("serial-number") or dev.serial
+            dev.chassis_id = normalize_mac(ch.get("hw-mac-address")) or dev.chassis_id
+        for i in _unwrap_list(raw.get("interfaces"), "interface"):
+            name = i.get("name")
+            if not name:
+                continue
+            itf = dev.upsert_interface(name)
+            itf.description = i.get("description") or itf.description
+            itf.admin_up = truthy_status(i.get("admin-state"))
+            itf.oper_up = truthy_status(i.get("oper-state"))
+            eth = i.get("ethernet") or {}
+            itf.mac = normalize_mac(eth.get("hw-mac-address")) or itf.mac
+            speed = str(eth.get("port-speed") or "")
+            itf.speed_mbps = itf.speed_mbps or (to_int(speed) * 1000 if speed.upper().endswith("G") and to_int(speed)
+                                                 else to_int(speed) if speed.upper().endswith("M") else None)
+            itf.mtu = to_int(i.get("mtu")) or itf.mtu
+            for sub in _as_list(i.get("subinterface")):
+                for addr in _as_list((sub.get("ipv4") or {}).get("address")):
+                    cidr = ip_with_prefix(addr.get("ip-prefix"))
+                    if cidr and cidr not in itf.ipv4:
+                        itf.ipv4.append(cidr)
+        for lif in _unwrap_list(raw.get("lldp"), "interface"):
+            local = lif.get("name")
+            for nb in _as_list(lif.get("neighbor")):
+                mgmt = None
+                for m in _as_list(nb.get("management-address")):
+                    mgmt = parse_ipv4(m.get("address") if isinstance(m, dict) else m)
+                    if mgmt:
+                        break
+                port = nb.get("port-id")
+                if normalize_mac(port) and nb.get("port-description"):
+                    port = nb.get("port-description")
+                dev.neighbors.append(Neighbor(
+                    protocol="lldp", local_interface=canonical_ifname(local), remote_hostname=nb.get("system-name"),
+                    remote_interface=port, remote_mgmt_ip=mgmt, remote_chassis_id=normalize_mac(nb.get("chassis-id")),
+                    remote_description=nb.get("system-description"),
+                    remote_platform=(nb.get("system-description") or "")[:120] or None,
+                ))
+        for b in _unwrap_list(raw.get("bgp"), "neighbor"):
+            peer = parse_ipv4(b.get("peer-address"))
+            if peer:
+                dev.neighbors.append(Neighbor(protocol="bgp", remote_mgmt_ip=peer, remote_asn=to_int(b.get("peer-as")),
+                                              state=b.get("session-state")))
+
+
 DRIVERS: dict[str, Any] = {
     "eapi": EapiDriver,
     "nxapi": NxapiDriver,
     "restconf_iosxe": RestconfIosxeDriver,
     "mikrotik": MikrotikRestDriver,
     "fortios": FortiosDriver,
+    "srl_jsonrpc": SrlJsonRpcDriver,
 }
 
 
@@ -454,6 +578,9 @@ class RestCollector:
                 driver.parse(raw, dev)
             except Exception as exc:  # resposta inesperada
                 res.errors.append(f"rest: erro ao interpretar resposta: {exc}")
+                continue
+            if not dev.hostname and not dev.interfaces:  # API respondeu, mas sem dados úteis
+                res.errors.append(f"rest[{cred.display}]: resposta sem hostname nem interfaces")
                 continue
             res.device = dev
             res.credential = cred

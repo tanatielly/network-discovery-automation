@@ -20,7 +20,9 @@ class Fingerprint:
     snmp_cred: Credential | None = None
     system: dict[str, Any] | None = None
     ssh_cred: Credential | None = None
+    ssh_banner: str | None = None
     open_ports: set[int] = field(default_factory=set)
+    errors: list[str] = field(default_factory=list)
 
 
 async def port_open(host: str, port: int, timeout: float = 2.0) -> bool:
@@ -34,6 +36,31 @@ async def port_open(host: str, port: int, timeout: float = 2.0) -> bool:
     except Exception:
         pass
     return True
+
+
+async def read_ssh_banner(host: str, port: int = 22, timeout: float = 3.0) -> str | None:
+    """Lê a linha de versão do servidor SSH (RFC 4253), antes de qualquer autenticação."""
+    try:
+        reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout)
+    except (OSError, asyncio.TimeoutError):
+        return None
+    try:
+        for _ in range(5):  # alguns servidores mandam linhas de aviso antes da versão
+            line = await asyncio.wait_for(reader.readline(), timeout)
+            if not line:
+                break
+            text = line.decode("utf-8", "replace").strip()
+            if text.startswith("SSH-"):
+                return text
+    except (OSError, asyncio.TimeoutError):
+        return None
+    finally:
+        writer.close()
+        try:
+            await writer.wait_closed()
+        except Exception:
+            pass
+    return None
 
 
 async def scan_ports(host: str, ports: list[int], timeout: float = 2.0) -> set[int]:

@@ -53,7 +53,7 @@ SCENARIOS: list[dict[str, Any]] = [
         methods=["ssh"], credentials=all_creds("ssh_mikrotik", "ssh_srlinux", "ssh_linux"))},
     {"id": "07-apis", "title": "APIs (REST/NETCONF); SNMP só para identificar o fabricante",
      "settings": base_settings(methods=["rest", "netconf", "snmp"], snmp_complement=False,
-                               credentials=all_creds("rest_mikrotik", "netconf_srlinux", "snmp_v2c"))},
+                               credentials=all_creds("rest_mikrotik", "rest_srlinux", "netconf_srlinux", "snmp_v2c"))},
     {"id": "08-credenciais-mistas", "title": "Credenciais erradas testadas primeiro",
      "settings": base_settings(credentials=WRONG_CREDS + all_creds())},
     {"id": "09-escopo", "title": "Profundidade 1 e exclusão da rede dos servidores",

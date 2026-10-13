@@ -1,0 +1,45 @@
+-------------------------------------------------------------------------------
+LLDP neighbors:
+-------------------------------------------------------------------------------
+Interface:    eth3, via: LLDP, RID: 1, Time: 0 day, 00:01:30
+  Chassis:     
+    ChassisID:    mac aa:c1:ab:a4:50:62
+    SysName:      srv1
+    SysDescr:     Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64
+    MgmtIP:       172.20.20.41
+    MgmtIface:    2
+    Capability:   Bridge, off
+    Capability:   Router, on
+    Capability:   Wlan, off
+    Capability:   Station, off
+  Port:        
+    PortID:       mac aa:c1:ab:a4:50:62
+    PortDescr:    eth1
+    TTL:          120
+-------------------------------------------------------------------------------
+Interface:    eth1, via: LLDP, RID: 3, Time: 0 day, 00:01:18
+  Chassis:     
+    ChassisID:    mac 1a:97:00:ff:00:00
+    SysName:      core-srl1
+    SysDescr:     SRLinux-v25.10.5-111-g6fbddec84ef core-srl1 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026
+    MgmtIP:       172.20.20.21
+    MgmtIface:    1
+    Capability:   Router, on
+  Port:        
+    PortID:       ifname ethernet-1/3
+    PortDescr:    to dist-frr1 eth1
+    TTL:          120
+-------------------------------------------------------------------------------
+Interface:    eth2, via: LLDP, RID: 2, Time: 0 day, 00:01:20
+  Chassis:     
+    ChassisID:    mac 1a:b9:01:ff:00:00
+    SysName:      core-srl2
+    SysDescr:     SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026
+    MgmtIP:       172.20.20.22
+    MgmtIface:    1
+    Capability:   Router, on
+  Port:        
+    PortID:       ifname ethernet-1/3
+    PortDescr:    to dist-frr1 eth2
+    TTL:          120
+-------------------------------------------------------------------------------
