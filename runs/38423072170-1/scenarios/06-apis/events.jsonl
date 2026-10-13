@@ -1,0 +1,28 @@
+{"type": "memory", "known": 0, "t": 0.0}
+{"type": "sweep", "tested": 254, "found": 9, "t": 9.42}
+{"type": "started", "seeds": ["172.20.20.11", "172.20.20.1", "172.20.20.2", "172.20.20.12", "172.20.20.21", "172.20.20.22", "172.20.20.31", "172.20.20.41", "172.20.20.42"], "t": 9.42}
+{"type": "device_started", "target": "172.20.20.11", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 9.42}
+{"type": "device_started", "target": "172.20.20.1", "origin": "varredura", "hostname": null, "depth": 0, "parent": null, "t": 9.42}
+{"type": "device_started", "target": "172.20.20.2", "origin": "varredura", "hostname": null, "depth": 0, "parent": null, "t": 9.42}
+{"type": "device_started", "target": "172.20.20.12", "origin": "varredura", "hostname": "edge-mk2", "depth": 0, "parent": null, "t": 9.42}
+{"type": "device_started", "target": "172.20.20.21", "origin": "varredura", "hostname": "core-srl1", "depth": 0, "parent": null, "t": 9.42}
+{"type": "device_started", "target": "172.20.20.22", "origin": "varredura", "hostname": "core-srl2", "depth": 0, "parent": null, "t": 9.42}
+{"type": "device_started", "target": "172.20.20.31", "origin": "varredura", "hostname": "dist-frr1", "depth": 0, "parent": null, "t": 9.42}
+{"type": "device_started", "target": "172.20.20.41", "origin": "varredura", "hostname": "srv1", "depth": 0, "parent": null, "t": 9.42}
+{"type": "device_started", "target": "172.20.20.42", "origin": "varredura", "hostname": "srv2", "depth": 0, "parent": null, "t": 9.42}
+{"type": "device_done", "target": "172.20.20.22", "id": "core-srl2", "hostname": "core-srl2", "vendor": "Nokia", "model": "7220 IXR-D2L", "via": ["rest"], "neighbors": 5, "processed": 1, "known": 1, "t": 10.26}
+{"type": "queued", "target": "10.10.2.1", "hostname": "edge-mk2", "candidates": ["IP anunciado:10.10.2.1"], "depth": 1, "t": 10.26}
+{"type": "device_started", "target": "10.10.2.1", "origin": "anunciado", "hostname": "edge-mk2", "depth": 1, "parent": "core-srl2", "t": 10.26}
+{"type": "device_done", "target": "172.20.20.21", "id": "core-srl1", "hostname": "core-srl1", "vendor": "Nokia", "model": "7220 IXR-D2L", "via": ["rest"], "neighbors": 4, "processed": 2, "known": 2, "t": 10.27}
+{"type": "queued", "target": "10.10.1.1", "hostname": "edge-mk1", "candidates": ["IP anunciado:10.10.1.1"], "depth": 1, "t": 10.27}
+{"type": "device_started", "target": "10.10.1.1", "origin": "anunciado", "hostname": "edge-mk1", "depth": 1, "parent": "core-srl1", "t": 10.27}
+{"type": "device_done", "target": "172.20.20.11", "id": "edge-mk1", "hostname": "edge-mk1", "vendor": "MikroTik", "model": "CHR QEMU Standard PC (i440FX + PIIX, 1996)", "via": ["rest"], "neighbors": 5, "processed": 3, "known": 3, "t": 10.73}
+{"type": "device_done", "target": "172.20.20.12", "id": "edge-mk2", "hostname": "edge-mk2", "vendor": "MikroTik", "model": "CHR QEMU Standard PC (i440FX + PIIX, 1996)", "via": ["rest"], "neighbors": 3, "processed": 4, "known": 4, "t": 10.73}
+{"type": "device_failed", "target": "172.20.20.1", "hostname": null, "reason": "varredura 172.20.20.1: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)", "processed": 5, "t": 11.55}
+{"type": "device_failed", "target": "172.20.20.2", "hostname": null, "reason": "varredura 172.20.20.2: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)", "processed": 6, "t": 11.55}
+{"type": "device_failed", "target": "10.10.2.1", "hostname": "edge-mk2", "reason": "IP anunciado 10.10.2.1: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)", "processed": 8, "t": 15.29}
+{"type": "device_failed", "target": "10.10.1.1", "hostname": "edge-mk1", "reason": "IP anunciado 10.10.1.1: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)", "processed": 8, "t": 15.29}
+{"type": "device_done", "target": "172.20.20.31", "id": "dist-frr1", "hostname": "dist-frr1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 3, "processed": 9, "known": 5, "t": 17.22}
+{"type": "device_done", "target": "172.20.20.41", "id": "srv1", "hostname": "srv1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 10, "known": 6, "t": 17.22}
+{"type": "device_done", "target": "172.20.20.42", "id": "srv2", "hostname": "srv2", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 11, "known": 7, "t": 17.23}
+{"type": "finished", "stats": {"devices": 8, "collected": 7, "stubs": 1, "links": 9, "physical_links": 9, "l3_links": 0, "logical_links": 0, "interfaces": 139, "failed_targets": 4, "by_vendor": {"Linux": 4, "Nokia": 2, "MikroTik": 2}, "by_role": {"router": 4, "l3switch": 2, "server": 2}, "duration_s": 17.2, "ignored_mgmt_neighbors": 2, "memoria": {"conhecidos": 0, "reaproveitados": 0, "recoletados": 0, "inacessiveis": 0, "novos_coletados": 7, "eventos": []}}, "t": 17.23}
