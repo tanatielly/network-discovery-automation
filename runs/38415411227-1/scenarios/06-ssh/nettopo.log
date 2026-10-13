@@ -1,0 +1,16 @@
+2026-10-13 14:48:14,672 DEBUG nettopo.collectors.ssh: 172.20.20.11 facts '/system resource print without-paging' -> 1 registros (mikrotik_facts)
+2026-10-13 14:48:14,672 DEBUG nettopo.collectors.ssh: 172.20.20.11 hostname '/system identity print' -> 1 registros (mikrotik_identity)
+2026-10-13 14:48:14,673 DEBUG nettopo.collectors.ssh: 172.20.20.11 interfaces '/interface print detail without-paging' -> 5 registros (mikrotik_interfaces)
+2026-10-13 14:48:14,673 DEBUG nettopo.collectors.ssh: 172.20.20.11 ip_interfaces '/ip address print terse without-paging' -> 4 registros (mikrotik_ip_address)
+2026-10-13 14:48:14,674 DEBUG nettopo.collectors.ssh: 172.20.20.11 other_l2 '/ip neighbor print detail without-paging' -> 3 registros (mikrotik_neighbors)
+2026-10-13 14:48:14,674 DEBUG nettopo.collectors.ssh: 172.20.20.11 arp '/ip arp print terse without-paging' -> 3 registros (mikrotik_arp)
+2026-10-13 14:48:14,674 DEBUG nettopo.collectors.ssh: 172.20.20.11 routes '/ip route print terse without-paging' -> 6 registros (mikrotik_routes)
+2026-10-13 14:48:14,674 DEBUG nettopo.collectors.ssh: 172.20.20.11 ospf '/routing ospf neighbor print detail without-paging' -> 1 registros (mikrotik_ospf)
+2026-10-13 14:48:14,674 DEBUG nettopo.collectors.ssh: 172.20.20.11 bgp '/routing bgp session print detail without-paging' -> 1 registros (mikrotik_bgp)
+2026-10-13 14:48:24,953 DEBUG nettopo.collectors.ssh: 172.20.20.21 facts 'show version' -> 1 registros (kv_colon)
+2026-10-13 14:48:24,954 DEBUG nettopo.vendors.parsers: ntc-templates nokia_srl 'show interface brief': Unable to parse command "show interface brief" on platform nokia_srl - No template found for attributes: "{'Command': 'show interface brief', 'Platform': 'nokia_srl'}"
+2026-10-13 14:48:24,961 DEBUG nettopo.collectors.ssh: 172.20.20.21 ip_interfaces 'show interface brief' -> 59 registros (generic)
+2026-10-13 14:48:24,962 DEBUG nettopo.vendors.parsers: ntc-templates nokia_srl 'show system lldp neighbor': Unable to parse command "show system lldp neighbor" on platform nokia_srl - No template found for attributes: "{'Command': 'show system lldp neighbor', 'Platform': 'nokia_srl'}"
+2026-10-13 14:48:24,962 DEBUG nettopo.collectors.ssh: 172.20.20.21 lldp 'show system lldp neighbor' -> 4 registros (generic)
+2026-10-13 14:48:24,964 DEBUG nettopo.vendors.parsers: ntc-templates nokia_srl 'show arpnd arp-entries': Unable to parse command "show arpnd arp-entries" on platform nokia_srl - No template found for attributes: "{'Command': 'show arpnd arp-entries', 'Platform': 'nokia_srl'}"
+2026-10-13 14:48:24,964 DEBUG nettopo.collectors.ssh: 172.20.20.21 arp 'show arpnd arp-entries' -> 1 registros (generic)

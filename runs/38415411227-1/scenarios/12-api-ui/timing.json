@@ -1,0 +1,68 @@
+{
+  "id": "12-api-ui",
+  "title": "API REST + WebSocket + UI web",
+  "duration_s": 13.0,
+  "ws_events": {
+    "started": 1,
+    "device_started": 9,
+    "device_done": 7,
+    "queued": 1,
+    "device_failed": 2,
+    "finished": 1,
+    "closed": 1
+  },
+  "status": "finished",
+  "stats": {
+    "devices": 8,
+    "collected": 7,
+    "stubs": 1,
+    "links": 9,
+    "physical_links": 9,
+    "l3_links": 0,
+    "logical_links": 0,
+    "interfaces": 148,
+    "failed_targets": 2,
+    "by_vendor": {
+      "Linux": 4,
+      "Nokia": 2,
+      "MikroTik": 2
+    },
+    "by_role": {
+      "router": 4,
+      "l3switch": 2,
+      "server": 2
+    },
+    "duration_s": 12.9,
+    "ignored_mgmt_neighbors": 2
+  },
+  "exports": {
+    "html": {
+      "status": 200,
+      "bytes": 127822
+    },
+    "drawio": {
+      "status": 200,
+      "bytes": 37266
+    },
+    "xlsx": {
+      "status": 200,
+      "bytes": 30844
+    },
+    "md": {
+      "status": 200,
+      "bytes": 9039
+    },
+    "json": {
+      "status": 200,
+      "bytes": 108169
+    }
+  },
+  "secrets_in_db": false,
+  "screenshots": [
+    "relatorio-diagrama.png",
+    "relatorio-equipamento.png",
+    "relatorio-inventario.png",
+    "relatorio-links.png",
+    "ui-resultado.png"
+  ]
+}

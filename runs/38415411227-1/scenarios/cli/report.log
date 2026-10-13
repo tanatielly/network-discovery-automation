@@ -1,0 +1,25 @@
+Resumo da descoberta                                                
+┌─────────────────────────────┬────────────────────────────────────┐
+│ Equipamentos coletados      │ 7                                  │
+│ Vistos por vizinhos (stubs) │ 1                                  │
+│ Links físicos               │ 9                                  │
+│ Links L3                    │ 0                                  │
+│ Adjacências de roteamento   │ 0                                  │
+│ Interfaces                  │ 148                                │
+│ Alvos com falha             │ 2                                  │
+│ Duração (s)                 │ 11.5                               │
+│ Fabricantes                 │ Linux (4), Nokia (2), MikroTik (2) │
+└─────────────────────────────┴────────────────────────────────────┘
+Arquivos gerados:
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/report/lab-nettopo-containerlab.html
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/report/lab-nettopo-containerlab.drawio
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/report/lab-nettopo-containerlab.xlsx
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/report/lab-nettopo-containerlab-docs/README.md

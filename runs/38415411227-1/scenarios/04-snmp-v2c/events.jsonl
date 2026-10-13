@@ -1,0 +1,9 @@
+{"type": "started", "seeds": ["172.20.20.11"], "t": 0.0}
+{"type": "device_started", "target": "172.20.20.11", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_done", "target": "172.20.20.11", "id": "edge-mk1", "hostname": "edge-mk1", "vendor": "MikroTik", "model": "RouterOS 7.16.2 (stable) on CHR", "via": ["snmp"], "neighbors": 4, "processed": 1, "known": 1, "t": 0.69}
+{"type": "queued", "target": "isp-pe", "hostname": "isp-pe", "candidates": [], "depth": 1, "t": 0.69}
+{"type": "queued", "target": "edge-mk2", "hostname": "edge-mk2", "candidates": [], "depth": 1, "t": 0.69}
+{"type": "queued", "target": "core-srl1", "hostname": "core-srl1", "candidates": [], "depth": 1, "t": 0.69}
+{"type": "device_started", "target": "10.255.0.2", "origin": "arp", "hostname": "edge-mk2", "depth": 1, "parent": "edge-mk1", "t": 0.7}
+{"type": "device_failed", "target": "10.255.0.2", "hostname": "edge-mk2", "reason": "ARP 10.255.0.2: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta", "processed": 2, "t": 5.65}
+{"type": "finished", "stats": {"devices": 4, "collected": 1, "stubs": 3, "links": 3, "physical_links": 3, "l3_links": 0, "logical_links": 0, "interfaces": 5, "failed_targets": 1, "by_vendor": {"MikroTik": 2, "Linux": 1, "Nokia": 1}, "by_role": {"router": 2, "switch": 2}, "duration_s": 5.7, "ignored_mgmt_neighbors": 0}, "t": 5.65}

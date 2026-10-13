@@ -1,0 +1,158 @@
+[
+  {
+    "id": "01-completo",
+    "title": "Completo (REST > NETCONF > SSH + SNMP), semente única, sem DNS",
+    "status": "ok",
+    "duration_s": 18.8
+  },
+  {
+    "id": "02-completo-dns",
+    "title": "Completo com DNS (hostnames resolvem para a gerência)",
+    "status": "ok",
+    "duration_s": 17.8
+  },
+  {
+    "id": "03-inventario",
+    "title": "Sementes = inventário de IPs de gerência",
+    "status": "ok",
+    "duration_s": 11.6
+  },
+  {
+    "id": "04-snmp-v2c",
+    "title": "Somente SNMP v2c",
+    "status": "ok",
+    "duration_s": 5.7
+  },
+  {
+    "id": "05-snmp-v3",
+    "title": "Somente SNMPv3 (authPriv SHA/AES) a partir do inventário",
+    "status": "ok",
+    "duration_s": 2.7
+  },
+  {
+    "id": "06-ssh",
+    "title": "Somente SSH/CLI",
+    "status": "ok",
+    "duration_s": 16.7
+  },
+  {
+    "id": "07-apis",
+    "title": "APIs (REST/NETCONF); SNMP só para identificar o fabricante",
+    "status": "ok",
+    "duration_s": 5.6
+  },
+  {
+    "id": "08-credenciais-mistas",
+    "title": "Credenciais erradas testadas primeiro",
+    "status": "ok",
+    "duration_s": 22.8
+  },
+  {
+    "id": "09-escopo",
+    "title": "Profundidade 1 e exclusão da rede dos servidores",
+    "status": "ok",
+    "duration_s": 11.9
+  },
+  {
+    "id": "10-concorrencia-1",
+    "title": "Inventário com concorrência 1 (sequencial)",
+    "status": "ok",
+    "duration_s": 42.6
+  },
+  {
+    "id": "12-api-ui",
+    "title": "API REST + WebSocket + UI web",
+    "duration_s": 13.0,
+    "ws_events": {
+      "started": 1,
+      "device_started": 9,
+      "device_done": 7,
+      "queued": 1,
+      "device_failed": 2,
+      "finished": 1,
+      "closed": 1
+    },
+    "status": "finished",
+    "stats": {
+      "devices": 8,
+      "collected": 7,
+      "stubs": 1,
+      "links": 9,
+      "physical_links": 9,
+      "l3_links": 0,
+      "logical_links": 0,
+      "interfaces": 148,
+      "failed_targets": 2,
+      "by_vendor": {
+        "Linux": 4,
+        "Nokia": 2,
+        "MikroTik": 2
+      },
+      "by_role": {
+        "router": 4,
+        "l3switch": 2,
+        "server": 2
+      },
+      "duration_s": 12.9,
+      "ignored_mgmt_neighbors": 2
+    },
+    "exports": {
+      "html": {
+        "status": 200,
+        "bytes": 127822
+      },
+      "drawio": {
+        "status": 200,
+        "bytes": 37266
+      },
+      "xlsx": {
+        "status": 200,
+        "bytes": 30844
+      },
+      "md": {
+        "status": 200,
+        "bytes": 9039
+      },
+      "json": {
+        "status": 200,
+        "bytes": 108169
+      }
+    },
+    "secrets_in_db": false,
+    "screenshots": [
+      "relatorio-diagrama.png",
+      "relatorio-equipamento.png",
+      "relatorio-inventario.png",
+      "relatorio-links.png",
+      "ui-resultado.png"
+    ]
+  },
+  {
+    "id": "11-falha-injetada",
+    "title": "Após falha: srv2 desligado e link core-srl2/dist-frr1 derrubado",
+    "status": "ok",
+    "duration_s": 14.2
+  },
+  {
+    "id": "cli",
+    "title": "Comandos da CLI",
+    "checks": {
+      "vendors": {
+        "exit_code": 0,
+        "duration_s": 0.4
+      },
+      "discover": {
+        "exit_code": 0,
+        "duration_s": 1.3
+      },
+      "report": {
+        "exit_code": 0,
+        "duration_s": 0.5
+      },
+      "diff": {
+        "exit_code": 0,
+        "duration_s": 0.3
+      }
+    }
+  }
+]

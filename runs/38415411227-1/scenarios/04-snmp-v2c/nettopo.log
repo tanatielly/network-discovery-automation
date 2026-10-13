@@ -1,0 +1,1 @@
+2026-10-13 14:48:05,495 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.2 via snmp-v2c falhou: No SNMP response received before timeout
