@@ -1,0 +1,37 @@
+2026-10-14 14:29:45,398 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-10-14 14:29:45,420 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v3 falhou: Unknown USM user
+2026-10-14 14:29:48,340 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-10-14 14:29:50,360 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.2 via snmp-v3 falhou: No SNMP response received before timeout
+2026-10-14 14:30:00,555 DEBUG nettopo.collectors.ssh: 172.20.20.31 facts 'echo "NT_OS=$(. /etc/os-release 2>/dev/null; echo $PRETTY_NAME)"; echo "NT_KERNEL=$(uname -r)"; echo "NT_SERIAL=$(cat /sys/class/dmi/id/product_serial 2>/dev/null)"; echo "NT_PRODUCT=$(cat /sys/class/dmi/id/product_name 2>/dev/null)"; echo "NT_ROUTING=$(ps -eo comm 2>/dev/null | grep -E '^(zebra|bgpd|ospfd|ospf6d|isisd|ripd|bird|bird6|quagga)$' | sort -u | tr '\n' ',')"' -> 1 registros (linux_facts)
+2026-10-14 14:30:00,555 DEBUG nettopo.collectors.ssh: 172.20.20.31 hostname 'hostname' -> 1 registros (first_line)
+2026-10-14 14:30:00,555 DEBUG nettopo.collectors.ssh: 172.20.20.31 interfaces 'ip -o link show' -> 4 registros (linux_links)
+2026-10-14 14:30:00,556 DEBUG nettopo.collectors.ssh: 172.20.20.31 ip_interfaces 'ip -o -4 addr show' -> 4 registros (linux_addrs)
+2026-10-14 14:30:00,556 DEBUG nettopo.collectors.ssh: 172.20.20.31 lldp 'sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details' -> 3 registros (lldpctl_keyvalue)
+2026-10-14 14:30:00,556 DEBUG nettopo.collectors.ssh: 172.20.20.31 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-10-14 14:30:00,556 DEBUG nettopo.collectors.ssh: 172.20.20.31 routes 'ip -4 route show' -> 5 registros (linux_routes)
+2026-10-14 14:30:00,557 DEBUG nettopo.vendors.parsers: ntc-templates linux 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"': Unable to parse command "sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"" on platform linux - No template found for attributes: "{'Command': 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"', 'Platform': 'linux'}"
+2026-10-14 14:30:00,557 DEBUG nettopo.collectors.ssh: 172.20.20.31 ospf 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"' -> 0 registros (none)
+2026-10-14 14:30:00,558 DEBUG nettopo.vendors.parsers: ntc-templates linux 'sudo -n /usr/bin/vtysh -c "show bgp summary json"': Unable to parse command "sudo -n /usr/bin/vtysh -c "show bgp summary json"" on platform linux - No template found for attributes: "{'Command': 'sudo -n /usr/bin/vtysh -c "show bgp summary json"', 'Platform': 'linux'}"
+2026-10-14 14:30:00,558 DEBUG nettopo.collectors.ssh: 172.20.20.31 bgp 'sudo -n /usr/bin/vtysh -c "show bgp summary json"' -> 0 registros (none)
+2026-10-14 14:30:02,279 DEBUG nettopo.collectors.ssh: 172.20.20.42 facts 'echo "NT_OS=$(. /etc/os-release 2>/dev/null; echo $PRETTY_NAME)"; echo "NT_KERNEL=$(uname -r)"; echo "NT_SERIAL=$(cat /sys/class/dmi/id/product_serial 2>/dev/null)"; echo "NT_PRODUCT=$(cat /sys/class/dmi/id/product_name 2>/dev/null)"; echo "NT_ROUTING=$(ps -eo comm 2>/dev/null | grep -E '^(zebra|bgpd|ospfd|ospf6d|isisd|ripd|bird|bird6|quagga)$' | sort -u | tr '\n' ',')"' -> 1 registros (linux_facts)
+2026-10-14 14:30:02,280 DEBUG nettopo.collectors.ssh: 172.20.20.42 hostname 'hostname' -> 1 registros (first_line)
+2026-10-14 14:30:02,280 DEBUG nettopo.collectors.ssh: 172.20.20.42 interfaces 'ip -o link show' -> 2 registros (linux_links)
+2026-10-14 14:30:02,280 DEBUG nettopo.collectors.ssh: 172.20.20.42 ip_interfaces 'ip -o -4 addr show' -> 2 registros (linux_addrs)
+2026-10-14 14:30:02,280 DEBUG nettopo.collectors.ssh: 172.20.20.42 lldp 'sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details' -> 1 registros (lldpctl_keyvalue)
+2026-10-14 14:30:02,280 DEBUG nettopo.collectors.ssh: 172.20.20.42 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-10-14 14:30:02,280 DEBUG nettopo.collectors.ssh: 172.20.20.42 routes 'ip -4 route show' -> 3 registros (linux_routes)
+2026-10-14 14:30:02,281 DEBUG nettopo.vendors.parsers: ntc-templates linux 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"': Unable to parse command "sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"" on platform linux - No template found for attributes: "{'Command': 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"', 'Platform': 'linux'}"
+2026-10-14 14:30:02,282 DEBUG nettopo.collectors.ssh: 172.20.20.42 ospf 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"' -> 0 registros (none)
+2026-10-14 14:30:02,282 DEBUG nettopo.vendors.parsers: ntc-templates linux 'sudo -n /usr/bin/vtysh -c "show bgp summary json"': Unable to parse command "sudo -n /usr/bin/vtysh -c "show bgp summary json"" on platform linux - No template found for attributes: "{'Command': 'sudo -n /usr/bin/vtysh -c "show bgp summary json"', 'Platform': 'linux'}"
+2026-10-14 14:30:02,282 DEBUG nettopo.collectors.ssh: 172.20.20.42 bgp 'sudo -n /usr/bin/vtysh -c "show bgp summary json"' -> 0 registros (none)
+2026-10-14 14:30:08,186 DEBUG nettopo.collectors.ssh: 172.20.20.41 facts 'echo "NT_OS=$(. /etc/os-release 2>/dev/null; echo $PRETTY_NAME)"; echo "NT_KERNEL=$(uname -r)"; echo "NT_SERIAL=$(cat /sys/class/dmi/id/product_serial 2>/dev/null)"; echo "NT_PRODUCT=$(cat /sys/class/dmi/id/product_name 2>/dev/null)"; echo "NT_ROUTING=$(ps -eo comm 2>/dev/null | grep -E '^(zebra|bgpd|ospfd|ospf6d|isisd|ripd|bird|bird6|quagga)$' | sort -u | tr '\n' ',')"' -> 1 registros (linux_facts)
+2026-10-14 14:30:08,186 DEBUG nettopo.collectors.ssh: 172.20.20.41 hostname 'hostname' -> 1 registros (first_line)
+2026-10-14 14:30:08,186 DEBUG nettopo.collectors.ssh: 172.20.20.41 interfaces 'ip -o link show' -> 2 registros (linux_links)
+2026-10-14 14:30:08,187 DEBUG nettopo.collectors.ssh: 172.20.20.41 ip_interfaces 'ip -o -4 addr show' -> 2 registros (linux_addrs)
+2026-10-14 14:30:08,187 DEBUG nettopo.collectors.ssh: 172.20.20.41 lldp 'sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details' -> 1 registros (lldpctl_keyvalue)
+2026-10-14 14:30:08,187 DEBUG nettopo.collectors.ssh: 172.20.20.41 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-10-14 14:30:08,187 DEBUG nettopo.collectors.ssh: 172.20.20.41 routes 'ip -4 route show' -> 3 registros (linux_routes)
+2026-10-14 14:30:08,188 DEBUG nettopo.vendors.parsers: ntc-templates linux 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"': Unable to parse command "sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"" on platform linux - No template found for attributes: "{'Command': 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"', 'Platform': 'linux'}"
+2026-10-14 14:30:08,188 DEBUG nettopo.collectors.ssh: 172.20.20.41 ospf 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"' -> 0 registros (none)
+2026-10-14 14:30:08,189 DEBUG nettopo.vendors.parsers: ntc-templates linux 'sudo -n /usr/bin/vtysh -c "show bgp summary json"': Unable to parse command "sudo -n /usr/bin/vtysh -c "show bgp summary json"" on platform linux - No template found for attributes: "{'Command': 'sudo -n /usr/bin/vtysh -c "show bgp summary json"', 'Platform': 'linux'}"
+2026-10-14 14:30:08,189 DEBUG nettopo.collectors.ssh: 172.20.20.41 bgp 'sudo -n /usr/bin/vtysh -c "show bgp summary json"' -> 0 registros (none)
