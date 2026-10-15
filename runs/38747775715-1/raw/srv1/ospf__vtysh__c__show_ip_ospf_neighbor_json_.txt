@@ -1,0 +1,4 @@
+
+% Can't open configuration file /etc/frr/vtysh.conf due to 'Permission denied'.
+Exiting: failed to connect to any daemons.
+Hint: if this seems wrong, try running me as a privileged user!

@@ -1,0 +1,35 @@
+Resumo da descoberta                                                            
+┌─────────────────────────────┬────────────────────────────────────────────────┐
+│ Equipamentos coletados      │ 7                                              │
+│ Vistos por vizinhos (stubs) │ 1                                              │
+│ Links físicos               │ 9                                              │
+│ Links L3                    │ 0                                              │
+│ Adjacências de roteamento   │ 0                                              │
+│ Interfaces                  │ 148                                            │
+│ Alvos com falha             │ 3                                              │
+│ Duração (s)                 │ 32.4                                           │
+│ Fabricantes                 │ Linux (4), Nokia (2), MikroTik (2)             │
+│ Memória                     │ 0 conhecidos · 0 confirmados sem recoleta · 0  │
+│                             │ recoletados · 0 inacessíveis · 7 novos         │
+└─────────────────────────────┴────────────────────────────────────────────────┘
+Mudanças desde a última execução:
+  • novo: core-srl1
+  • novo: core-srl2
+  • novo: dist-frr1
+  • novo: edge-mk1
+  • novo: edge-mk2
+  • novo: srv1
+  • novo: srv2
+Arquivos gerados:
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/report/laborat-rio-containerlab.html
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/report/laborat-rio-containerlab.drawio
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/report/laborat-rio-containerlab.xlsx
+  • 
+/home/runner/work/network-discovery-automation/network-discovery-automation/lab-
+results/scenarios/cli/report/laborat-rio-containerlab-docs/README.md

@@ -1,0 +1,10 @@
+{"type": "memory", "known": 7, "t": 0.0}
+{"type": "revalidated", "hostname": "edge-mk1", "target": "172.20.20.11", "status": "ativo", "reused": true, "t": 0.21}
+{"type": "revalidated", "hostname": "edge-mk2", "target": "172.20.20.12", "status": "ativo", "reused": true, "t": 0.21}
+{"type": "revalidated", "hostname": "core-srl1", "target": "172.20.20.21", "status": "ativo", "reused": true, "t": 0.25}
+{"type": "revalidated", "hostname": "srv2", "target": "172.20.20.42", "status": "ativo", "reused": true, "t": 3.29}
+{"type": "revalidated", "hostname": "srv1", "target": "172.20.20.41", "status": "ativo", "reused": true, "t": 3.32}
+{"type": "revalidated", "hostname": "core-srl2", "target": "172.20.20.22", "status": "alterado", "reused": false, "reason": "vizinhança mudou", "t": 4.19}
+{"type": "revalidated", "hostname": "dist-frr1", "target": "172.20.20.31", "status": "alterado", "reused": false, "reason": "vizinhança mudou", "t": 11.88}
+{"type": "started", "seeds": [], "t": 11.88}
+{"type": "finished", "stats": {"devices": 8, "collected": 7, "stubs": 1, "links": 9, "physical_links": 9, "l3_links": 0, "logical_links": 0, "interfaces": 148, "failed_targets": 0, "by_vendor": {"Linux": 4, "Nokia": 2, "MikroTik": 2}, "by_role": {"router": 4, "l3switch": 2, "server": 2}, "duration_s": 11.9, "ignored_mgmt_neighbors": 2, "memoria": {"conhecidos": 7, "reaproveitados": 5, "recoletados": 2, "inacessiveis": 0, "novos_coletados": 0, "eventos": [{"device": "core-srl2", "kind": "alterado", "detail": ["vizinhança mudou"]}, {"device": "dist-frr1", "kind": "alterado", "detail": ["vizinhança mudou"]}, {"device": "srv2", "kind": "voltou"}]}}, "t": 11.89}
