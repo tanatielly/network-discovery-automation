@@ -1,0 +1,15 @@
+{
+  "id": "01-semente-unica",
+  "title": "Semente única, todos os métodos, sem DNS nem memória",
+  "status": "ok",
+  "duration_s": 29.9,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 6,
+    "eventos": []
+  }
+}

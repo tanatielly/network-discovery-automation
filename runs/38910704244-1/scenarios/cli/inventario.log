@@ -1,0 +1,11 @@
+                        Inventário (memória persistente)                        
+┏━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓
+┃             ┃ IP de       ┃            ┃        ┃ Verificado  ┃              ┃
+┃ Equipamento ┃ gerência    ┃ Fabricante ┃ Status ┃ em          ┃ Acesso       ┃
+┡━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩
+│ edge-mk1    │ 172.20.20.… │ MikroTik   │ ativo  │ 16/10 13:59 │ rest         │
+│             │             │            │        │             │ rest-mikrot… │
+└─────────────┴─────────────┴────────────┴────────┴─────────────┴──────────────┘
+Eventos recentes:
+  16/10 13:59  novo           edge-mk1 MikroTik CHR QEMU Standard PC (i440FX + 
+PIIX, 1996) 172.20.20.11

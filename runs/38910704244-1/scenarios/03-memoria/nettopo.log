@@ -1,0 +1,6 @@
+2026-10-16 13:52:43,799 DEBUG nettopo.collectors.ssh: 172.20.20.31 hostname 'hostname' -> 1 registros (first_line)
+2026-10-16 13:52:43,799 DEBUG nettopo.collectors.ssh: 172.20.20.31 lldp 'sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details' -> 3 registros (lldpctl_keyvalue)
+2026-10-16 13:52:43,804 DEBUG nettopo.collectors.ssh: 172.20.20.41 hostname 'hostname' -> 1 registros (first_line)
+2026-10-16 13:52:43,804 DEBUG nettopo.collectors.ssh: 172.20.20.41 lldp 'sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details' -> 1 registros (lldpctl_keyvalue)
+2026-10-16 13:52:43,807 DEBUG nettopo.collectors.ssh: 172.20.20.42 hostname 'hostname' -> 1 registros (first_line)
+2026-10-16 13:52:43,807 DEBUG nettopo.collectors.ssh: 172.20.20.42 lldp 'sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details' -> 1 registros (lldpctl_keyvalue)
