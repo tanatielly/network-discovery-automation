@@ -1,0 +1,4 @@
+0 address=172.31.255.30/30 network=172.31.255.28 interface=ether1 actual-interface=ether1
+1 comment=ISP-PE address=200.200.10.2/30 network=200.200.10.0 interface=ether2 actual-interface=ether2
+2 comment=EDGE-MK2 address=10.255.0.1/30 network=10.255.0.0 interface=ether3 actual-interface=ether3
+3 comment=CORE-SRL1 address=10.10.1.1/30 network=10.10.1.0 interface=ether4 actual-interface=ether4

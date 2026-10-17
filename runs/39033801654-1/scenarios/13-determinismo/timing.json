@@ -1,0 +1,15 @@
+{
+  "id": "13-determinismo",
+  "title": "Repetição do cenário 02 sem memória (mesmo resultado?)",
+  "status": "ok",
+  "duration_s": 36.1,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 7,
+    "eventos": []
+  }
+}

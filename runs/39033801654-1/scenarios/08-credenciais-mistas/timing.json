@@ -1,0 +1,15 @@
+{
+  "id": "08-credenciais-mistas",
+  "title": "Credenciais erradas testadas primeiro",
+  "status": "ok",
+  "duration_s": 16.8,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 7,
+    "eventos": []
+  }
+}

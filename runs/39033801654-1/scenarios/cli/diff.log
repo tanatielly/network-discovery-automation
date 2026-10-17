@@ -1,0 +1,8 @@
+Equipamentos adicionados (0)
+Equipamentos removidos (0)
+Links adicionados (0)
+Links removidos (2)
+   core-srl2:ethernet-1/3 <-> dist-frr1:eth2
+   core-srl2:ethernet-1/4 <-> srv2:eth1
+Equipamentos alterados (1)
+  srv2: os_version: 6.17.0-1022-azure -> None
