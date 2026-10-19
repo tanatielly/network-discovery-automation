@@ -1,0 +1,15 @@
+{
+  "id": "12-carga-conservadora",
+  "title": "Perfil de carga conservador (500 ms entre requisições, 1 sessão)",
+  "status": "ok",
+  "duration_s": 70.3,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 7,
+    "eventos": []
+  }
+}
