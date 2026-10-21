@@ -1,0 +1,6 @@
+
+NT_OS=Debian GNU/Linux 12 (bookworm)
+NT_KERNEL=7.0.0-1017-azure
+NT_SERIAL=
+NT_PRODUCT=Virtual Machine
+NT_ROUTING=bgpd,ospfd,zebra,
