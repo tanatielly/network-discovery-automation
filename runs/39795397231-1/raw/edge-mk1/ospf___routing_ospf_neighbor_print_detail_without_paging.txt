@@ -1,0 +1,2 @@
+Flags: V - virtual; D - dynamic 
+ 0  D instance=ospf-lab area=backbone address=10.255.0.2 router-id=10.255.255.2 state="Full" state-changes=5 adjacency=47s timeout=33s
