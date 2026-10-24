@@ -1,0 +1,14 @@
+{"type": "memory", "known": 0, "t": 0.0}
+{"type": "started", "seeds": ["172.20.20.11"], "t": 0.0}
+{"type": "device_started", "target": "172.20.20.11", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_done", "target": "172.20.20.11", "id": "edge-mk1", "hostname": "edge-mk1", "vendor": "MikroTik", "model": "CHR QEMU Standard PC (i440FX + PIIX, 1996)", "via": ["rest", "snmp"], "neighbors": 5, "processed": 1, "known": 1, "t": 2.9}
+{"type": "queued", "target": "172.20.20.2", "hostname": "isp-pe", "candidates": ["IP anunciado:172.20.20.2"], "depth": 1, "t": 2.9}
+{"type": "queued", "target": "10.255.0.2", "hostname": "edge-mk2", "candidates": ["IP anunciado:10.255.0.2"], "depth": 1, "t": 2.9}
+{"type": "queued", "target": "172.20.20.21", "hostname": "core-srl1", "candidates": ["IP anunciado:172.20.20.21"], "depth": 1, "t": 2.9}
+{"type": "device_started", "target": "172.20.20.2", "origin": "anunciado", "hostname": "isp-pe", "depth": 1, "parent": "edge-mk1", "t": 2.9}
+{"type": "device_started", "target": "10.255.0.2", "origin": "anunciado", "hostname": "edge-mk2", "depth": 1, "parent": "edge-mk1", "t": 2.9}
+{"type": "device_started", "target": "172.20.20.21", "origin": "anunciado", "hostname": "core-srl1", "depth": 1, "parent": "edge-mk1", "t": 2.9}
+{"type": "device_done", "target": "172.20.20.21", "id": "core-srl1", "hostname": "core-srl1", "vendor": "Nokia", "model": "7220 IXR-D2L", "via": ["rest", "snmp"], "neighbors": 4, "processed": 2, "known": 2, "t": 6.51}
+{"type": "device_failed", "target": "10.255.0.2", "hostname": "edge-mk2", "reason": "IP anunciado 10.255.0.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)", "processed": 3, "t": 9.85}
+{"type": "device_failed", "target": "172.20.20.2", "hostname": "isp-pe", "reason": "IP anunciado 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário ou varredura)", "processed": 4, "t": 15.21}
+{"type": "finished", "stats": {"devices": 6, "collected": 2, "stubs": 4, "links": 5, "physical_links": 5, "l3_links": 0, "logical_links": 0, "interfaces": 68, "failed_targets": 2, "by_vendor": {"Nokia": 2, "MikroTik": 2, "Linux": 2}, "by_role": {"router": 3, "l3switch": 1, "switch": 1, "server": 1}, "duration_s": 15.2, "ignored_mgmt_neighbors": 1, "memoria": {"conhecidos": 0, "reaproveitados": 0, "recoletados": 0, "inacessiveis": 0, "novos_coletados": 2, "eventos": []}}, "t": 15.21}

@@ -1,0 +1,44 @@
+{
+  "id": "02-varredura",
+  "title": "Semente única + varredura da rede de gerência (cria a memória)",
+  "status": "ok",
+  "duration_s": 34.2,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 7,
+    "eventos": [
+      {
+        "device": "core-srl1",
+        "kind": "novo"
+      },
+      {
+        "device": "core-srl2",
+        "kind": "novo"
+      },
+      {
+        "device": "dist-frr1",
+        "kind": "novo"
+      },
+      {
+        "device": "edge-mk1",
+        "kind": "novo"
+      },
+      {
+        "device": "edge-mk2",
+        "kind": "novo"
+      },
+      {
+        "device": "srv1",
+        "kind": "novo"
+      },
+      {
+        "device": "srv2",
+        "kind": "novo"
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+Flags: E - established 
+ 0 E name="operadora-1" 
+     remote.address=200.200.10.1 .as=64500 .id=200.200.10.1 .capabilities=mp,rr,em,gr,as4,ap,err,llgr,fqdn .afi=ip .messages=2 .bytes=78 .gr-time=120 .eor=ip 
+     local.address=200.200.10.2 .as=65001 .id=10.255.255.1 .cluster-id=10.255.255.1 .capabilities=mp,rr,gr,as4 .afi=ip .messages=1 .bytes=19 .eor="" 
+     output.procid=20 
+     input.procid=20 ebgp 
+     hold-time=3m keepalive-time=1m uptime=44s30ms last-started=2026-10-24 13:12:41 prefix-count=1
