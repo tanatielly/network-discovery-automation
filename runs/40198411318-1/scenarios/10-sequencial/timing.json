@@ -1,0 +1,15 @@
+{
+  "id": "10-sequencial",
+  "title": "Inventário com 1 coleta por vez",
+  "status": "ok",
+  "duration_s": 56.5,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 7,
+    "eventos": []
+  }
+}

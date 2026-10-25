@@ -1,0 +1,140 @@
+{
+  "interface": [
+    {
+      "name": "ethernet-1/1",
+      "neighbor": [
+        {
+          "id": "0C:00:B6:E2:87:03",
+          "first-message": "2026-10-25T13:38:49.741Z (a minute ago)",
+          "last-update": "2026-10-25T13:39:53.801Z (2 seconds ago)",
+          "system-name": "edge-mk1",
+          "system-description": "MikroTik RouterOS 7.16.2 (stable) 2024-11-26 12:09:40 CHR",
+          "chassis-id": "0C:00:B6:E2:87:03",
+          "chassis-id-type": "MAC_ADDRESS",
+          "port-id": "ether4",
+          "port-id-type": "INTERFACE_NAME",
+          "port-description": "ether4",
+          "management-address": [
+            {
+              "address": "10.10.1.1",
+              "type": "IPv4"
+            },
+            {
+              "address": "fe80::e00:b6ff:fee2:8703",
+              "type": "IPv6"
+            }
+          ],
+          "capability": [
+            {
+              "name": "MAC_BRIDGE",
+              "enabled": false
+            },
+            {
+              "name": "ROUTER",
+              "enabled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ethernet-1/2",
+      "neighbor": [
+        {
+          "id": "1A:44:01:FF:00:00",
+          "first-message": "2026-10-25T13:38:47.955Z (a minute ago)",
+          "last-update": "2026-10-25T13:39:52.972Z (3 seconds ago)",
+          "system-name": "core-srl2",
+          "system-description": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+          "chassis-id": "1A:44:01:FF:00:00",
+          "chassis-id-type": "MAC_ADDRESS",
+          "port-id": "ethernet-1/2",
+          "port-id-type": "INTERFACE_NAME",
+          "port-description": "to core-srl1 e1-2",
+          "management-address": [
+            {
+              "address": "172.20.20.22",
+              "type": "IPv4"
+            }
+          ],
+          "capability": [
+            {
+              "name": "ROUTER",
+              "enabled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ethernet-1/3",
+      "neighbor": [
+        {
+          "id": "AA:C1:AB:B0:03:DF",
+          "first-message": "2026-10-25T13:38:52.063Z (a minute ago)",
+          "last-update": "2026-10-25T13:39:52.072Z (4 seconds ago)",
+          "system-name": "dist-frr1",
+          "system-description": "Debian GNU/Linux 12 (bookworm) Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64",
+          "chassis-id": "AA:C1:AB:B0:03:DF",
+          "chassis-id-type": "MAC_ADDRESS",
+          "port-id": "AA:C1:AB:B0:03:DF",
+          "port-id-type": "MAC_ADDRESS",
+          "port-description": "eth1",
+          "management-address": [
+            {
+              "address": "172.20.20.31",
+              "type": "IPv4"
+            }
+          ],
+          "capability": [
+            {
+              "name": "MAC_BRIDGE",
+              "enabled": false
+            },
+            {
+              "name": "ROUTER",
+              "enabled": true
+            },
+            {
+              "name": "STATION_ONLY",
+              "enabled": false
+            },
+            {
+              "name": "WLAN_ACCESS_POINT",
+              "enabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "mgmt0",
+      "neighbor": [
+        {
+          "id": "1A:44:01:FF:00:00",
+          "first-message": "2026-10-25T13:38:47.951Z (a minute ago)",
+          "last-update": "2026-10-25T13:39:52.971Z (3 seconds ago)",
+          "system-name": "core-srl2",
+          "system-description": "SRLinux-v25.10.5-111-g6fbddec84ef core-srl2 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+          "chassis-id": "1A:44:01:FF:00:00",
+          "chassis-id-type": "MAC_ADDRESS",
+          "port-id": "mgmt0",
+          "port-id-type": "INTERFACE_NAME",
+          "port-description": "",
+          "management-address": [
+            {
+              "address": "172.20.20.22",
+              "type": "IPv4"
+            }
+          ],
+          "capability": [
+            {
+              "name": "ROUTER",
+              "enabled": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

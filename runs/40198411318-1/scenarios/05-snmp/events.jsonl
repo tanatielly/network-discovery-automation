@@ -1,0 +1,28 @@
+{"type": "memory", "known": 0, "t": 0.0}
+{"type": "sweep", "tested": 254, "found": 9, "t": 9.58}
+{"type": "started", "seeds": ["172.20.20.11", "172.20.20.1", "172.20.20.2", "172.20.20.12", "172.20.20.21", "172.20.20.22", "172.20.20.31", "172.20.20.41", "172.20.20.42"], "t": 9.58}
+{"type": "device_started", "target": "172.20.20.11", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 9.58}
+{"type": "device_started", "target": "172.20.20.1", "origin": "varredura", "hostname": null, "depth": 0, "parent": null, "t": 9.58}
+{"type": "device_started", "target": "172.20.20.2", "origin": "varredura", "hostname": null, "depth": 0, "parent": null, "t": 9.58}
+{"type": "device_started", "target": "172.20.20.12", "origin": "varredura", "hostname": "edge-mk2", "depth": 0, "parent": null, "t": 9.58}
+{"type": "device_started", "target": "172.20.20.21", "origin": "varredura", "hostname": "core-srl1", "depth": 0, "parent": null, "t": 9.58}
+{"type": "device_started", "target": "172.20.20.22", "origin": "varredura", "hostname": "core-srl2", "depth": 0, "parent": null, "t": 9.58}
+{"type": "device_started", "target": "172.20.20.31", "origin": "varredura", "hostname": "dist-frr1", "depth": 0, "parent": null, "t": 9.58}
+{"type": "device_started", "target": "172.20.20.41", "origin": "varredura", "hostname": "srv1", "depth": 0, "parent": null, "t": 9.58}
+{"type": "device_started", "target": "172.20.20.42", "origin": "varredura", "hostname": "srv2", "depth": 0, "parent": null, "t": 9.58}
+{"type": "device_failed", "target": "172.20.20.1", "hostname": null, "reason": "varredura 172.20.20.1: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)", "processed": 1, "t": 11.74}
+{"type": "device_failed", "target": "172.20.20.2", "hostname": null, "reason": "varredura 172.20.20.2: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)", "processed": 2, "t": 11.74}
+{"type": "device_done", "target": "172.20.20.31", "id": "dist-frr1", "hostname": "dist-frr1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 3, "processed": 3, "known": 1, "t": 17.39}
+{"type": "device_done", "target": "172.20.20.41", "id": "srv1", "hostname": "srv1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 4, "known": 2, "t": 17.39}
+{"type": "device_done", "target": "172.20.20.42", "id": "srv2", "hostname": "srv2", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 5, "known": 3, "t": 17.39}
+{"type": "device_done", "target": "172.20.20.12", "id": "edge-mk2", "hostname": "edge-mk2", "vendor": "MikroTik", "model": "RouterOS 7.16.2 (stable) on CHR", "via": ["snmp"], "neighbors": 2, "processed": 6, "known": 4, "t": 17.4}
+{"type": "queued", "target": "edge-mk1", "hostname": "edge-mk1", "candidates": [], "depth": 1, "t": 17.4}
+{"type": "queued", "target": "core-srl2", "hostname": "core-srl2", "candidates": [], "depth": 1, "t": 17.4}
+{"type": "device_started", "target": "10.255.0.1", "origin": "arp", "hostname": "edge-mk1", "depth": 1, "parent": "edge-mk2", "t": 17.41}
+{"type": "device_done", "target": "172.20.20.11", "id": "edge-mk1", "hostname": "edge-mk1", "vendor": "MikroTik", "model": "RouterOS 7.16.2 (stable) on CHR", "via": ["snmp"], "neighbors": 4, "processed": 7, "known": 5, "t": 17.6}
+{"type": "queued", "target": "isp-pe", "hostname": "isp-pe", "candidates": [], "depth": 1, "t": 17.6}
+{"type": "queued", "target": "core-srl1", "hostname": "core-srl1", "candidates": [], "depth": 1, "t": 17.6}
+{"type": "device_done", "target": "172.20.20.21", "id": "core-srl1", "hostname": "core-srl1", "vendor": "Nokia", "model": null, "via": ["snmp"], "neighbors": 4, "processed": 8, "known": 6, "t": 18.59}
+{"type": "device_done", "target": "172.20.20.22", "id": "core-srl2", "hostname": "core-srl2", "vendor": "Nokia", "model": null, "via": ["snmp"], "neighbors": 5, "processed": 9, "known": 7, "t": 18.6}
+{"type": "device_failed", "target": "10.255.0.1", "hostname": "edge-mk1", "reason": "ARP 10.255.0.1: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado); sem resposta: portas 22/80/443/830 fechadas e SNMP sem resposta", "processed": 10, "t": 22.41}
+{"type": "finished", "stats": {"devices": 8, "collected": 7, "stubs": 1, "links": 9, "physical_links": 9, "l3_links": 0, "logical_links": 0, "interfaces": 148, "failed_targets": 3, "by_vendor": {"Linux": 4, "Nokia": 2, "MikroTik": 2}, "by_role": {"router": 3, "l3switch": 2, "server": 2, "switch": 1}, "duration_s": 22.4, "ignored_mgmt_neighbors": 2, "memoria": {"conhecidos": 0, "reaproveitados": 0, "recoletados": 0, "inacessiveis": 0, "novos_coletados": 7, "eventos": []}}, "t": 22.41}
