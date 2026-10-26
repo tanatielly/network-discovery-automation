@@ -1,0 +1,15 @@
+{
+  "id": "04-ssh",
+  "title": "Somente SSH (identificação por banner/prompt, sem SNMP)",
+  "status": "ok",
+  "duration_s": 17.4,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 7,
+    "eventos": []
+  }
+}

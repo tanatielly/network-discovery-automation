@@ -1,0 +1,62 @@
+2026-10-26 16:07:23,420 DEBUG nettopo.collectors.ssh: 172.20.20.31 hostname 'hostname' -> 1 registros (first_line)
+2026-10-26 16:07:23,421 DEBUG nettopo.collectors.ssh: 172.20.20.31 lldp 'sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details' -> 2 registros (lldpctl_keyvalue)
+2026-10-26 16:07:23,428 DEBUG nettopo.collectors.ssh: 172.20.20.41 hostname 'hostname' -> 1 registros (first_line)
+2026-10-26 16:07:23,429 DEBUG nettopo.collectors.ssh: 172.20.20.41 lldp 'sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details' -> 1 registros (lldpctl_keyvalue)
+2026-10-26 16:07:28,313 ERROR paramiko.transport: Exception (client): Error reading SSH protocol banner[Errno 9] Bad file descriptor
+2026-10-26 16:07:28,314 ERROR paramiko.transport: Traceback (most recent call last):
+2026-10-26 16:07:28,314 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/transport.py", line 2227, in _check_banner
+2026-10-26 16:07:28,314 ERROR paramiko.transport:     buf = self.packetizer.readline(timeout)
+2026-10-26 16:07:28,314 ERROR paramiko.transport:           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-26 16:07:28,314 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/packet.py", line 395, in readline
+2026-10-26 16:07:28,314 ERROR paramiko.transport:     buf += self._read_timeout(timeout)
+2026-10-26 16:07:28,314 ERROR paramiko.transport:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-26 16:07:28,314 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/packet.py", line 663, in _read_timeout
+2026-10-26 16:07:28,314 ERROR paramiko.transport:     x = self.__socket.recv(128)
+2026-10-26 16:07:28,314 ERROR paramiko.transport:         ^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-26 16:07:28,314 ERROR paramiko.transport: OSError: [Errno 9] Bad file descriptor
+2026-10-26 16:07:28,314 ERROR paramiko.transport: 
+2026-10-26 16:07:28,315 ERROR paramiko.transport: During handling of the above exception, another exception occurred:
+2026-10-26 16:07:28,315 ERROR paramiko.transport: 
+2026-10-26 16:07:28,315 ERROR paramiko.transport: Traceback (most recent call last):
+2026-10-26 16:07:28,315 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/transport.py", line 2043, in run
+2026-10-26 16:07:28,315 ERROR paramiko.transport:     self._check_banner()
+2026-10-26 16:07:28,315 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/transport.py", line 2231, in _check_banner
+2026-10-26 16:07:28,315 ERROR paramiko.transport:     raise SSHException(
+2026-10-26 16:07:28,315 ERROR paramiko.transport: paramiko.ssh_exception.SSHException: Error reading SSH protocol banner[Errno 9] Bad file descriptor
+2026-10-26 16:07:28,315 ERROR paramiko.transport: 
+2026-10-26 16:07:29,891 DEBUG nettopo.collectors.ssh: 172.20.20.31 facts 'echo "NT_OS=$(. /etc/os-release 2>/dev/null; echo $PRETTY_NAME)"; echo "NT_KERNEL=$(uname -r)"; echo "NT_SERIAL=$(cat /sys/class/dmi/id/product_serial 2>/dev/null)"; echo "NT_PRODUCT=$(cat /sys/class/dmi/id/product_name 2>/dev/null)"; echo "NT_ROUTING=$(ps -eo comm 2>/dev/null | grep -E '^(zebra|bgpd|ospfd|ospf6d|isisd|ripd|bird|bird6|quagga)$' | sort -u | tr '\n' ',')"' -> 1 registros (linux_facts)
+2026-10-26 16:07:29,891 DEBUG nettopo.collectors.ssh: 172.20.20.31 hostname 'hostname' -> 1 registros (first_line)
+2026-10-26 16:07:29,891 DEBUG nettopo.collectors.ssh: 172.20.20.31 interfaces 'ip -o link show' -> 4 registros (linux_links)
+2026-10-26 16:07:29,892 DEBUG nettopo.collectors.ssh: 172.20.20.31 ip_interfaces 'ip -o -4 addr show' -> 4 registros (linux_addrs)
+2026-10-26 16:07:29,892 DEBUG nettopo.collectors.ssh: 172.20.20.31 lldp 'sudo -n /usr/sbin/lldpcli -f keyvalue show neighbors details' -> 2 registros (lldpctl_keyvalue)
+2026-10-26 16:07:29,892 DEBUG nettopo.collectors.ssh: 172.20.20.31 arp 'ip -4 neigh show' -> 1 registros (linux_neigh)
+2026-10-26 16:07:29,892 DEBUG nettopo.collectors.ssh: 172.20.20.31 routes 'ip -4 route show' -> 4 registros (linux_routes)
+2026-10-26 16:07:29,894 DEBUG nettopo.vendors.parsers: ntc-templates linux 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"': Unable to parse command "sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"" on platform linux - No template found for attributes: "{'Command': 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"', 'Platform': 'linux'}"
+2026-10-26 16:07:29,894 DEBUG nettopo.collectors.ssh: 172.20.20.31 ospf 'sudo -n /usr/bin/vtysh -c "show ip ospf neighbor json"' -> 0 registros (none)
+2026-10-26 16:07:29,895 DEBUG nettopo.vendors.parsers: ntc-templates linux 'sudo -n /usr/bin/vtysh -c "show bgp summary json"': Unable to parse command "sudo -n /usr/bin/vtysh -c "show bgp summary json"" on platform linux - No template found for attributes: "{'Command': 'sudo -n /usr/bin/vtysh -c "show bgp summary json"', 'Platform': 'linux'}"
+2026-10-26 16:07:29,895 DEBUG nettopo.collectors.ssh: 172.20.20.31 bgp 'sudo -n /usr/bin/vtysh -c "show bgp summary json"' -> 0 registros (none)
+2026-10-26 16:07:30,288 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.42 via snmp-v2c falhou: No SNMP response received before timeout
+2026-10-26 16:07:32,403 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.42 via snmp-v2c falhou: No SNMP response received before timeout
+2026-10-26 16:07:34,409 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.42 via snmp-v3 falhou: No SNMP response received before timeout
+2026-10-26 16:07:45,423 ERROR paramiko.transport: Exception (client): Error reading SSH protocol banner[Errno 9] Bad file descriptor
+2026-10-26 16:07:45,424 ERROR paramiko.transport: Traceback (most recent call last):
+2026-10-26 16:07:45,424 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/transport.py", line 2227, in _check_banner
+2026-10-26 16:07:45,424 ERROR paramiko.transport:     buf = self.packetizer.readline(timeout)
+2026-10-26 16:07:45,424 ERROR paramiko.transport:           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-26 16:07:45,424 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/packet.py", line 395, in readline
+2026-10-26 16:07:45,424 ERROR paramiko.transport:     buf += self._read_timeout(timeout)
+2026-10-26 16:07:45,424 ERROR paramiko.transport:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-26 16:07:45,424 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/packet.py", line 663, in _read_timeout
+2026-10-26 16:07:45,424 ERROR paramiko.transport:     x = self.__socket.recv(128)
+2026-10-26 16:07:45,425 ERROR paramiko.transport:         ^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-26 16:07:45,425 ERROR paramiko.transport: OSError: [Errno 9] Bad file descriptor
+2026-10-26 16:07:45,425 ERROR paramiko.transport: 
+2026-10-26 16:07:45,425 ERROR paramiko.transport: During handling of the above exception, another exception occurred:
+2026-10-26 16:07:45,425 ERROR paramiko.transport: 
+2026-10-26 16:07:45,425 ERROR paramiko.transport: Traceback (most recent call last):
+2026-10-26 16:07:45,425 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/transport.py", line 2043, in run
+2026-10-26 16:07:45,425 ERROR paramiko.transport:     self._check_banner()
+2026-10-26 16:07:45,425 ERROR paramiko.transport:   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/paramiko/transport.py", line 2231, in _check_banner
+2026-10-26 16:07:45,425 ERROR paramiko.transport:     raise SSHException(
+2026-10-26 16:07:45,425 ERROR paramiko.transport: paramiko.ssh_exception.SSHException: Error reading SSH protocol banner[Errno 9] Bad file descriptor
+2026-10-26 16:07:45,425 ERROR paramiko.transport: 

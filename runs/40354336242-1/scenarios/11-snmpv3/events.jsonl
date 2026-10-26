@@ -1,0 +1,19 @@
+{"type": "memory", "known": 0, "t": 0.0}
+{"type": "started", "seeds": ["172.20.20.2", "172.20.20.11", "172.20.20.12", "172.20.20.21", "172.20.20.22", "172.20.20.31", "172.20.20.41", "172.20.20.42"], "t": 0.0}
+{"type": "device_started", "target": "172.20.20.2", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.11", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.12", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.21", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.22", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.31", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.41", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_started", "target": "172.20.20.42", "origin": "semente", "hostname": null, "depth": 0, "parent": null, "t": 0.0}
+{"type": "device_failed", "target": "172.20.20.2", "hostname": null, "reason": "semente 172.20.20.2: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)", "processed": 1, "t": 0.69}
+{"type": "device_failed", "target": "172.20.20.21", "hostname": null, "reason": "semente 172.20.20.21: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)", "processed": 2, "t": 0.69}
+{"type": "device_failed", "target": "172.20.20.22", "hostname": null, "reason": "semente 172.20.20.22: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)", "processed": 3, "t": 0.7}
+{"type": "device_failed", "target": "172.20.20.11", "hostname": null, "reason": "semente 172.20.20.11: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)", "processed": 4, "t": 2.81}
+{"type": "device_failed", "target": "172.20.20.12", "hostname": null, "reason": "semente 172.20.20.12: snmp: sem resposta para 1 credencial(is) (community/usuário incorreto, ACL ou agente desligado)", "processed": 5, "t": 2.81}
+{"type": "device_done", "target": "172.20.20.31", "id": "dist-frr1", "hostname": "dist-frr1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 3, "processed": 6, "known": 1, "t": 8.44}
+{"type": "device_done", "target": "172.20.20.41", "id": "srv1", "hostname": "srv1", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 7, "known": 2, "t": 8.45}
+{"type": "device_done", "target": "172.20.20.42", "id": "srv2", "hostname": "srv2", "vendor": "Linux", "model": null, "via": ["snmp"], "neighbors": 1, "processed": 8, "known": 3, "t": 8.45}
+{"type": "finished", "stats": {"devices": 5, "collected": 3, "stubs": 2, "links": 4, "physical_links": 4, "l3_links": 0, "logical_links": 0, "interfaces": 11, "failed_targets": 5, "by_vendor": {"Linux": 3, "Nokia": 2}, "by_role": {"server": 2, "l3switch": 2, "router": 1}, "duration_s": 8.4, "ignored_mgmt_neighbors": 0, "memoria": {"conhecidos": 0, "reaproveitados": 0, "recoletados": 0, "inacessiveis": 0, "novos_coletados": 3, "eventos": []}}, "t": 8.45}

@@ -1,0 +1,12 @@
+{"type": "memory", "known": 7, "t": 0.0}
+{"type": "revalidated", "hostname": "edge-mk1", "target": "172.20.20.11", "status": "ativo", "reused": true, "t": 0.22}
+{"type": "revalidated", "hostname": "edge-mk2", "target": "172.20.20.12", "status": "ativo", "reused": true, "t": 0.22}
+{"type": "revalidated", "hostname": "core-srl1", "target": "172.20.20.21", "status": "ativo", "reused": true, "t": 0.26}
+{"type": "revalidated", "hostname": "core-srl2", "target": "172.20.20.22", "status": "ativo", "reused": true, "t": 0.27}
+{"type": "revalidated", "hostname": "dist-frr1", "target": "172.20.20.31", "status": "ativo", "reused": true, "t": 3.21}
+{"type": "revalidated", "hostname": "srv2", "target": "172.20.20.42", "status": "ativo", "reused": true, "t": 3.21}
+{"type": "revalidated", "hostname": "srv1", "target": "172.20.20.41", "status": "ativo", "reused": true, "t": 3.24}
+{"type": "started", "seeds": ["172.20.20.11"], "t": 3.24}
+{"type": "queued", "target": "172.20.20.2", "hostname": "isp-pe", "candidates": ["IP anunciado:172.20.20.2"], "depth": 1, "t": 3.25}
+{"type": "device_failed", "target": "172.20.20.2", "hostname": "isp-pe", "reason": "IP anunciado 172.20.20.2: sem resposta na última tentativa (26/10 16:01, 1x); nova tentativa após 6 h ou com --completo: varredura 172.20.20.2: snmp: sem resposta para 2 credencial(is) (community/usuário incorreto, ACL ou agente desligado); ssh: autenticação recusada para 3 credencial(is); ssh: fabricante não identificado | nenhum outro IP de gerência conhecido (configure DNS, memória/inventário o", "processed": 0, "t": 3.25}
+{"type": "finished", "stats": {"devices": 8, "collected": 7, "stubs": 1, "links": 9, "physical_links": 9, "l3_links": 0, "logical_links": 0, "interfaces": 148, "failed_targets": 1, "by_vendor": {"Linux": 4, "Nokia": 2, "MikroTik": 2}, "by_role": {"router": 4, "l3switch": 2, "server": 2}, "duration_s": 3.2, "ignored_mgmt_neighbors": 2, "memoria": {"conhecidos": 7, "reaproveitados": 7, "recoletados": 0, "inacessiveis": 0, "novos_coletados": 0, "eventos": []}}, "t": 3.26}

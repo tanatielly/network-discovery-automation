@@ -1,0 +1,99 @@
+[entrypoint] sshd ok
+snmpd[49]: Created directory: /var/lib/snmp/cert_indexes
+
+snmpd[49]: Turning on AgentX master support.
+
+[entrypoint] snmpd ok
+snmpd[51]: NET-SNMP version 5.9.3
+
+Starting watchfrr with command: '  /usr/lib/frr/watchfrr  -d  -F traditional   zebra bgpd ospfd staticd'.
+watchfrr[65]: [T83RR-8SM5G] watchfrr 8.4.4 starting: vty@0
+watchfrr[65]: [ZCJ3S-SPH5S] zebra state -> down : initial connection attempt failed
+watchfrr[65]: [ZCJ3S-SPH5S] bgpd state -> down : initial connection attempt failed
+watchfrr[65]: [ZCJ3S-SPH5S] ospfd state -> down : initial connection attempt failed
+watchfrr[65]: [ZCJ3S-SPH5S] staticd state -> down : initial connection attempt failed
+watchfrr[65]: [YFT0P-5Q5YX] Forked background command [pid 66]: /usr/lib/frr/watchfrr.sh restart all
+watchfrr[65]: [QDG3Y-BY5TN] zebra state -> up : connect succeeded
+watchfrr[65]: [QDG3Y-BY5TN] bgpd state -> up : connect succeeded
+watchfrr[65]: [QDG3Y-BY5TN] ospfd state -> up : connect succeeded
+watchfrr[65]: [QDG3Y-BY5TN] staticd state -> up : connect succeeded
+watchfrr[65]: [KWE5Q-QNGFC] all daemons up, doing startup-complete notify
+Started watchfrr.
+[entrypoint] frr ok
+[entrypoint] lldpd ok
+snmpd[51]: Connection from UDP: [172.20.20.1]:58761->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:58761->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:58761->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:33743->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:33743->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:33743->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:33743->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:33743->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:34875->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:34875->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:50316->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:50316->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:46111->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:46111->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:46111->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:56123->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:56123->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:56123->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:56123->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:43516->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:43516->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:43516->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:34923->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:34923->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:34923->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:36150->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:36150->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:42321->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:42321->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:42321->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:60748->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:60748->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:60748->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:60748->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:60748->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:35203->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:35203->[172.20.20.2]:161
+
+snmpd[51]: Connection from UDP: [172.20.20.1]:35203->[172.20.20.2]:161
+
