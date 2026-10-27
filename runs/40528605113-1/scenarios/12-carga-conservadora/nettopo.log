@@ -1,0 +1,2 @@
+2026-10-27 15:19:49,713 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-10-27 15:19:49,751 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v3 falhou: Unknown USM user

@@ -1,0 +1,6 @@
+
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000\    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0@if10: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default \    link/ether 46:2d:c4:21:5b:ab brd ff:ff:ff:ff:ff:ff link-netnsid 0
+15: eth1@if14: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue state UP mode DEFAULT group default \    link/ether aa:c1:ab:e1:a3:da brd ff:ff:ff:ff:ff:ff link-netnsid 3\    altname clab-o-f8193d82c24f2db1
+17: eth2@if16: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue state UP mode DEFAULT group default \    link/ether aa:c1:ab:1c:57:ee brd ff:ff:ff:ff:ff:ff link-netnsid 2\    altname clab-o-bb9db2f9063c6f41
+20: eth3@if21: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue state UP mode DEFAULT group default \    link/ether aa:c1:ab:db:69:4c brd ff:ff:ff:ff:ff:ff link-netnsid 1\    altname clab-o-5a6a9b4eb0174399

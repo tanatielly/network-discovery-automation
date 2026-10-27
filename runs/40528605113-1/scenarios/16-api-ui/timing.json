@@ -1,0 +1,121 @@
+{
+  "id": "16-api-ui",
+  "title": "API REST + WebSocket + cofre + UI web",
+  "duration_s": 14.7,
+  "ws_events": {
+    "memory": 1,
+    "started": 1,
+    "device_started": 9,
+    "device_done": 7,
+    "queued": 1,
+    "device_failed": 2,
+    "finished": 1,
+    "closed": 1
+  },
+  "status": "finished",
+  "stats": {
+    "devices": 8,
+    "collected": 7,
+    "stubs": 1,
+    "links": 9,
+    "physical_links": 9,
+    "l3_links": 0,
+    "logical_links": 0,
+    "interfaces": 148,
+    "failed_targets": 2,
+    "by_vendor": {
+      "Linux": 4,
+      "Nokia": 2,
+      "MikroTik": 2
+    },
+    "by_role": {
+      "router": 4,
+      "l3switch": 2,
+      "server": 2
+    },
+    "duration_s": 13.9,
+    "ignored_mgmt_neighbors": 2,
+    "memoria": {
+      "conhecidos": 0,
+      "reaproveitados": 0,
+      "recoletados": 0,
+      "inacessiveis": 0,
+      "novos_coletados": 7,
+      "eventos": [
+        {
+          "device": "core-srl1",
+          "kind": "novo"
+        },
+        {
+          "device": "core-srl2",
+          "kind": "novo"
+        },
+        {
+          "device": "dist-frr1",
+          "kind": "novo"
+        },
+        {
+          "device": "edge-mk1",
+          "kind": "novo"
+        },
+        {
+          "device": "edge-mk2",
+          "kind": "novo"
+        },
+        {
+          "device": "srv1",
+          "kind": "novo"
+        },
+        {
+          "device": "srv2",
+          "kind": "novo"
+        }
+      ]
+    }
+  },
+  "verify": {
+    "status": "finished",
+    "memoria": {
+      "conhecidos": 7,
+      "reaproveitados": 7,
+      "recoletados": 0,
+      "inacessiveis": 0,
+      "novos_coletados": 0,
+      "eventos": []
+    }
+  },
+  "inventory_counts": {
+    "ativo": 7
+  },
+  "exports": {
+    "html": {
+      "status": 200,
+      "bytes": 130639
+    },
+    "drawio": {
+      "status": 200,
+      "bytes": 37636
+    },
+    "xlsx": {
+      "status": 200,
+      "bytes": 30067
+    },
+    "md": {
+      "status": 200,
+      "bytes": 8700
+    },
+    "json": {
+      "status": 200,
+      "bytes": 110125
+    }
+  },
+  "secrets_in_data_dir": false,
+  "screenshots": [
+    "relatorio-diagrama.png",
+    "relatorio-equipamento.png",
+    "relatorio-inventario.png",
+    "ui-formulario.png",
+    "ui-inventario.png",
+    "ui-resultado.png"
+  ]
+}
