@@ -1,0 +1,15 @@
+{
+  "id": "09-escopo",
+  "title": "Profundidade 1 e exclusão da rede dos servidores",
+  "status": "ok",
+  "duration_s": 14.3,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 2,
+    "eventos": []
+  }
+}

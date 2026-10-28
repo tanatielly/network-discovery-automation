@@ -1,0 +1,15 @@
+{
+  "id": "07-dns",
+  "title": "Semente única com DNS (hostnames resolvem para a gerência)",
+  "status": "ok",
+  "duration_s": 29.9,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 7,
+    "eventos": []
+  }
+}
