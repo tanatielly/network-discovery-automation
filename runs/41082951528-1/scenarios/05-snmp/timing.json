@@ -1,0 +1,15 @@
+{
+  "id": "05-snmp",
+  "title": "Somente SNMP v2c + varredura",
+  "status": "ok",
+  "duration_s": 22.7,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 7,
+    "eventos": []
+  }
+}

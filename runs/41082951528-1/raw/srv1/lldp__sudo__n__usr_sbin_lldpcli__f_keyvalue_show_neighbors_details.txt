@@ -1,0 +1,19 @@
+
+lldp.eth1.via=LLDP
+lldp.eth1.rid=1
+lldp.eth1.age=0 day, 00:01:53
+lldp.eth1.chassis.mac=aa:c1:ab:de:a8:5d
+lldp.eth1.chassis.name=dist-frr1
+lldp.eth1.chassis.descr=Debian GNU/Linux 12 (bookworm) Linux 7.0.0-1017-azure #17~24.04.1-Ubuntu SMP PREEMPT Thu Sep 24 18:46:57 UTC 2026 x86_64
+lldp.eth1.chassis.mgmt-ip=172.20.20.31
+lldp.eth1.chassis.mgmt-iface=2
+lldp.eth1.chassis.Bridge.enabled=off
+lldp.eth1.chassis.Router.enabled=on
+lldp.eth1.chassis.Wlan.enabled=off
+lldp.eth1.chassis.Station.enabled=off
+lldp.eth1.port.mac=aa:c1:ab:54:08:0d
+lldp.eth1.port.descr=eth3
+lldp.eth1.port.ttl=20
+lldp.eth1.port.auto-negotiation.supported=no
+lldp.eth1.port.auto-negotiation.enabled=no
+lldp.eth1.port.auto-negotiation.current=10GbaseT - Four-pair Category 6A or better, full duplex mode only
