@@ -1,0 +1,3 @@
+
+% Can't open configuration file /etc/frr/vtysh.conf due to 'Permission denied'.
+vtysh_connect(/var/run/frr/zebra.vty): stat = Permission denied
