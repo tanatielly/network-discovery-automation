@@ -1,0 +1,63 @@
+Interface web em http://127.0.0.1:8765  (API em /docs)
+INFO:     Started server process [27648]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8765 (Press CTRL+C to quit)
+INFO:     127.0.0.1:48944 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48952 - "POST /api/credentials HTTP/1.1" 201 Created
+INFO:     127.0.0.1:48966 - "POST /api/credentials HTTP/1.1" 201 Created
+INFO:     127.0.0.1:48968 - "POST /api/credentials HTTP/1.1" 201 Created
+INFO:     127.0.0.1:48974 - "POST /api/credentials HTTP/1.1" 201 Created
+INFO:     127.0.0.1:48976 - "POST /api/credentials HTTP/1.1" 201 Created
+INFO:     127.0.0.1:48980 - "POST /api/credentials HTTP/1.1" 201 Created
+INFO:     127.0.0.1:48988 - "POST /api/credentials HTTP/1.1" 201 Created
+INFO:     127.0.0.1:48992 - "POST /api/credentials HTTP/1.1" 201 Created
+INFO:     127.0.0.1:49006 - "POST /api/discoveries HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:49014 - "WebSocket /api/discoveries/69d4dd2eabbf/events" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:42106 - "GET /api/discoveries/69d4dd2eabbf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42120 - "POST /api/verify HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:42132 - "GET /api/discoveries/43c874c73aad HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42146 - "GET /api/discoveries/43c874c73aad HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42148 - "GET /api/discoveries/43c874c73aad HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42160 - "GET /api/discoveries/43c874c73aad HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42164 - "GET /api/discoveries/43c874c73aad HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42166 - "GET /api/inventory HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42170 - "GET /api/discoveries/69d4dd2eabbf/export/html HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42182 - "GET /api/discoveries/69d4dd2eabbf/export/drawio HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42190 - "GET /api/discoveries/69d4dd2eabbf/export/xlsx HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42192 - "GET /api/discoveries/69d4dd2eabbf/export/md HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42196 - "GET /api/discoveries/69d4dd2eabbf/export/json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50694 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50694 - "GET /assets/viewer.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50720 - "GET /assets/topoview.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50738 - "GET /static/app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50710 - "GET /static/ui.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50728 - "GET /assets/viewer.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50728 - "GET /api/discoveries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50728 - "GET /api/discoveries/69d4dd2eabbf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50728 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50710 - "GET /api/discoveries/69d4dd2eabbf/view HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50742 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50742 - "GET /assets/viewer.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50750 - "GET /static/ui.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50760 - "GET /assets/viewer.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50758 - "GET /assets/topoview.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50774 - "GET /static/app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50774 - "GET /api/discoveries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50758 - "GET /api/inventory/events?limit=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50774 - "GET /api/inventory HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50774 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50790 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50790 - "GET /assets/viewer.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50800 - "GET /static/ui.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50820 - "GET /assets/viewer.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50806 - "GET /assets/topoview.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50834 - "GET /static/app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50834 - "GET /api/discoveries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50834 - "GET /api/credentials HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50834 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [27648]

@@ -1,0 +1,66 @@
+{
+  "ssh-mikrotik": {
+    "name": "ssh-mikrotik",
+    "type": "ssh",
+    "username": "admin",
+    "version": null,
+    "saved_at": "2026-11-03T17:02:32.911130+00:00",
+    "backend": "arquivo"
+  },
+  "ssh-srlinux": {
+    "name": "ssh-srlinux",
+    "type": "ssh",
+    "username": "admin",
+    "version": null,
+    "saved_at": "2026-11-03T17:02:33.112726+00:00",
+    "backend": "arquivo"
+  },
+  "ssh-linux": {
+    "name": "ssh-linux",
+    "type": "ssh",
+    "username": "nettopo",
+    "version": null,
+    "saved_at": "2026-11-03T17:02:33.312195+00:00",
+    "backend": "arquivo"
+  },
+  "snmp-v2c": {
+    "name": "snmp-v2c",
+    "type": "snmp",
+    "username": null,
+    "version": "2c",
+    "saved_at": "2026-11-03T17:02:33.512146+00:00",
+    "backend": "arquivo"
+  },
+  "snmp-v3": {
+    "name": "snmp-v3",
+    "type": "snmp",
+    "username": "nettopo",
+    "version": "3",
+    "saved_at": "2026-11-03T17:02:33.709677+00:00",
+    "backend": "arquivo"
+  },
+  "netconf-srlinux": {
+    "name": "netconf-srlinux",
+    "type": "netconf",
+    "username": "admin",
+    "version": null,
+    "saved_at": "2026-11-03T17:02:33.908678+00:00",
+    "backend": "arquivo"
+  },
+  "rest-mikrotik": {
+    "name": "rest-mikrotik",
+    "type": "rest",
+    "username": "admin",
+    "version": null,
+    "saved_at": "2026-11-03T17:02:34.106824+00:00",
+    "backend": "arquivo"
+  },
+  "rest-srlinux": {
+    "name": "rest-srlinux",
+    "type": "rest",
+    "username": "admin",
+    "version": null,
+    "saved_at": "2026-11-03T17:02:34.307151+00:00",
+    "backend": "arquivo"
+  }
+}
