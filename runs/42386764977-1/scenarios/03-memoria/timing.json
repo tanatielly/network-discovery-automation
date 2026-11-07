@@ -1,0 +1,15 @@
+{
+  "id": "03-memoria",
+  "title": "Segunda execução: semente única usando a memória",
+  "status": "ok",
+  "duration_s": 3.4,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 7,
+    "reaproveitados": 7,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 0,
+    "eventos": []
+  }
+}
