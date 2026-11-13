@@ -1,0 +1,16 @@
+Memória: confirmando 1 equipamento(s) conhecido(s)
+  ativo       edge-mk1                     172.20.20.11     dados reaproveitados
+Resumo da descoberta                                                            
+┌─────────────────────────────┬────────────────────────────────────────────────┐
+│ Equipamentos coletados      │ 1                                              │
+│ Vistos por vizinhos (stubs) │ 3                                              │
+│ Links físicos               │ 3                                              │
+│ Links L3                    │ 0                                              │
+│ Adjacências de roteamento   │ 0                                              │
+│ Interfaces                  │ 5                                              │
+│ Alvos com falha             │ 0                                              │
+│ Duração (s)                 │ 0.2                                            │
+│ Fabricantes                 │ MikroTik (2), Linux (1), Nokia (1)             │
+│ Memória                     │ 1 conhecidos · 1 confirmados sem recoleta · 0  │
+│                             │ recoletados · 0 inacessíveis · 0 novos         │
+└─────────────────────────────┴────────────────────────────────────────────────┘
