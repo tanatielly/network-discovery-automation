@@ -1,0 +1,14 @@
+{
+  "edge-mk1": {
+    "_identity_before": "name: edge-mk1",
+    "_status": "startup-config aplicado pelo containerlab",
+    "_identity_after": "name: edge-mk1",
+    "_addresses": "0 address=172.31.255.30/30 network=172.31.255.28 interface=ether1 actual-interface=ether1\n1 comment=ISP-PE address=200.200.10.2/30 network=200.200.10.0 interface=ether2 actual-interface=ether2\n2 comment=EDGE-MK2 address=10.255.0.1/30 network=10.255.0.0 interface=ether3 actual-interface=ether3\n3 comment=CORE-SRL1 address=10.10.1.1/30 network=10.10.1.0 interface=ether4 actual-interface=ether4"
+  },
+  "edge-mk2": {
+    "_identity_before": "name: edge-mk2",
+    "_status": "startup-config aplicado pelo containerlab",
+    "_identity_after": "name: edge-mk2",
+    "_addresses": "0 address=172.31.255.30/30 network=172.31.255.28 interface=ether1 actual-interface=ether1\n1 comment=EDGE-MK1 address=10.255.0.2/30 network=10.255.0.0 interface=ether3 actual-interface=ether3\n2 comment=CORE-SRL2 address=10.10.2.1/30 network=10.10.2.0 interface=ether4 actual-interface=ether4"
+  }
+}
