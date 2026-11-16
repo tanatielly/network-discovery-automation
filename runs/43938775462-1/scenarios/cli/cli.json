@@ -1,0 +1,26 @@
+{
+  "vendors": {
+    "exit_code": 0,
+    "duration_s": 0.2
+  },
+  "discover": {
+    "exit_code": 0,
+    "duration_s": 3.4
+  },
+  "verificar": {
+    "exit_code": 0,
+    "duration_s": 0.7
+  },
+  "inventario": {
+    "exit_code": 0,
+    "duration_s": 0.4
+  },
+  "report": {
+    "exit_code": 0,
+    "duration_s": 0.3
+  },
+  "diff": {
+    "exit_code": 0,
+    "duration_s": 0.2
+  }
+}
