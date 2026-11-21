@@ -1,0 +1,6 @@
+
+default via 172.20.20.1 dev eth0 
+10.10.3.0/30 dev eth1 proto kernel scope link src 10.10.3.2 
+10.10.4.0/30 dev eth2 proto kernel scope link src 10.10.4.2 
+172.20.20.0/24 dev eth0 proto kernel scope link src 172.20.20.31 
+192.168.10.0/24 dev eth3 proto kernel scope link src 192.168.10.1 
