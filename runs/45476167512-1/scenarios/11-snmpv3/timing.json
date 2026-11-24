@@ -1,0 +1,15 @@
+{
+  "id": "11-snmpv3",
+  "title": "Somente SNMPv3 (authPriv SHA/AES) a partir do inventário",
+  "status": "ok",
+  "duration_s": 8.1,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 0,
+    "reaproveitados": 0,
+    "recoletados": 0,
+    "inacessiveis": 0,
+    "novos_coletados": 3,
+    "eventos": []
+  }
+}
