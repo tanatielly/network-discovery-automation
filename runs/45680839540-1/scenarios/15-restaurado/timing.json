@@ -1,0 +1,34 @@
+{
+  "id": "15-restaurado",
+  "title": "Verificação após restaurar srv2 e o link",
+  "status": "ok",
+  "duration_s": 11.8,
+  "suite": "completa",
+  "memoria": {
+    "conhecidos": 7,
+    "reaproveitados": 5,
+    "recoletados": 2,
+    "inacessiveis": 0,
+    "novos_coletados": 0,
+    "eventos": [
+      {
+        "device": "core-srl2",
+        "kind": "alterado",
+        "detail": [
+          "vizinhança mudou"
+        ]
+      },
+      {
+        "device": "dist-frr1",
+        "kind": "alterado",
+        "detail": [
+          "vizinhança mudou"
+        ]
+      },
+      {
+        "device": "srv2",
+        "kind": "voltou"
+      }
+    ]
+  }
+}

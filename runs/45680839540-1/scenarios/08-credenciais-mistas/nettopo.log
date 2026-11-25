@@ -1,0 +1,13 @@
+2026-11-25 19:06:02,052 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-errada falhou: No SNMP response received before timeout
+2026-11-25 19:06:02,052 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.11 via snmp-errada falhou: No SNMP response received before timeout
+2026-11-25 19:06:02,052 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.12 via snmp-errada falhou: No SNMP response received before timeout
+2026-11-25 19:06:02,053 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.21 via snmp-errada falhou: No SNMP response received before timeout
+2026-11-25 19:06:02,053 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.22 via snmp-errada falhou: No SNMP response received before timeout
+2026-11-25 19:06:02,053 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.31 via snmp-errada falhou: No SNMP response received before timeout
+2026-11-25 19:06:02,053 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.41 via snmp-errada falhou: No SNMP response received before timeout
+2026-11-25 19:06:02,053 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.42 via snmp-errada falhou: No SNMP response received before timeout
+2026-11-25 19:06:04,071 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v2c falhou: No SNMP response received before timeout
+2026-11-25 19:06:04,095 DEBUG nettopo.collectors.snmp: SNMP 172.20.20.2 via snmp-v3 falhou: Unknown USM user
+2026-11-25 19:06:09,599 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.1 via snmp-v2c falhou: No SNMP response received before timeout
+2026-11-25 19:06:11,614 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.1 via snmp-errada falhou: No SNMP response received before timeout
+2026-11-25 19:06:13,631 DEBUG nettopo.collectors.snmp: SNMP 10.255.0.1 via snmp-v3 falhou: No SNMP response received before timeout
