@@ -1,0 +1,9 @@
+suíte: completa
+4
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       935Mi        13Gi        44Mi       1.0Gi        14Gi
+Swap:             0B          0B          0B
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/mapper/cow-root  145G   57G   88G  40% /
+crw-rw---- 1 root kvm 10, 232 Nov 27 18:43 /dev/kvm
+Linux ip-10-0-130-37 7.0.0-1018-aws #19~24.04.1-Ubuntu SMP PREEMPT Thu Nov 12 17:17:32 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
